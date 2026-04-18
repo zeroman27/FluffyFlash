@@ -1,0 +1,14 @@
+---
+description: After substantive code or product changes, update Obsidian project notes in this repo.
+alwaysApply: true
+---
+
+# Obsidian vault sync (Wist)
+
+When you make **substantive** changes to the app (features, architecture, roadmap-worthy behavior, notable refactors):
+
+1. Update relevant notes under `ObsidianVault/10-Project-Wist/` — at minimum check [[Architecture]], [[Roadmap]], and [[Backlog]] when the change affects behavior users care about.
+2. Add or adjust a **session note** in `ObsidianVault/10-Project-Wist/Sessions/` when the work is worth a dated record.
+3. Do **not** duplicate full code in Obsidian; keep high-level bullets and links to modules/files.
+
+Skip updates for trivial one-line fixes or purely cosmetic edits unless the user asks.

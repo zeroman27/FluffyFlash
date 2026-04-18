@@ -1,0 +1,37 @@
+# Python
+**/__pycache__/
+*.py[cod]
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode — пользовательские данные и кэши сборки
+**/xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+DerivedData/
+build/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+.swiftpm/xcode/package.xcworkspace/xcuserdata/
+.swiftpm/configuration/
+
+# Собранные CLI и dylib (ставятся скриптом bundle-mac-cli-tools.sh)
+WinMist/Wist/Tools/bin/
+WinMist/Wist/Tools/lib/
+WinMist/EmbeddedCLI/lib/
+
+# Локальные машинные переводы / частичные бандлы (по желанию раскомментируйте)
+# WinMist/Scripts/l10n_bundle.partial.json
+
+# Obsidian — личная раскладка окон (уже в ObsidianVault/.gitignore частично)
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
