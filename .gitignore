@@ -1,37 +1,62 @@
-# Python
-**/__pycache__/
-*.py[cod]
-
 # macOS
 .DS_Store
 .AppleDouble
 .LSOverride
+._*
 
-# Xcode — пользовательские данные и кэши сборки
-**/xcuserdata/
-*.xcuserstate
-*.xccheckout
-*.xcscmblueprint
-DerivedData/
+# Xcode & Swift
 build/
+DerivedData/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
 *.hmap
 *.ipa
 *.dSYM.zip
 *.dSYM
+*.swiftdoc
+*.swiftinterface
+Timeline.xctimeline
+Playground.workspace
+xcuserdata/
+*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+.swiftpm/configuration/registries.json
+.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+.netrc
 
 # Swift Package Manager
 .build/
-.swiftpm/xcode/package.xcworkspace/xcuserdata/
-.swiftpm/configuration/
+Packages/
+Package.resolved
+*.xcodeproj/project.xcworkspace/xcshareddata/
 
-# Собранные CLI и dylib (ставятся скриптом bundle-mac-cli-tools.sh)
+# Wist: встроенные CLI и dylib (ставятся скриптом сборки, не исходники)
 WinMist/Wist/Tools/bin/
 WinMist/Wist/Tools/lib/
 WinMist/EmbeddedCLI/lib/
 
-# Локальные машинные переводы / частичные бандлы (по желанию раскомментируйте)
-# WinMist/Scripts/l10n_bundle.partial.json
+# Python (скрипты в .cursor/skills и др.)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
 
-# Obsidian — личная раскладка окон (уже в ObsidianVault/.gitignore частично)
-.obsidian/workspace.json
-.obsidian/workspace-mobile.json
+# Obsidian — личный расклад окон (остальной .obsidian коммитим)
+ObsidianVault/.obsidian/workspace.json
+ObsidianVault/.obsidian/workspace-mobile.json
+
+# Секреты и локальные env
+.env
+.env.*
+!.env.example
+
+# Редакторы / IDE (опционально)
+*.swp
+*.swo
+*~
+
+# Логи
+*.log
