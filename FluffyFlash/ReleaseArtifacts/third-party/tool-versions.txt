@@ -1,0 +1,121 @@
+== aria2c ==
+
+== cabextract ==
+cabextract version 1.11
+
+== wimlib-imagex ==
+
+== chntpw ==
+chntpw: change password of a user in a Windows SAM file,
+or invoke registry editor. Should handle both 32 and 64 bit windows and
+all version from NT3.x to Win8.1
+chntpw [OPTIONS] <samfile> [systemfile] [securityfile] [otherreghive] [...]
+ -h          This message
+
+== mkisofs ==
+mkisofs 3.02a09 (--)
+
+Copyright (C) 1993-1997 Eric Youngdale
+Copyright (C) 1997-2017 Joerg Schilling
+Copyright (C) 1997-2001 James Pearson
+
+== mist ==
+2.2 (latest: 2.2)
+
+== brew list --versions ==
+aria2 1.37.0_1
+cabextract 1.11
+cdrtools 3.02a09
+chntpw 1.0.3
+mist-cli 2.2
+wimlib 1.14.5
+
+== brew info (selected) ==
+==> aria2: stable 1.37.0 (bottled)
+Download with resuming and segmented downloading
+https://aria2.github.io/
+Installed (on request)
+/opt/homebrew/Cellar/aria2/1.37.0_1 (66 files, 5.9MB) *
+  Poured from bottle using the formulae.brew.sh API on 2026-04-18 at 12:44:54
+From: https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/a/aria2.rb
+License: GPL-2.0-or-later
+==> Dependencies
+Required (5): c-ares, libssh2, openssl@3, sqlite, gettext
+Recursive Runtime (8): 8 ✔, 0 ✘
+==> Analytics
+install: 15,207 (30 days), 28,761 (90 days), 77,654 (365 days)
+install-on-request: 15,195 (30 days), 28,729 (90 days), 77,582 (365 days)
+build-error: 21 (30 days)
+
+==> cabextract: stable 1.11 (bottled)
+Extract files from Microsoft cabinet files
+https://www.cabextract.org.uk/
+Installed (on request)
+/opt/homebrew/Cellar/cabextract/1.11 (11 files, 177KB) *
+  Poured from bottle using the formulae.brew.sh API on 2026-04-18 at 12:45:03
+From: https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/c/cabextract.rb
+License: GPL-3.0-or-later
+==> Analytics
+install: 1,282 (30 days), 3,839 (90 days), 16,578 (365 days)
+install-on-request: 619 (30 days), 1,866 (90 days), 7,673 (365 days)
+build-error: 0 (30 days)
+
+==> wimlib: stable 1.14.5 (bottled)
+Library to create, extract, and modify Windows Imaging files
+https://wimlib.net/
+Installed (on request)
+/opt/homebrew/Cellar/wimlib/1.14.5 (65 files, 1.7MB) *
+  Poured from bottle using the formulae.brew.sh API on 2026-04-18 at 12:45:08
+From: https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/w/wimlib.rb
+License: GPL-3.0-or-later
+==> Analytics
+install: 4,727 (30 days), 18,657 (90 days), 61,595 (365 days)
+install-on-request: 4,727 (30 days), 18,657 (90 days), 61,595 (365 days)
+build-error: 12 (30 days)
+
+==> cdrtools: stable 3.02a09 (bottled)
+CD/DVD/Blu-ray premastering and recording software
+https://cdrtools.sourceforge.net/private/cdrecord.html
+Conflicts with:
+  dvdrtools (because both dvdrtools and cdrtools install binaries by the same name)
+Installed (on request)
+/opt/homebrew/Cellar/cdrtools/3.02a09 (210 files, 6.4MB) *
+  Poured from bottle using the formulae.brew.sh API on 2026-04-18 at 12:45:14
+From: https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/c/cdrtools.rb
+License: CDDL-1.0
+==> Analytics
+install: 539 (30 days), 1,926 (90 days), 7,797 (365 days)
+install-on-request: 502 (30 days), 1,611 (90 days), 7,169 (365 days)
+build-error: 0 (30 days)
+
+==> mist-cli: stable 2.2 (bottled), HEAD
+Mac command-line tool that automatically downloads macOS Firmwares / Installers
+https://github.com/ninxsoft/mist-cli
+Installed (on request)
+/opt/homebrew/Cellar/mist-cli/2.2 (10 files, 3.4MB) *
+  Poured from bottle using the formulae.brew.sh API on 2026-04-26 at 12:34:18
+From: https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/m/mist-cli.rb
+License: MIT
+==> Requirements
+Required: macOS
+==> Options
+--HEAD
+	Install HEAD version
+==> Analytics
+install: 204 (30 days), 595 (90 days), 1,778 (365 days)
+install-on-request: 204 (30 days), 595 (90 days), 1,778 (365 days)
+build-error: 0 (30 days)
+
+==> minacle/chntpw/chntpw: stable 1.0.3, HEAD
+The Offline NT Password Editor
+https://github.com/minacle/chntpw
+Installed (on request)
+/opt/homebrew/Cellar/chntpw/1.0.3 (6 files, 4.5MB) *
+  Built from source on 2026-04-18 at 12:45:24
+From: https://github.com/minacle/homebrew-chntpw/blob/HEAD/Formula/chntpw.rb
+License: GPL-2.0-only
+==> Dependencies
+Build (1): openssl@3
+==> Options
+--HEAD
+	Install HEAD version
