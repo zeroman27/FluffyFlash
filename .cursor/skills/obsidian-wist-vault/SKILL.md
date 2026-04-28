@@ -16,6 +16,8 @@ description: >-
 
 В Obsidian: **Open folder as vault** → выберите `ObsidianVault` или `docs/vault` (только корень vault, не подпапку).
 
+**Правки из Cursor:** файлы в `ObsidianVault/` при сохранении сразу на диске; Obsidian на macOS обычно подхватывает изменения без отдельного шага. Нет настройки в git-репозитории, которая «включала бы» Obsidian — это поведение [приложения Obsidian](https://obsidian.md).
+
 ## Настройки в репозитории
 
 - В **`.obsidian/`** заданы: новые заметки → `00-Inbox/`, вложения → `attachments/`, шаблоны → `Templates/` (шаблон **Session** для сессий).

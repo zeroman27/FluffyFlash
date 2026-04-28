@@ -31,10 +31,18 @@ Packages/
 Package.resolved
 *.xcodeproj/project.xcworkspace/xcshareddata/
 
-# Wist: встроенные CLI и dylib (ставятся скриптом сборки, не исходники)
-WinMist/Wist/Tools/bin/
-WinMist/Wist/Tools/lib/
-WinMist/EmbeddedCLI/lib/
+# FluffyFlash: встроенные CLI и dylib (ставятся скриптом сборки, не исходники)
+FluffyFlash/Fluffy Flash/Tools/bin/
+FluffyFlash/Fluffy Flash/Tools/lib/
+FluffyFlash/Wist/Tools/bin/
+FluffyFlash/Wist/Tools/lib/
+FluffyFlash/EmbeddedCLI/lib/
+
+# Release artifacts (комплаенс-бандлы и т.п.) — не пушим в public
+FluffyFlash/ReleaseArtifacts/
+
+# Obsidian vault (держим в private repo)
+ObsidianVault/
 
 # Python (скрипты в .cursor/skills и др.)
 __pycache__/

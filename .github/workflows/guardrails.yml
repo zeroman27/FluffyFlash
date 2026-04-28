@@ -1,0 +1,53 @@
+name: Guardrails
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  forbid-private-paths:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Block private/sensitive tracked paths
+        run: |
+          set -euo pipefail
+          forbidden=(
+            '^ObsidianVault/'
+            '^FluffyFlash/ReleaseArtifacts/'
+            '^FluffyFlash/.*/Tools/bin/'
+            '^FluffyFlash/.*/Tools/lib/'
+            '^FluffyFlash/EmbeddedCLI/lib/'
+            '^FluffyFlash/.*\.xcodeproj/xcuserdata/'
+          )
+
+          failed=0
+          for pat in "${forbidden[@]}"; do
+            if git ls-files | grep -E "$pat" >/dev/null 2>&1; then
+              echo "Found forbidden tracked paths matching: $pat"
+              git ls-files | grep -E "$pat" | head -n 50
+              failed=1
+            fi
+          done
+
+          if [[ "$failed" -ne 0 ]]; then
+            echo ""
+            echo "These paths must NOT be tracked in the public repo."
+            echo "Move them to the private repo or remove from git history."
+            exit 1
+          fi
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_ENABLE_COMMENTS: "false"
+

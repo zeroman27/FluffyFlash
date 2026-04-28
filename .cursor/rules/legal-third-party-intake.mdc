@@ -1,0 +1,40 @@
+---
+description: Always keep Legal + THIRD_PARTY current when adding third-party dependencies, code, tools, or assets.
+alwaysApply: true
+---
+
+# Legal / Third‑party intake (Wist / Fluffy Flash)
+
+Whenever you add, update, bundle, or copy **any** third‑party component (code, binaries/CLI tools, assets, fonts, scripts, SDKs, data files), you MUST do the following in the same change set:
+
+## 1) Inventory & documentation
+
+- Update `FluffyFlash/THIRD_PARTY.md`:
+  - component name + upstream URL
+  - license (SPDX if possible)
+  - what we use it for
+  - whether it ships inside `.app` (runtime redistributed) or is build-time only
+  - compliance obligations (e.g., attribution, NOTICE propagation, source offer)
+
+- Update `ObsidianVault/10-Project-Wist/Legal.md`:
+  - add/adjust the inventory entry
+  - update “release checklist” if obligations changed
+  - add risks/notes if license is copyleft/contested/unclear
+
+## 2) Release artifacts (if redistributed)
+
+If the third‑party component is redistributed in the `.app` or in release packages:
+
+- Ensure `FluffyFlash/THIRD_PARTY_NOTICES.txt` includes it
+- Ensure `FluffyFlash/Scripts/build_third_party_sources_bundle.sh` can produce:
+  - `ReleaseArtifacts/third-party/manifest.json`
+  - `ReleaseArtifacts/third-party/third-party-sources.tar.gz`
+
+## 3) Safety rails
+
+- Prefer permissive licenses (MIT/BSD/Apache) when possible.
+- Treat GPL/LGPL/CDDL/AGPL as “needs explicit plan”:
+  - define whether it is a separate program (process boundary) vs linked library
+  - define how we will ship corresponding source
+  - define where notices live in the distribution
+

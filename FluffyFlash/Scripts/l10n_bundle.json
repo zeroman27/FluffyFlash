@@ -1,0 +1,1618 @@
+{
+  "wimlib-imagex was not found. Release builds include it under Tools/bin. Otherwise: brew install wimlib": {
+    "es": "wimlib-imagex was not found. Release builds include it under Tools/bin. Otherwise: brew install wimlib",
+    "zh-Hans": "wimlib-imagex was not found. Release builds include it under Tools/bin. Otherwise: brew install wimlib",
+    "hi": "wimlib-imagex नहीं मिला। रिलीज़ बिल्ड में इसे टूल्स/बिन के अंतर्गत शामिल किया गया है। अन्यथा: ब्रू इंस्टॉल विमलिब",
+    "ar": "wimlib-imagex was not found. Release builds include it under Tools/bin. Otherwise: brew install wimlib",
+    "fr": "wimlib-imagex n'a pas été trouvé. Les versions de version l'incluent sous Outils/bin. Sinon : brew install wimlib",
+    "he": "wimlib-imagex was not found. Release builds include it under Tools/bin. Otherwise: brew install wimlib"
+  },
+  "Write": {
+    "es": "Escribir",
+    "zh-Hans": "写",
+    "hi": "लिखना",
+    "ar": "يكتب",
+    "fr": "Écrire",
+    "he": "Write"
+  },
+  "Create USB": {
+    "es": "Crear USB",
+    "zh-Hans": "创建USB",
+    "hi": "Create USB",
+    "ar": "إنشاء يو إس بي",
+    "fr": "Create USB",
+    "he": "Create USB"
+  },
+  "Bootable media for UEFI PCs: ISO, one or more removable drives, erase confirmation.": {
+    "es": "Medios de arranque para PC UEFI: ISO, una o más unidades extraíbles, confirmación de borrado.",
+    "zh-Hans": "UEFI PC 的可启动介质：ISO、一个或多个可移动驱动器、擦除确认。",
+    "hi": "यूईएफआई पीसी के लिए बूट करने योग्य मीडिया: आईएसओ, एक या अधिक हटाने योग्य ड्राइव, पुष्टिकरण मिटा दें।",
+    "ar": "الوسائط القابلة للتمهيد لأجهزة الكمبيوتر التي تعمل بنظام UEFI: ISO، واحد أو أكثر من محركات الأقراص القابلة للإزالة، مسح التأكيد.",
+    "fr": "Support de démarrage pour PC UEFI : ISO, un ou plusieurs lecteurs amovibles, confirmation d'effacement.",
+    "he": "Bootable media for UEFI PCs: ISO, one or more removable drives, erase confirmation."
+  },
+  "ISO image": {
+    "es": "Imagen ISO",
+    "zh-Hans": "ISO镜像",
+    "hi": "आईएसओ छवि",
+    "ar": "صورة ايزو",
+    "fr": "Image ISO",
+    "he": "ISO image"
+  },
+  "USB drives": {
+    "es": "USB drives",
+    "zh-Hans": "USB 驱动器",
+    "hi": "यूएसबी ड्राइव",
+    "ar": "USB drives",
+    "fr": "Clés USB",
+    "he": "USB drives"
+  },
+  "Data on selected USB drives will be erased": {
+    "es": "Se borrarán los datos de las unidades USB seleccionadas",
+    "zh-Hans": "选定 USB 驱动器上的数据将被删除",
+    "hi": "Data on selected USB drives will be erased",
+    "ar": "سيتم مسح البيانات الموجودة على محركات أقراص USB المحددة",
+    "fr": "Les données sur les clés USB sélectionnées seront effacées",
+    "he": "Data on selected USB drives will be erased"
+  },
+  "Each drive is formatted as FAT32 (volume label WINSETUP) and receives the Windows installer. Requires install.wim or install.esd and wimlib-imagex (brew install wimlib).": {
+    "es": "Cada unidad está formateada como FAT32 (etiqueta de volumen WINSETUP) y recibe el instalador de Windows. Requiere install.wim o install.esd y wimlib-imagex (brew install wimlib).",
+    "zh-Hans": "Each drive is formatted as FAT32 (volume label WINSETUP) and receives the Windows installer. Requires install.wim or install.esd and wimlib-imagex (brew install wimlib).",
+    "hi": "प्रत्येक ड्राइव को FAT32 (वॉल्यूम लेबल WinSETUP) के रूप में स्वरूपित किया जाता है और Windows इंस्टॉलर प्राप्त होता है। install.wim या install.esd और wimlib-imagex (brew install wimlib) की आवश्यकता है।",
+    "ar": "يتم تنسيق كل محرك أقراص بتنسيق FAT32 (تسمية وحدة التخزين WINSETUP) ويتلقى مثبت Windows. يتطلب install.wim أو install.esd وwimlib-imagex (تثبيت الشراب wimlib).",
+    "fr": "Chaque disque est formaté en FAT32 (nom de volume WINSETUP) et reçoit le programme d'installation de Windows. Nécessite install.wim ou install.esd et wimlib-imagex (brew install wimlib).",
+    "he": "Each drive is formatted as FAT32 (volume label WINSETUP) and receives the Windows installer. Requires install.wim or install.esd and wimlib-imagex (brew install wimlib)."
+  },
+  "Erase and write?": {
+    "es": "¿Borrar y escribir?",
+    "zh-Hans": "擦除并写入？",
+    "hi": "मिटाओ और लिखो?",
+    "ar": "امسح واكتب؟",
+    "fr": "Effacer et écrire ?",
+    "he": "Erase and write?"
+  },
+  "Cancel": {
+    "es": "Cancel",
+    "zh-Hans": "Cancel",
+    "hi": "Cancel",
+    "ar": "Cancel",
+    "fr": "Annuler",
+    "he": "Cancel"
+  },
+  "Erase and write": {
+    "es": "Erase and write",
+    "zh-Hans": "擦除并写入",
+    "hi": "मिटाओ और लिखो",
+    "ar": "امسح واكتب",
+    "fr": "Effacer et écrire",
+    "he": "Erase and write"
+  },
+  "Update this drive?": {
+    "es": "¿Actualizar esta unidad?",
+    "zh-Hans": "更新这个驱动器吗？",
+    "hi": "इस ड्राइव को अपडेट करें?",
+    "ar": "تحديث محرك الأقراص هذا؟",
+    "fr": "Mettre à jour ce lecteur ?",
+    "he": "Update this drive?"
+  },
+  "Erase and update": {
+    "es": "Borrar y actualizar",
+    "zh-Hans": "删除并更新",
+    "hi": "मिटाएँ और अद्यतन करें",
+    "ar": "محو وتحديث",
+    "fr": "Effacer et mettre à jour",
+    "he": "Erase and update"
+  },
+  "The drive will be formatted and written using the build selected in the app.": {
+    "es": "La unidad se formateará y escribirá utilizando la compilación seleccionada en la aplicación.",
+    "zh-Hans": "该驱动器将使用应用程序中选择的版本进行格式化和写入。",
+    "hi": "ऐप में चयनित बिल्ड का उपयोग करके ड्राइव को स्वरूपित और लिखा जाएगा।",
+    "ar": "سيتم تنسيق محرك الأقراص وكتابته باستخدام الإصدار المحدد في التطبيق.",
+    "fr": "Le lecteur sera formaté et écrit à l'aide de la version sélectionnée dans l'application.",
+    "he": "The drive will be formatted and written using the build selected in the app."
+  },
+  "FAT32 (WINSETUP) will be applied and Windows setup files will be written.": {
+    "es": "Se aplicará FAT32 (WINSETUP) y se escribirán los archivos de instalación de Windows.",
+    "zh-Hans": "将应用 FAT32 (WINSETUP) 并写入 Windows 安装文件。",
+    "hi": "FAT32 (WINSETUP) लागू किया जाएगा और Windows सेटअप फ़ाइलें लिखी जाएंगी।",
+    "ar": "سيتم تطبيق FAT32 (WINSETUP) وستتم كتابة ملفات إعداد Windows.",
+    "fr": "FAT32 (WINSETUP) sera appliqué et les fichiers d'installation de Windows seront écrits.",
+    "he": "FAT32 (WINSETUP) will be applied and Windows setup files will be written."
+  },
+  "FAT32 (WINSETUP) will be applied to %lld drives, one after another.": {
+    "es": "FAT32 (WINSETUP) se aplicará a las unidades %lld, una tras otra.",
+    "zh-Hans": "FAT32 (WINSETUP) 将依次应用于 %lld 个驱动器。",
+    "hi": "FAT32 (WINSETUP) को एक के बाद एक %lld ड्राइव पर लागू किया जाएगा।",
+    "ar": "FAT32 (WINSETUP) will be applied to %lld drives, one after another.",
+    "fr": "FAT32 (WINSETUP) will be applied to %lld drives, one after another.",
+    "he": "FAT32 (WINSETUP) will be applied to %lld drives, one after another."
+  },
+  "Fluffy Flash drives": {
+    "es": "unidades Fluffy Flash",
+    "zh-Hans": "Fluffy Flash 驱动器",
+    "hi": "Fluffy Flash ड्राइव",
+    "ar": "محركات Fluffy Flash",
+    "fr": "Disques Fluffy Flash",
+    "he": "Fluffy Flash drives"
+  },
+  "Found %@ on a mounted volume. Build detection without this file is not guaranteed.": {
+    "es": "Encontrado %@ en un volumen montado. No se garantiza la detección de compilaciones sin este archivo.",
+    "zh-Hans": "在已安装的卷上找到 %@。如果没有此文件，则无法保证构建检测。",
+    "hi": "माउंटेड वॉल्यूम पर %@ मिला। इस फ़ाइल के बिना बिल्ड डिटेक्शन की गारंटी नहीं है।",
+    "ar": "تم العثور على %@ على وحدة تخزين مثبتة. لا يمكن ضمان اكتشاف البناء بدون هذا الملف.",
+    "fr": "%@ trouvé sur un volume monté. La détection des builds sans ce fichier n'est pas garantie.",
+    "he": "Found %@ on a mounted volume. Build detection without this file is not guaranteed."
+  },
+  "Build": {
+    "es": "Construir",
+    "zh-Hans": "建造",
+    "hi": "निर्माण",
+    "ar": "يبني",
+    "fr": "Construire",
+    "he": "Build"
+  },
+  "Update to selected build": {
+    "es": "Actualizar a la compilación seleccionada",
+    "zh-Hans": "更新到选定的版本",
+    "hi": "चयनित बिल्ड में अद्यतन करें",
+    "ar": "Update to selected build",
+    "fr": "Mettre à jour vers la version sélectionnée",
+    "he": "Update to selected build"
+  },
+  "Windows image (.iso)": {
+    "es": "Imagen de Windows (.iso)",
+    "zh-Hans": "Windows image (.iso)",
+    "hi": "विंडोज़ छवि (.iso)",
+    "ar": "صورة ويندوز (.iso)",
+    "fr": "Image Windows (.iso)",
+    "he": "Windows image (.iso)"
+  },
+  "Other file…": {
+    "es": "Otro archivo…",
+    "zh-Hans": "其他文件...",
+    "hi": "अन्य फ़ाइल…",
+    "ar": "ملف آخر…",
+    "fr": "Autre fichier…",
+    "he": "Other file…"
+  },
+  "No ISO selected": {
+    "es": "No se seleccionó ningún ISO",
+    "zh-Hans": "未选择 ISO",
+    "hi": "कोई ISO चयनित नहीं",
+    "ar": "لم يتم تحديد ISO",
+    "fr": "Aucun ISO sélectionné",
+    "he": "No ISO selected"
+  },
+  "Choose an installer image with a sources folder and install.wim or install.esd. For Run all, the ISO is built automatically.": {
+    "es": "Elija una imagen del instalador con una carpeta de fuentes e install.wim o install.esd. Para Ejecutar todo, la ISO se crea automáticamente.",
+    "zh-Hans": "选择带有源文件夹和 install.wim 或 install.esd 的安装程序映像。对于全部运行，ISO 是自动构建的。",
+    "hi": "सोर्स फ़ोल्डर के साथ एक इंस्टॉलर छवि चुनें और install.wim या install.esd करें। रन ऑल के लिए, ISO स्वचालित रूप से निर्मित होता है।",
+    "ar": "اختر صورة المثبت مع مجلد المصادر ثم install.wim أو install.esd. بالنسبة إلى تشغيل الكل، يتم إنشاء ملف ISO تلقائيًا.",
+    "fr": "Choisissez une image d'installation avec un dossier sources et install.wim ou install.esd. Pour Run all, l’ISO est construit automatiquement.",
+    "he": "Choose an installer image with a sources folder and install.wim or install.esd. For Run all, the ISO is built automatically."
+  },
+  "Choose ISO…": {
+    "es": "Elija ISO...",
+    "zh-Hans": "选择 ISO...",
+    "hi": "आईएसओ चुनें…",
+    "ar": "اختر ايزو...",
+    "fr": "Choisissez ISO…",
+    "he": "Choose ISO…"
+  },
+  "Refresh list": {
+    "es": "Actualizar lista",
+    "zh-Hans": "刷新列表",
+    "hi": "सूची रीफ़्रेश करें",
+    "ar": "تحديث القائمة",
+    "fr": "Actualiser la liste",
+    "he": "Refresh list"
+  },
+  "Selected: %lld": {
+    "es": "Seleccionado: %lld",
+    "zh-Hans": "已选择：%lld",
+    "hi": "चयनित: %lld",
+    "ar": "تم التحديد: %lld",
+    "fr": "Sélectionné : %lld",
+    "he": "Selected: %lld"
+  },
+  "No drives found": {
+    "es": "No se encontraron unidades",
+    "zh-Hans": "未找到驱动器",
+    "hi": "कोई ड्राइव नहीं मिली",
+    "ar": "لم يتم العثور على محركات أقراص",
+    "fr": "Aucun lecteur trouvé",
+    "he": "No drives found"
+  },
+  "Connect a USB drive and tap Refresh list. Internal disks are hidden.": {
+    "es": "Conecte una unidad USB y toque Actualizar lista. Los discos internos están ocultos.",
+    "zh-Hans": "连接 USB 驱动器并点击刷新列表。内部磁盘被隐藏。",
+    "hi": "USB ड्राइव कनेक्ट करें और रीफ़्रेश सूची टैप करें। आंतरिक डिस्क छिपी हुई हैं.",
+    "ar": "قم بتوصيل محرك أقراص USB وانقر فوق تحديث القائمة. الأقراص الداخلية مخفية.",
+    "fr": "Connectez une clé USB et appuyez sur Actualiser la liste. Les disques internes sont masqués.",
+    "he": "Connect a USB drive and tap Refresh list. Internal disks are hidden."
+  },
+  "Action (ISO only)": {
+    "es": "Acción (solo ISO)",
+    "zh-Hans": "动作（仅限 ISO）",
+    "hi": "कार्रवाई (केवल आईएसओ)",
+    "ar": "الإجراء (ISO فقط)",
+    "fr": "Action (ISO uniquement)",
+    "he": "Action (ISO only)"
+  },
+  "Writes the selected ISO to the selected drives. The UUP → ISO → USB chain is started with Run all at the bottom.": {
+    "es": "Escribe el ISO seleccionado en las unidades seleccionadas. La cadena UUP → ISO → USB se inicia con Ejecutar todo en la parte inferior.",
+    "zh-Hans": "将选定的 ISO 写入选定的驱动器。 UUP → ISO → USB 链从底部的 Run all 开始。",
+    "hi": "चयनित आईएसओ को चयनित ड्राइव पर लिखता है। यूयूपी → आईएसओ → यूएसबी श्रृंखला नीचे रन ऑल के साथ शुरू होती है।",
+    "ar": "يكتب ISO المحدد إلى محركات الأقراص المحددة. تبدأ سلسلة UUP → ISO → USB مع تشغيل الكل في الأسفل.",
+    "fr": "Écrit l'ISO sélectionné sur les lecteurs sélectionnés. La chaîne UUP → ISO → USB est démarrée avec Run all en bas.",
+    "he": "Writes the selected ISO to the selected drives. The UUP → ISO → USB chain is started with Run all at the bottom."
+  },
+  "Write ISO to USB…": {
+    "es": "Escribir ISO en USB…",
+    "zh-Hans": "将 ISO 写入 USB...",
+    "hi": "Write ISO to USB…",
+    "ar": "اكتب ISO إلى USB...",
+    "fr": "Écrire l'ISO sur USB…",
+    "he": "Write ISO to USB…"
+  },
+  "Clear log": {
+    "es": "Borrar registro",
+    "zh-Hans": "清除日志",
+    "hi": "लॉग साफ करें",
+    "ar": "مسح السجل",
+    "fr": "Effacer le journal",
+    "he": "Clear log"
+  },
+  "Writing to USB…": {
+    "es": "Escribiendo en USB…",
+    "zh-Hans": "写入 USB...",
+    "hi": "USB पर लिख रहा हूँ...",
+    "ar": "الكتابة إلى USB...",
+    "fr": "Écriture sur USB…",
+    "he": "Writing to USB…"
+  },
+  "Log": {
+    "es": "Registro",
+    "zh-Hans": "日志",
+    "hi": "लकड़ी का लट्ठा",
+    "ar": "سجل",
+    "fr": "Enregistrer",
+    "he": "Log"
+  },
+  "Copy log": {
+    "es": "Copiar registro",
+    "zh-Hans": "复制日志",
+    "hi": "लॉग कॉपी करें",
+    "ar": "نسخ السجل",
+    "fr": "Copier le journal",
+    "he": "Copy log"
+  },
+  "Copied": {
+    "es": "Copiado",
+    "zh-Hans": "已复制",
+    "hi": "कॉपी किया गया",
+    "ar": "منقول",
+    "fr": "Copié",
+    "he": "Copied"
+  },
+  "Catalog & download": {
+    "es": "Catálogo y descarga",
+    "zh-Hans": "目录及下载",
+    "hi": "कैटलॉग और डाउनलोड करें",
+    "ar": "الكتالوج والتنزيل",
+    "fr": "Catalogue et téléchargement",
+    "he": "Catalog & download"
+  },
+  "Full flow to USB": {
+    "es": "Flujo completo a USB",
+    "zh-Hans": "完全流向USB",
+    "hi": "USB में पूर्ण प्रवाह",
+    "ar": "التدفق الكامل إلى USB",
+    "fr": "Flux complet vers USB",
+    "he": "Full flow to USB"
+  },
+  "Search by title, build, architecture…": {
+    "es": "Busque por título, construcción, arquitectura…",
+    "zh-Hans": "按标题、构建、架构搜索...",
+    "hi": "शीर्षक, निर्माण, वास्तुकला के आधार पर खोजें...",
+    "ar": "البحث حسب العنوان، والبناء، والهندسة المعمارية ...",
+    "fr": "Recherche par titre, construction, architecture…",
+    "he": "Search by title, build, architecture…"
+  },
+  "Source": {
+    "es": "Fuente",
+    "zh-Hans": "来源",
+    "hi": "स्रोत",
+    "ar": "مصدر",
+    "fr": "Source",
+    "he": "Source"
+  },
+  "Build catalog": {
+    "es": "Crear catálogo",
+    "zh-Hans": "建立目录",
+    "hi": "कैटलॉग बनाएं",
+    "ar": "بناء كتالوج",
+    "fr": "Créer un catalogue",
+    "he": "Build catalog"
+  },
+  "Choose a Windows build from the UUPDump catalog. The installable .iso file is assembled on the next step — Cache & ISO — after the UUP payload is on disk.": {
+    "es": "Elija una compilación de Windows del catálogo UUPDump. El archivo .iso instalable se ensambla en el siguiente paso (Caché e ISO) después de que la carga útil UUP esté en el disco.",
+    "zh-Hans": "从 UUPDump 目录中选择 Windows 版本。 UUP 有效负载位于磁盘上后，可安装的 .iso 文件将在下一步（缓存和 ISO）中进行组装。",
+    "hi": "UUPDump कैटलॉग से एक विंडोज़ बिल्ड चुनें। यूयूपी पेलोड डिस्क पर होने के बाद इंस्टॉल करने योग्य .iso फ़ाइल को अगले चरण - कैश और आईएसओ - पर इकट्ठा किया जाता है।",
+    "ar": "اختر إصدار Windows من كتالوج UUPDump. يتم تجميع ملف .iso القابل للتثبيت في الخطوة التالية - ذاكرة التخزين المؤقت وISO - بعد أن تكون حمولة UUP على القرص.",
+    "fr": "Choisissez une version Windows dans le catalogue UUPDump. Le fichier .iso installable est assemblé à l'étape suivante (Cache et ISO) une fois la charge utile UUP sur le disque.",
+    "he": "Choose a Windows build from the UUPDump catalog. The installable .iso file is assembled on the next step — Cache & ISO — after the UUP payload is on disk."
+  },
+  "%@ · %@": {
+    "es": null,
+    "zh-Hans": "%@·%@",
+    "hi": null,
+    "ar": null,
+    "fr": null,
+    "he": "%@ · %@"
+  },
+  "Workflow": {
+    "es": "Flujo de trabajo",
+    "zh-Hans": "工作流程",
+    "hi": "कार्यप्रवाह",
+    "ar": "سير العمل",
+    "fr": "Flux de travail",
+    "he": "Workflow"
+  },
+  "Uses the same steps as Run all: UUP download → ISO conversion → USB write. Select removable drives below, then run the full pipeline.": {
+    "es": "Utiliza los mismos pasos que Ejecutar todo: Descarga UUP → Conversión ISO → Escritura USB. Seleccione las unidades extraíbles a continuación y luego ejecute el proceso completo.",
+    "zh-Hans": "使用与运行全部相同的步骤：UUP 下载 → ISO 转换 → USB 写入。选择下面的可移动驱动器，然后运行完整的管道。",
+    "hi": "रन ऑल के समान चरणों का उपयोग करता है: यूयूपी डाउनलोड → आईएसओ रूपांतरण → यूएसबी लिखना। नीचे हटाने योग्य ड्राइव का चयन करें, फिर पूरी पाइपलाइन चलाएँ।",
+    "ar": "يستخدم نفس الخطوات مثل تشغيل الكل: تنزيل UUP → تحويل ISO → كتابة USB. حدد محركات الأقراص القابلة للإزالة أدناه، ثم قم بتشغيل المسار الكامل.",
+    "fr": "Utilise les mêmes étapes que Run all : téléchargement UUP → conversion ISO → écriture USB. Sélectionnez les lecteurs amovibles ci-dessous, puis exécutez le pipeline complet.",
+    "he": "Uses the same steps as Run all: UUP download → ISO conversion → USB write. Select removable drives below, then run the full pipeline."
+  },
+  "USB drives (full flow)": {
+    "es": "Unidades USB (flujo completo)",
+    "zh-Hans": "USB 驱动器（全流）",
+    "hi": "यूएसबी ड्राइव (पूर्ण प्रवाह)",
+    "ar": "محركات أقراص USB (التدفق الكامل)",
+    "fr": "Clés USB (full flow)",
+    "he": "USB drives (full flow)"
+  },
+  "Connect a USB drive and refresh.": {
+    "es": "Conecte una unidad USB y actualice.",
+    "zh-Hans": "连接 USB 驱动器并刷新。",
+    "hi": "USB ड्राइव कनेक्ट करें और रीफ़्रेश करें.",
+    "ar": "قم بتوصيل محرك أقراص USB وقم بالتحديث.",
+    "fr": "Connectez une clé USB et actualisez.",
+    "he": "Connect a USB drive and refresh."
+  },
+  "Run full pipeline": {
+    "es": "Ejecutar todo el proceso",
+    "zh-Hans": "运行完整管道",
+    "hi": "पूरी पाइपलाइन चलाएँ",
+    "ar": "تشغيل خط الأنابيب الكامل",
+    "fr": "Exécuter un pipeline complet",
+    "he": "Run full pipeline"
+  },
+  "Windows package language & edition": {
+    "es": "Idioma y edición del paquete de Windows",
+    "zh-Hans": "Windows 软件包语言和版本",
+    "hi": "विंडोज़ पैकेज भाषा और संस्करण",
+    "ar": "Windows package language & edition",
+    "fr": "Langue et édition du package Windows",
+    "he": "Windows package language & edition"
+  },
+  "Language": {
+    "es": "Idioma",
+    "zh-Hans": "语言",
+    "hi": "भाषा",
+    "ar": "لغة",
+    "fr": "Langue",
+    "he": "Language"
+  },
+  "Edition": {
+    "es": "Edición",
+    "zh-Hans": "版",
+    "hi": "संस्करण",
+    "ar": "طبعة",
+    "fr": "Édition",
+    "he": "Edition"
+  },
+  "Confirm a build and load download options to see language and edition here.": {
+    "es": "Confirme una compilación y cargue las opciones de descarga para ver el idioma y la edición aquí.",
+    "zh-Hans": "确认构建并加载下载选项以在此处查看语言和版本。",
+    "hi": "यहां भाषा और संस्करण देखने के लिए बिल्ड और लोड डाउनलोड विकल्पों की पुष्टि करें।",
+    "ar": "قم بتأكيد خيارات الإنشاء والتنزيل لرؤية اللغة والإصدار هنا.",
+    "fr": "Confirmez une version et chargez les options de téléchargement pour voir la langue et l'édition ici.",
+    "he": "Confirm a build and load download options to see language and edition here."
+  },
+  "Confirm selection & load options": {
+    "es": "Confirmar selección y cargar opciones",
+    "zh-Hans": "确认选择和加载选项",
+    "hi": "चयन और लोड विकल्पों की पुष्टि करें",
+    "ar": "تأكيد التحديد وخيارات التحميل",
+    "fr": "Confirmer la sélection et charger les options",
+    "he": "Confirm selection & load options"
+  },
+  "Loading…": {
+    "es": "Cargando…",
+    "zh-Hans": "加载中…",
+    "hi": "लोड हो रहा है...",
+    "ar": "تحميل…",
+    "fr": "Chargement…",
+    "he": "Loading…"
+  },
+  "Preview / Insider build": {
+    "es": "Vista previa/compilación interna",
+    "zh-Hans": "预览/内部构建",
+    "hi": "पूर्वावलोकन / अंदरूनी सूत्र निर्माण",
+    "ar": "معاينة / بناء من الداخل",
+    "fr": "Aperçu / Version Insider",
+    "he": "Preview / Insider build"
+  },
+  "This build looks like an Insider or preview channel. It may be less stable than retail releases.": {
+    "es": "Esta compilación parece un canal Insider o de vista previa. Puede que sea menos estable que los lanzamientos minoristas.",
+    "zh-Hans": "此版本看起来像 Insider 或预览频道。它可能不如零售版本稳定。",
+    "hi": "यह बिल्ड एक इनसाइडर या पूर्वावलोकन चैनल जैसा दिखता है। यह खुदरा रिलीज़ की तुलना में कम स्थिर हो सकता है।",
+    "ar": "يبدو هذا الإصدار كقناة Insider أو قناة معاينة. قد تكون أقل استقرارًا من إصدارات البيع بالتجزئة.",
+    "fr": "Cette version ressemble à une chaîne Insider ou Preview. Il peut être moins stable que les versions commerciales.",
+    "he": "This build looks like an Insider or preview channel. It may be less stable than retail releases."
+  },
+  "Filters": {
+    "es": "Filtros",
+    "zh-Hans": "过滤器",
+    "hi": "फिल्टर",
+    "ar": "المرشحات",
+    "fr": "Filtres",
+    "he": "Filters"
+  },
+  "Product": {
+    "es": "Producto",
+    "zh-Hans": "产品",
+    "hi": "उत्पाद",
+    "ar": "منتج",
+    "fr": "Produit",
+    "he": "Product"
+  },
+  "Channel": {
+    "es": "Canal",
+    "zh-Hans": "渠道",
+    "hi": "चैनल",
+    "ar": "قناة",
+    "fr": "Canal",
+    "he": "Channel"
+  },
+  "Architecture": {
+    "es": "Arquitectura",
+    "zh-Hans": "建筑学",
+    "hi": "वास्तुकला",
+    "ar": "بنيان",
+    "fr": "Architecture",
+    "he": "Architecture"
+  },
+  "Reset": {
+    "es": "Reiniciar",
+    "zh-Hans": "重置",
+    "hi": "रीसेट करें",
+    "ar": "إعادة ضبط",
+    "fr": "Réinitialiser",
+    "he": "Reset"
+  },
+  "Showing %lld of %lld builds · newest first": {
+    "es": "Mostrando %lld de %lld compilaciones · las más nuevas primero",
+    "zh-Hans": "显示 %lld 个版本（共 %lld 个）· 最新的在前",
+    "hi": "%lld बिल्ड में से %lld · सबसे नया पहले दिखाया जा रहा है",
+    "ar": "يتم عرض %lld من %lld من الإصدارات · الأحدث أولاً",
+    "fr": "Affichage de %lld sur %lld builds · les plus récentes en premier",
+    "he": "Showing %lld of %lld builds · newest first"
+  },
+  "Windows builds (UUP)": {
+    "es": "Compilaciones de Windows (UUP)",
+    "zh-Hans": "Windows 构建 (UUP)",
+    "hi": "विंडोज़ बिल्ड (यूयूपी)",
+    "ar": "إصدارات Windows (UUP)",
+    "fr": "Versions Windows (UUP)",
+    "he": "Windows builds (UUP)"
+  },
+  "Refresh catalog": {
+    "es": "Refresh catalog",
+    "zh-Hans": "Refresh catalog",
+    "hi": "कैटलॉग ताज़ा करें",
+    "ar": "تحديث الكتالوج",
+    "fr": "Refresh catalog",
+    "he": "Refresh catalog"
+  },
+  "Loading catalog…": {
+    "es": "Cargando catálogo…",
+    "zh-Hans": "正在加载目录...",
+    "hi": "कैटलॉग लोड हो रहा है...",
+    "ar": "جارٍ تحميل الكتالوج…",
+    "fr": "Chargement du catalogue…",
+    "he": "Loading catalog…"
+  },
+  "Fetching the build list from UUPDump.": {
+    "es": "Obteniendo la lista de compilación de UUPDump.",
+    "zh-Hans": "从 UUPDump 获取构建列表。",
+    "hi": "UUPDump से बिल्ड सूची प्राप्त की जा रही है।",
+    "ar": "جلب قائمة البناء من UUPDump.",
+    "fr": "Récupération de la liste de construction à partir de UUPDump.",
+    "he": "Fetching the build list from UUPDump."
+  },
+  "No matching builds": {
+    "es": "No hay compilaciones coincidentes",
+    "zh-Hans": "没有匹配的版本",
+    "hi": "कोई मेल खाता निर्माण नहीं",
+    "ar": "لا توجد بنيات مطابقة",
+    "fr": "Aucune version correspondante",
+    "he": "No matching builds"
+  },
+  "Reset filters": {
+    "es": "Restablecer filtros",
+    "zh-Hans": "重置过滤器",
+    "hi": "फ़िल्टर रीसेट करें",
+    "ar": "Reset filters",
+    "fr": "Réinitialiser les filtres",
+    "he": "Reset filters"
+  },
+  "The catalog is empty. Tap Refresh catalog to try again.": {
+    "es": "El catálogo está vacío. Toca Actualizar catálogo para volver a intentarlo.",
+    "zh-Hans": "目录是空的。点击刷新目录重试。",
+    "hi": "कैटलॉग खाली है. पुनः प्रयास करने के लिए कैटलॉग ताज़ा करें पर टैप करें।",
+    "ar": "الكتالوج فارغ. انقر فوق تحديث الكتالوج للمحاولة مرة أخرى.",
+    "fr": "Le catalogue est vide. Appuyez sur Actualiser le catalogue pour réessayer.",
+    "he": "The catalog is empty. Tap Refresh catalog to try again."
+  },
+  "Nothing matches the current filters or search. Reset filters or broaden your search.": {
+    "es": "Nada coincide con los filtros o la búsqueda actuales. Restablece filtros o amplía tu búsqueda.",
+    "zh-Hans": "没有任何内容与当前过滤器或搜索匹配。重置过滤器或扩大搜索范围。",
+    "hi": "वर्तमान फ़िल्टर या खोज से कुछ भी मेल नहीं खाता। फ़िल्टर रीसेट करें या अपनी खोज का विस्तार करें।",
+    "ar": "لا شيء يطابق المرشحات أو البحث الحالي. إعادة تعيين عوامل التصفية أو توسيع نطاق البحث.",
+    "fr": "Rien ne correspond aux filtres ou à la recherche actuels. Réinitialisez les filtres ou élargissez votre recherche.",
+    "he": "Nothing matches the current filters or search. Reset filters or broaden your search."
+  },
+  "No builds are available to show.": {
+    "es": "No hay compilaciones disponibles para mostrar.",
+    "zh-Hans": "没有可供显示的版本。",
+    "hi": "दिखाने के लिए कोई बिल्ड उपलब्ध नहीं है.",
+    "ar": "لا توجد بنيات متاحة للعرض.",
+    "fr": "Aucune version n'est disponible à afficher.",
+    "he": "No builds are available to show."
+  },
+  "Download options": {
+    "es": "Opciones de descarga",
+    "zh-Hans": "下载选项",
+    "hi": "विकल्प डाउनलोड करें",
+    "ar": "خيارات التنزيل",
+    "fr": "Options de téléchargement",
+    "he": "Download options"
+  },
+  "Load options": {
+    "es": "Opciones de carga",
+    "zh-Hans": "加载选项",
+    "hi": "विकल्प लोड करें",
+    "ar": "خيارات التحميل",
+    "fr": "Options de chargement",
+    "he": "Load options"
+  },
+  "Pick a build in the list, then tap Confirm selection & load options.": {
+    "es": "Elija una compilación en la lista, luego toque Confirmar selección y cargar opciones.",
+    "zh-Hans": "在列表中选择一个版本，然后点击确认选择和加载选项。",
+    "hi": "सूची में एक बिल्ड चुनें, फिर चयन और लोड विकल्पों की पुष्टि करें पर टैप करें।",
+    "ar": "اختر إصدارًا من القائمة، ثم اضغط على تأكيد التحديد وخيارات التحميل.",
+    "fr": "Pick a build in the list, then tap Confirm selection & load options.",
+    "he": "Pick a build in the list, then tap Confirm selection & load options."
+  },
+  "Cache": {
+    "es": "Cache",
+    "zh-Hans": "缓存",
+    "hi": "कैश",
+    "ar": "مخبأ",
+    "fr": "Cache",
+    "he": "Cache"
+  },
+  "Download UUP to cache": {
+    "es": "Descargar UUP al caché",
+    "zh-Hans": "下载UUP到缓存",
+    "hi": "कैश करने के लिए यूयूपी डाउनलोड करें",
+    "ar": "قم بتنزيل UUP إلى ذاكرة التخزين المؤقت",
+    "fr": "Téléchargez UUP dans le cache",
+    "he": "Download UUP to cache"
+  },
+  "Stop": {
+    "es": "Detener",
+    "zh-Hans": "停止",
+    "hi": "रुकना",
+    "ar": "قف",
+    "fr": "Arrêt",
+    "he": "Stop"
+  },
+  "Downloading…": {
+    "es": "Descargando…",
+    "zh-Hans": "正在下载...",
+    "hi": "डाउनलोड हो रहा है...",
+    "ar": "جارٍ التنزيل…",
+    "fr": "Téléchargement…",
+    "he": "Downloading…"
+  },
+  "Confirm your build and load download options before downloading.": {
+    "es": "Confirme sus opciones de descarga de compilación y carga antes de descargar.",
+    "zh-Hans": "下载前确认您的构建并加载下载选项。",
+    "hi": "डाउनलोड करने से पहले अपने निर्माण और लोड डाउनलोड विकल्पों की पुष्टि करें।",
+    "ar": "قم بتأكيد خيارات البناء والتحميل الخاصة بك قبل التنزيل.",
+    "fr": "Confirmez votre build et chargez les options de téléchargement avant de télécharger.",
+    "he": "Confirm your build and load download options before downloading."
+  },
+  "Your list selection doesn’t match the confirmed build. Confirm again or pick Download.": {
+    "es": "La selección de su lista no coincide con la compilación confirmada. Confirme nuevamente o seleccione Descargar.",
+    "zh-Hans": "您的列表选择与已确认的版本不匹配。再次确认或选择“下载”。",
+    "hi": "आपकी सूची का चयन पुष्टि किए गए निर्माण से मेल नहीं खाता है। दोबारा पुष्टि करें या डाउनलोड चुनें।",
+    "ar": "لا يتطابق اختيار القائمة الخاصة بك مع الإصدار المؤكد. أكد مرة أخرى أو اختر تنزيل.",
+    "fr": "Votre sélection de liste ne correspond pas à la version confirmée. Confirmez à nouveau ou choisissez Télécharger.",
+    "he": "Your list selection doesn’t match the confirmed build. Confirm again or pick Download."
+  },
+  "This Mac": {
+    "es": "Esta Mac",
+    "zh-Hans": "这台Mac",
+    "hi": "यह मैक",
+    "ar": "هذا ماك",
+    "fr": "Ce Mac",
+    "he": "This Mac"
+  },
+  "Build %@": {
+    "es": "Construir %@",
+    "zh-Hans": "建造 ％@",
+    "hi": "निर्माण %@",
+    "ar": "يبني ٪@",
+    "fr": "Construire %@",
+    "he": "Build %@"
+  },
+  "Select a build first.": {
+    "es": "Seleccione una compilación primero.",
+    "zh-Hans": "Select a build first.",
+    "hi": "पहले एक बिल्ड चुनें.",
+    "ar": "حدد البناء أولاً.",
+    "fr": "Sélectionnez d’abord une version.",
+    "he": "Select a build first."
+  },
+  "Tap Languages & editions first.": {
+    "es": "Toca Idiomas y ediciones primero.",
+    "zh-Hans": "首先点击语言和版本。",
+    "hi": "सबसे पहले भाषाएँ और संस्करण टैप करें।",
+    "ar": "اضغط على اللغات والإصدارات أولاً.",
+    "fr": "Appuyez d'abord sur Langues et éditions.",
+    "he": "Tap Languages & editions first."
+  },
+  "Select a language.": {
+    "es": "Seleccione un idioma.",
+    "zh-Hans": "选择一种语言。",
+    "hi": "भाषा चुनें।",
+    "ar": "اختر لغة.",
+    "fr": "Sélectionnez une langue.",
+    "he": "Select a language."
+  },
+  "Select a Windows edition in the list above.": {
+    "es": "Seleccione una edición de Windows en la lista anterior.",
+    "zh-Hans": "在上面的列表中选择 Windows 版本。",
+    "hi": "उपरोक्त सूची में एक विंडोज़ संस्करण चुनें।",
+    "ar": "حدد إصدار Windows في القائمة أعلاه.",
+    "fr": "Sélectionnez une édition Windows dans la liste ci-dessus.",
+    "he": "Select a Windows edition in the list above."
+  },
+  "Requesting file list…": {
+    "es": "Solicitando lista de archivos…",
+    "zh-Hans": "正在请求文件列表...",
+    "hi": "फ़ाइल सूची का अनुरोध किया जा रहा है...",
+    "ar": "جارٍ طلب قائمة الملفات...",
+    "fr": "Demande de liste de fichiers…",
+    "he": "Requesting file list…"
+  },
+  "The server returned an empty file list. Try another edition or language.": {
+    "es": "El servidor devolvió una lista de archivos vacía. Pruebe con otra edición o idioma.",
+    "zh-Hans": "服务器返回一个空文件列表。尝试其他版本或语言。",
+    "hi": "सर्वर ने एक खाली फ़ाइल सूची लौटा दी। कोई अन्य संस्करण या भाषा आज़माएँ.",
+    "ar": "قام الخادم بإرجاع قائمة ملفات فارغة. جرّب إصدارًا أو لغة أخرى.",
+    "fr": "Le serveur a renvoyé une liste de fichiers vide. Essayez une autre édition ou une autre langue.",
+    "he": "The server returned an empty file list. Try another edition or language."
+  },
+  "No files could be queued (invalid links). Try again later.": {
+    "es": "No se pudieron poner archivos en cola (enlaces no válidos). Vuelve a intentarlo más tarde.",
+    "zh-Hans": "没有文件可以排队（无效链接）。稍后再试。",
+    "hi": "कोई भी फ़ाइल कतारबद्ध नहीं की जा सकी (अमान्य लिंक)। बाद में पुन: प्रयास।",
+    "ar": "لا يمكن وضع أي ملفات في قائمة الانتظار (ارتباطات غير صالحة). حاول مرة أخرى لاحقًا.",
+    "fr": "Aucun fichier n'a pu être mis en file d'attente (liens invalides). Réessayez plus tard.",
+    "he": "No files could be queued (invalid links). Try again later."
+  },
+  "Downloading: %@ of %@": {
+    "es": "Descargando: %@ de %@",
+    "zh-Hans": "正在下载：%@（共 %@）",
+    "hi": "डाउनलोडिंग: %@ में से %@",
+    "ar": "التنزيل: %@ من %@",
+    "fr": "Téléchargement : %@ sur %@",
+    "he": "Downloading: %@ of %@"
+  },
+  "Done: files at %@": {
+    "es": "Listo: archivos en %@",
+    "zh-Hans": "完成：文件位于 %@",
+    "hi": "हो गया: %@ पर फ़ाइलें",
+    "ar": "تم: الملفات في %@",
+    "fr": "Terminé : fichiers à %@",
+    "he": "Done: files at %@"
+  },
+  "Download canceled.": {
+    "es": "Descarga cancelada.",
+    "zh-Hans": "下载已取消。",
+    "hi": "डाउनलोड रद्द कर दिया गया.",
+    "ar": "تم إلغاء التنزيل.",
+    "fr": "Téléchargement annulé.",
+    "he": "Download canceled."
+  },
+  "Checking dependencies…": {
+    "es": "Comprobando dependencias...",
+    "zh-Hans": "检查依赖关系...",
+    "hi": "निर्भरता की जाँच की जा रही है...",
+    "ar": "جارٍ التحقق من التبعيات...",
+    "fr": "Vérification des dépendances…",
+    "he": "Checking dependencies…"
+  },
+  "— Done: %@": {
+    "es": "- Hecho: %@",
+    "zh-Hans": "- 完毕： ％@",
+    "hi": "- हो गया: %@",
+    "ar": "- منتهي: ٪@",
+    "fr": "- Fait: %@",
+    "he": "— Done: %@"
+  },
+  "Conversion canceled.": {
+    "es": "Conversión cancelada.",
+    "zh-Hans": "转换已取消。",
+    "hi": "रूपांतरण रद्द किया गया.",
+    "ar": "تم إلغاء التحويل.",
+    "fr": "Conversion annulée.",
+    "he": "Conversion canceled."
+  },
+  "Invalid UUPDump response (missing response field). Check the network and try again.": {
+    "es": "Respuesta de UUPDump no válida (falta campo de respuesta). Verifique la red y vuelva a intentarlo.",
+    "zh-Hans": "UUPDump 响应无效（缺少响应字段）。检查网络并重试。",
+    "hi": "अमान्य UUPDump प्रतिक्रिया (अनुपलब्ध प्रतिक्रिया फ़ील्ड)। नेटवर्क जांचें और पुनः प्रयास करें.",
+    "ar": "استجابة UUPDump غير صالحة (حقل الاستجابة مفقود). تحقق من الشبكة وحاول مرة أخرى.",
+    "fr": "Réponse UUPDump non valide (champ de réponse manquant). Vérifiez le réseau et réessayez.",
+    "he": "Invalid UUPDump response (missing response field). Check the network and try again."
+  },
+  "No internet connection.": {
+    "es": "Sin conexión a Internet.",
+    "zh-Hans": "没有互联网连接。",
+    "hi": "कोई इंटरनेट कनेक्शन नहीं।",
+    "ar": "لا يوجد اتصال بالإنترنت.",
+    "fr": "Pas de connexion Internet.",
+    "he": "No internet connection."
+  },
+  "Network timed out. Try again later.": {
+    "es": "Se agotó el tiempo de espera de la red. Vuelve a intentarlo más tarde.",
+    "zh-Hans": "网络超时。稍后再试。",
+    "hi": "नेटवर्क का समय समाप्त हो गया. बाद में पुन: प्रयास।",
+    "ar": "انتهت مهلة الشبكة. حاول مرة أخرى لاحقًا.",
+    "fr": "Le réseau a expiré. Réessayez plus tard.",
+    "he": "Network timed out. Try again later."
+  },
+  "Status": {
+    "es": "Estado",
+    "zh-Hans": "地位",
+    "hi": "स्थिति",
+    "ar": "حالة",
+    "fr": "Statut",
+    "he": "Status"
+  },
+  "Downloads": {
+    "es": "Descargas",
+    "zh-Hans": "下载",
+    "hi": "डाउनलोड",
+    "ar": "التنزيلات",
+    "fr": "Téléchargements",
+    "he": "Downloads"
+  },
+  "UUP progress, cache folders, and ISO conversion. Folder: %@": {
+    "es": "Progreso de UUP, carpetas de caché y conversión ISO. Carpeta: %@",
+    "zh-Hans": "UUP progress, cache folders, and ISO conversion. Folder: %@",
+    "hi": "यूयूपी प्रगति, कैश फ़ोल्डर और आईएसओ रूपांतरण। फ़ोल्डर: %@",
+    "ar": "UUP progress, cache folders, and ISO conversion. Folder: %@",
+    "fr": "Progression UUP, dossiers de cache et conversion ISO. Dossier: %@",
+    "he": "UUP progress, cache folders, and ISO conversion. Folder: %@"
+  },
+  "Windows language & edition": {
+    "es": "Idioma y edición de Windows",
+    "zh-Hans": "Windows 语言和版本",
+    "hi": "विंडोज़ भाषा और संस्करण",
+    "ar": "لغة وإصدار ويندوز",
+    "fr": "Langue et édition Windows",
+    "he": "Windows language & edition"
+  },
+  "Load Languages & editions on Download ISO so the app can show friendly names here and in the cache list.": {
+    "es": "Cargue Idiomas y ediciones en Descargar ISO para que la aplicación pueda mostrar nombres descriptivos aquí y en la lista de caché.",
+    "zh-Hans": "在下载 ISO 上加载语言和版本，以便应用程序可以在此处和缓存列表中显示友好名称。",
+    "hi": "डाउनलोड आईएसओ पर भाषाएं और संस्करण लोड करें ताकि ऐप यहां और कैश सूची में अनुकूल नाम दिखा सके।",
+    "ar": "قم بتحميل اللغات والإصدارات على تنزيل ISO حتى يتمكن التطبيق من عرض الأسماء المألوفة هنا وفي قائمة ذاكرة التخزين المؤقت.",
+    "fr": "Load Languages & editions on Download ISO so the app can show friendly names here and in the cache list.",
+    "he": "Load Languages & editions on Download ISO so the app can show friendly names here and in the cache list."
+  },
+  "These settings apply to new UUP downloads and metadata written into each cache folder. Change them on Download ISO → Parameters (after tapping Languages & editions).": {
+    "es": "Estas configuraciones se aplican a las nuevas descargas de UUP y a los metadatos escritos en cada carpeta de caché. Cámbielos en Descargar ISO → Parámetros (después de tocar Idiomas y ediciones).",
+    "zh-Hans": "这些设置适用于新的 UUP 下载和写入每个缓存文件夹的元数据。在下载 ISO → 参数中更改它们（点击语言和版本后）。",
+    "hi": "These settings apply to new UUP downloads and metadata written into each cache folder. Change them on Download ISO → Parameters (after tapping Languages & editions).",
+    "ar": "These settings apply to new UUP downloads and metadata written into each cache folder. Change them on Download ISO → Parameters (after tapping Languages & editions).",
+    "fr": "Ces paramètres s'appliquent aux nouveaux téléchargements UUP et aux métadonnées écrites dans chaque dossier de cache. Modifiez-les sur Télécharger ISO → Paramètres (après avoir appuyé sur Langues et éditions).",
+    "he": "These settings apply to new UUP downloads and metadata written into each cache folder. Change them on Download ISO → Parameters (after tapping Languages & editions)."
+  },
+  "—": {
+    "es": null,
+    "zh-Hans": null,
+    "hi": null,
+    "ar": "—",
+    "fr": "—",
+    "he": "—"
+  },
+  "Current UUP download": {
+    "es": "Descarga actual de UUP",
+    "zh-Hans": "当前 UUP 下载",
+    "hi": "Current UUP download",
+    "ar": "تنزيل UUP الحالي",
+    "fr": "Téléchargement UUP actuel",
+    "he": "Current UUP download"
+  },
+  "No active download": {
+    "es": "Sin descarga activa",
+    "zh-Hans": "没有主动下载",
+    "hi": "कोई सक्रिय डाउनलोड नहीं",
+    "ar": "لا يوجد تنزيل نشط",
+    "fr": "No active download",
+    "he": "No active download"
+  },
+  "Start a download on Download ISO — progress appears here.": {
+    "es": "Inicie una descarga en Descargar ISO: el progreso aparece aquí.",
+    "zh-Hans": "在“下载 ISO”上开始下载 — 此处显示进度。",
+    "hi": "डाउनलोड आईएसओ पर डाउनलोड शुरू करें - प्रगति यहां दिखाई देती है।",
+    "ar": "ابدأ التنزيل على Download ISO — يظهر التقدم هنا.",
+    "fr": "Démarrez un téléchargement sur Télécharger ISO – la progression apparaît ici.",
+    "he": "Start a download on Download ISO — progress appears here."
+  },
+  "ISO build": {
+    "es": "compilación ISO",
+    "zh-Hans": "ISO 版本",
+    "hi": "आईएसओ निर्माण",
+    "ar": "بناء ايزو",
+    "fr": "Construction ISO",
+    "he": "ISO build"
+  },
+  "Building image…": {
+    "es": "Imagen del edificio…",
+    "zh-Hans": "树立形象…",
+    "hi": "छवि निर्माण…",
+    "ar": "بناء الصورة…",
+    "fr": "Construire une image…",
+    "he": "Building image…"
+  },
+  "Last ISO build": {
+    "es": "Última compilación ISO",
+    "zh-Hans": "Last ISO build",
+    "hi": "Last ISO build",
+    "ar": "الإصدار الأخير من ISO",
+    "fr": "Dernière version ISO",
+    "he": "Last ISO build"
+  },
+  "UUP cache": {
+    "es": "caché UUP",
+    "zh-Hans": "UUP缓存",
+    "hi": "यूयूपी कैश",
+    "ar": "ذاكرة التخزين المؤقت UUP",
+    "fr": "Cache UUP",
+    "he": "UUP cache"
+  },
+  "No folders yet": {
+    "es": "Aún no hay carpetas",
+    "zh-Hans": "还没有文件夹",
+    "hi": "अभी तक कोई फ़ोल्डर नहीं",
+    "ar": "No folders yet",
+    "fr": "No folders yet",
+    "he": "No folders yet"
+  },
+  "After a UUP download finishes, folders appear here — you can build an ISO from them.": {
+    "es": "Una vez finalizada la descarga de UUP, las carpetas aparecen aquí; puede crear una ISO a partir de ellas.",
+    "zh-Hans": "UUP 下载完成后，文件夹将出现在此处 — 您可以从中构建 ISO。",
+    "hi": "यूयूपी डाउनलोड समाप्त होने के बाद, फ़ोल्डर्स यहां दिखाई देते हैं - आप उनसे आईएसओ बना सकते हैं।",
+    "ar": "بعد انتهاء تنزيل UUP، تظهر المجلدات هنا - يمكنك إنشاء ملف ISO منها.",
+    "fr": "Une fois le téléchargement UUP terminé, les dossiers apparaissent ici – vous pouvez créer une image ISO à partir d’eux.",
+    "he": "After a UUP download finishes, folders appear here — you can build an ISO from them."
+  },
+  "Size": {
+    "es": "Tamaño",
+    "zh-Hans": "尺寸",
+    "hi": "आकार",
+    "ar": "مقاس",
+    "fr": "Taille",
+    "he": "Size"
+  },
+  "Actions": {
+    "es": "Comportamiento",
+    "zh-Hans": "行动",
+    "hi": "कार्रवाई",
+    "ar": "الإجراءات",
+    "fr": "Actes",
+    "he": "Actions"
+  },
+  "Build ISO": {
+    "es": "Build ISO",
+    "zh-Hans": "构建ISO",
+    "hi": "Build ISO",
+    "ar": "بناء ايزو",
+    "fr": "Créer une ISO",
+    "he": "Build ISO"
+  },
+  "Finder": {
+    "es": "Descubridor",
+    "zh-Hans": "发现者",
+    "hi": "खोजक",
+    "ar": "مكتشف",
+    "fr": "Chercheur",
+    "he": "Finder"
+  },
+  "Delete": {
+    "es": "Borrar",
+    "zh-Hans": "删除",
+    "hi": "मिटाना",
+    "ar": "يمسح",
+    "fr": "Supprimer",
+    "he": "Delete"
+  },
+  "Build .iso from UUP": {
+    "es": "Construya .iso desde UUP",
+    "zh-Hans": "从 UUP 构建 .iso",
+    "hi": "UUP से .iso बनाएँ",
+    "ar": "بناء .iso من UUP",
+    "fr": "Construire .iso à partir d'UUP",
+    "he": "Build .iso from UUP"
+  },
+  "Embedded toolchain found — Homebrew is not required for conversion.": {
+    "es": "Se encontró una cadena de herramientas integrada: no se requiere Homebrew para la conversión.",
+    "zh-Hans": "找到嵌入式工具链 - 转换不需要 Homebrew。",
+    "hi": "एंबेडेड टूलचेन मिला - रूपांतरण के लिए होमब्रू की आवश्यकता नहीं है।",
+    "ar": "تم العثور على سلسلة أدوات مضمنة - برنامج Homebrew غير مطلوب للتحويل.",
+    "fr": "Chaîne d'outils intégrée trouvée – Homebrew n'est pas requis pour la conversion.",
+    "he": "Embedded toolchain found — Homebrew is not required for conversion."
+  },
+  "The converter script ships with the app; CLI tools are still required at runtime. Release builds bundle them under Resources/Tools/bin. When building from source, run Scripts/bundle-mac-cli-tools.sh (Homebrew on the dev machine) or install packages manually:": {
+    "es": "El script del convertidor se envía con la aplicación; Las herramientas CLI aún son necesarias en tiempo de ejecución. Las versiones de lanzamiento las agrupan en Recursos/Herramientas/bin. Al compilar desde el código fuente, ejecute Scripts/bundle-mac-cli-tools.sh (Homebrew en la máquina de desarrollo) o instale los paquetes manualmente:",
+    "zh-Hans": "The converter script ships with the app; CLI tools are still required at runtime. Release builds bundle them under Resources/Tools/bin. When building from source, run Scripts/bundle-mac-cli-tools.sh (Homebrew on the dev machine) or install packages manually:",
+    "hi": "कनवर्टर स्क्रिप्ट ऐप के साथ आती है; रनटाइम पर सीएलआई उपकरण अभी भी आवश्यक हैं। रिलीज़ बिल्ड उन्हें संसाधन/टूल्स/बिन के अंतर्गत बंडल करता है। स्रोत से निर्माण करते समय, Scripts/bundle-mac-cli-tools.sh (डेव मशीन पर Homebrew) चलाएँ या मैन्युअल रूप से पैकेज स्थापित करें:",
+    "ar": "يأتي البرنامج النصي للمحول مع التطبيق؛ لا تزال أدوات CLI مطلوبة في وقت التشغيل. يتم تجميع إصدارات الإصدار ضمن الموارد/الأدوات/الحاوية. عند البناء من المصدر، قم بتشغيل Scripts/bundle-mac-cli-tools.sh (Homebrew على جهاز التطوير) أو قم بتثبيت الحزم يدويًا:",
+    "fr": "The converter script ships with the app; CLI tools are still required at runtime. Release builds bundle them under Resources/Tools/bin. When building from source, run Scripts/bundle-mac-cli-tools.sh (Homebrew on the dev machine) or install packages manually:",
+    "he": "The converter script ships with the app; CLI tools are still required at runtime. Release builds bundle them under Resources/Tools/bin. When building from source, run Scripts/bundle-mac-cli-tools.sh (Homebrew on the dev machine) or install packages manually:"
+  },
+  "Reveal ISO in Finder": {
+    "es": "Revelar ISO en Finder",
+    "zh-Hans": "在 Finder 中显示 ISO",
+    "hi": "फाइंडर में आईएसओ प्रकट करें",
+    "ar": "كشف ISO في Finder",
+    "fr": "Révéler l'ISO dans le Finder",
+    "he": "Reveal ISO in Finder"
+  },
+  "Converter sources (uup-dump)": {
+    "es": "Fuentes del convertidor (uup-dump)",
+    "zh-Hans": "转换器源 (uup-dump)",
+    "hi": "कनवर्टर स्रोत (यूयूपी-डंप)",
+    "ar": "مصادر المحول (uup-dump)",
+    "fr": "Convertisseur de sources (uup-dump)",
+    "he": "Converter sources (uup-dump)"
+  },
+  "ISO build output": {
+    "es": "Salida de compilación ISO",
+    "zh-Hans": "ISO 构建输出",
+    "hi": "आईएसओ बिल्ड आउटपुट",
+    "ar": "ISO بناء الإخراج",
+    "fr": "Sortie de construction ISO",
+    "he": "ISO build output"
+  },
+  "Converter output · \\(key)": {
+    "es": "Salida del convertidor · \\(clave)",
+    "zh-Hans": "转换器输出·\\（键）",
+    "hi": "कनवर्टर आउटपुट · \\(कुंजी)",
+    "ar": "إخراج المحول · \\(مفتاح)",
+    "fr": "Sortie du convertisseur · \\(clé)",
+    "he": "Converter output · \\(key)"
+  },
+  "Select at least one USB drive.": {
+    "es": "Seleccione al menos una unidad USB.",
+    "zh-Hans": "选择至少一个 USB 驱动器。",
+    "hi": "कम से कम एक USB ड्राइव चुनें.",
+    "ar": "حدد محرك أقراص USB واحدًا على الأقل.",
+    "fr": "Sélectionnez au moins une clé USB.",
+    "he": "Select at least one USB drive."
+  },
+  "Select a Windows build.": {
+    "es": "Seleccione una compilación de Windows.",
+    "zh-Hans": "选择 Windows 版本。",
+    "hi": "एक विंडोज़ बिल्ड चुनें।",
+    "ar": "حدد إصدار Windows.",
+    "fr": "Sélectionnez une version Windows.",
+    "he": "Select a Windows build."
+  },
+  "Load languages and editions for the selected build first.": {
+    "es": "Cargue primero los idiomas y ediciones de la compilación seleccionada.",
+    "zh-Hans": "Load languages and editions for the selected build first.",
+    "hi": "पहले चयनित बिल्ड के लिए भाषाएँ और संस्करण लोड करें।",
+    "ar": "Load languages and editions for the selected build first.",
+    "fr": "Chargez d'abord les langues et les éditions pour la version sélectionnée.",
+    "he": "Load languages and editions for the selected build first."
+  },
+  "Select a Windows edition.": {
+    "es": "Select a Windows edition.",
+    "zh-Hans": "选择 Windows 版本。",
+    "hi": "एक Windows संस्करण चुनें.",
+    "ar": "حدد إصدار ويندوز.",
+    "fr": "Sélectionnez une édition Windows.",
+    "he": "Select a Windows edition."
+  },
+  "Downloading UUP…": {
+    "es": "Descargando UUP...",
+    "zh-Hans": "正在下载 UUP...",
+    "hi": "यूयूपी डाउनलोड हो रहा है...",
+    "ar": "جارٍ تنزيل UUP…",
+    "fr": "Téléchargement de l'UUP…",
+    "he": "Downloading UUP…"
+  },
+  "UUP folder missing after download: %@": {
+    "es": "Falta la carpeta UUP después de la descarga: %@",
+    "zh-Hans": "下载后丢失 UUP 文件夹：%@",
+    "hi": "डाउनलोड के बाद यूयूपी फ़ोल्डर गायब: %@",
+    "ar": "مجلد UUP مفقود بعد التنزيل: %@",
+    "fr": "Dossier UUP manquant après le téléchargement : %@",
+    "he": "UUP folder missing after download: %@"
+  },
+  "Building ISO…": {
+    "es": "Construyendo ISO…",
+    "zh-Hans": "Building ISO…",
+    "hi": "Building ISO…",
+    "ar": "بناء الآيزو…",
+    "fr": "Building ISO…",
+    "he": "Building ISO…"
+  },
+  "Conversion did not produce an ISO path.": {
+    "es": "La conversión no produjo una ruta ISO.",
+    "zh-Hans": "转换未生成 ISO 路径。",
+    "hi": "रूपांतरण से ISO पथ नहीं बना.",
+    "ar": "Conversion did not produce an ISO path.",
+    "fr": "Conversion did not produce an ISO path.",
+    "he": "Conversion did not produce an ISO path."
+  },
+  "Done: image written to the selected drives.": {
+    "es": "Done: image written to the selected drives.",
+    "zh-Hans": "完成：将映像写入选定的驱动器。",
+    "hi": "हो गया: चयनित ड्राइव पर छवि लिखी गई।",
+    "ar": "تم: صورة مكتوبة على محركات الأقراص المحددة.",
+    "fr": "Terminé : image écrite sur les lecteurs sélectionnés.",
+    "he": "Done: image written to the selected drives."
+  },
+  "Select a Windows build (for on-drive metadata).": {
+    "es": "Seleccione una compilación de Windows (para metadatos en la unidad).",
+    "zh-Hans": "选择 Windows 版本（用于驱动器上的元数据）。",
+    "hi": "एक विंडोज़ बिल्ड चुनें (ऑन-ड्राइव मेटाडेटा के लिए)।",
+    "ar": "حدد إصدار Windows (للبيانات التعريفية الموجودة على محرك الأقراص).",
+    "fr": "Sélectionnez une version Windows (pour les métadonnées sur le disque).",
+    "he": "Select a Windows build (for on-drive metadata)."
+  },
+  "Done.": {
+    "es": "Hecho.",
+    "zh-Hans": "完毕。",
+    "hi": "हो गया।",
+    "ar": "منتهي.",
+    "fr": "Fait.",
+    "he": "Done."
+  },
+  "Write %lld of %lld: %@": {
+    "es": "Escribe %lld de %lld: %@",
+    "zh-Hans": "写入 %lld（共 %lld）：%@",
+    "hi": "%lld का %lld लिखें: %@",
+    "ar": "اكتب %lld من %lld: %@",
+    "fr": "Écrivez %lld de %lld : %@",
+    "he": "Write %lld of %lld: %@"
+  },
+  "hdiutil: no mount point in plist.": {
+    "es": "hdiutil: no mount point in plist.",
+    "zh-Hans": "hdiutil：plist 中没有安装点。",
+    "hi": "hdiutil: प्लिस्ट में कोई माउंट पॉइंट नहीं।",
+    "ar": "hdiutil: لا توجد نقطة تحميل في plist.",
+    "fr": "hdiutil: no mount point in plist.",
+    "he": "hdiutil: no mount point in plist."
+  },
+  "hdiutil: could not parse output.": {
+    "es": "hdiutil: could not parse output.",
+    "zh-Hans": "hdiutil: could not parse output.",
+    "hi": "hdiutil: आउटपुट को पार्स नहीं कर सका।",
+    "ar": "hdiutil: لا يمكن تحليل الإخراج.",
+    "fr": "hdiutil : impossible d'analyser la sortie.",
+    "he": "hdiutil: could not parse output."
+  },
+  "  • %@ — %.1f MiB": {
+    "es": "• %@ — %.1f MiB",
+    "zh-Hans": "  • %@ — %.1f MiB",
+    "hi": "  • %@ — %.1f MiB",
+    "ar": "• %@ — %.1f MiB",
+    "fr": "  • %@ — %.1f MiB",
+    "he": "  • %@ — %.1f MiB"
+  },
+  "Progress": {
+    "es": "Progress",
+    "zh-Hans": "进步",
+    "hi": "Progress",
+    "ar": "Progress",
+    "fr": "Progress",
+    "he": "Progress"
+  },
+  "%lld percent": {
+    "es": "%lld por ciento",
+    "zh-Hans": "%lld 百分比",
+    "hi": "%lld percent",
+    "ar": "%10%",
+    "fr": "%lld percent",
+    "he": "%lld percent"
+  },
+  "In progress": {
+    "es": "In progress",
+    "zh-Hans": "进行中",
+    "hi": "प्रगति पर है",
+    "ar": "في تَقَدم",
+    "fr": "En cours",
+    "he": "In progress"
+  },
+  "Process exited with code %lld.%@": {
+    "es": "El proceso salió con el código %lld.%@",
+    "zh-Hans": "Process exited with code %lld.%@",
+    "hi": "कोड %lld.%@ के साथ प्रक्रिया बाहर निकल गई",
+    "ar": "تم إنهاء العملية بالكود %lld.%@",
+    "fr": "Processus terminé avec le code %lld.%@",
+    "he": "Process exited with code %lld.%@"
+  },
+  "Could not launch process: %@": {
+    "es": "No se pudo iniciar el proceso: %@",
+    "zh-Hans": "无法启动进程：%@",
+    "hi": "प्रक्रिया लॉन्च नहीं हो सकी: %@",
+    "ar": "تعذر تشغيل العملية: %@",
+    "fr": "Impossible de lancer le processus : %@",
+    "he": "Could not launch process: %@"
+  },
+  "Cache & ISO": {
+    "es": "Caché e ISO",
+    "zh-Hans": "缓存和ISO",
+    "hi": "कैश और आईएसओ",
+    "ar": "ذاكرة التخزين المؤقت وISO",
+    "fr": "Cache et ISO",
+    "he": "Cache & ISO"
+  },
+  "USB imaging": {
+    "es": "imágenes USB",
+    "zh-Hans": "USB 成像",
+    "hi": "यूएसबी इमेजिंग",
+    "ar": "تصوير يو اس بي",
+    "fr": "Imagerie USB",
+    "he": "USB imaging"
+  },
+  "Error: %@": {
+    "es": "Error: %@",
+    "zh-Hans": "错误： ％@",
+    "hi": "गलती: %@",
+    "ar": "خطأ: ٪@",
+    "fr": "Erreur: %@",
+    "he": "Error: %@"
+  },
+  "Selected removable drives: %lld. Use the Media step to adjust the list if needed, then Run all.": {
+    "es": "Selected removable drives: %lld. Use the Media step to adjust the list if needed, then Run all.",
+    "zh-Hans": "选定的可移动驱动器：%lld。如果需要，请使用“媒体”步骤调整列表，然后“全部运行”。",
+    "hi": "चयनित हटाने योग्य ड्राइव: %lld. यदि आवश्यक हो तो सूची को समायोजित करने के लिए मीडिया चरण का उपयोग करें, फिर सभी चलाएँ।",
+    "ar": "محركات الأقراص القابلة للإزالة المحددة: %lld. استخدم خطوة الوسائط لضبط القائمة إذا لزم الأمر، ثم قم بتشغيل الكل.",
+    "fr": "Lecteurs amovibles sélectionnés : %lld. Utilisez l’étape Média pour ajuster la liste si nécessaire, puis Exécutez tout.",
+    "he": "Selected removable drives: %lld. Use the Media step to adjust the list if needed, then Run all."
+  },
+  "Choose a build on Source, select USB on Media, then Run all.": {
+    "es": "Elija una compilación en Fuente, seleccione USB en Medios y luego Ejecutar todo.",
+    "zh-Hans": "Choose a build on Source, select USB on Media, then Run all.",
+    "hi": "स्रोत पर एक बिल्ड चुनें, मीडिया पर यूएसबी चुनें, फिर सभी चलाएँ।",
+    "ar": "اختر إصدارًا على المصدر، وحدد USB على الوسائط، ثم قم بتشغيل الكل.",
+    "fr": "Choisissez une version sur Source, sélectionnez USB sur support, puis Tout exécuter.",
+    "he": "Choose a build on Source, select USB on Media, then Run all."
+  },
+  "Pipeline: downloading UUP…": {
+    "es": "Canalización: descargando UUP…",
+    "zh-Hans": "管道：下载 UUP...",
+    "hi": "पाइपलाइन: यूयूपी डाउनलोड हो रहा है...",
+    "ar": "خط الأنابيب: تنزيل UUP...",
+    "fr": "Pipeline: downloading UUP…",
+    "he": "Pipeline: downloading UUP…"
+  },
+  "Pipeline: building ISO…": {
+    "es": "Tubería: construcción de ISO...",
+    "zh-Hans": "管道：建立 ISO...",
+    "hi": "पाइपलाइन: आईएसओ का निर्माण…",
+    "ar": "خط الأنابيب: بناء ISO ...",
+    "fr": "Pipeline : construire l’ISO…",
+    "he": "Pipeline: building ISO…"
+  },
+  "Pipeline: USB write (%lld/%lld). %@": {
+    "es": "Canalización: escritura USB (%lld/%lld). %@",
+    "zh-Hans": "管道：USB 写入 (%lld/%lld)。 %@",
+    "hi": "पाइपलाइन: यूएसबी राइट (%lld/%lld)। %@",
+    "ar": "خط الأنابيب: كتابة USB (%lld/%lld). %@",
+    "fr": "Pipeline : écriture USB (%lld/%lld). %@",
+    "he": "Pipeline: USB write (%lld/%lld). %@"
+  },
+  "Switches the main workflow step.": {
+    "es": "Cambia el paso principal del flujo de trabajo.",
+    "zh-Hans": "切换主要工作流程步骤。",
+    "hi": "मुख्य वर्कफ़्लो चरण स्विच करता है.",
+    "ar": "يقوم بتبديل خطوة سير العمل الرئيسية.",
+    "fr": "Change l’étape principale du flux de travail.",
+    "he": "Switches the main workflow step."
+  },
+  "USB volume not found after formatting: %@": {
+    "es": "Volumen USB no encontrado después de formatear: %@",
+    "zh-Hans": "格式化后未找到 USB 卷：%@",
+    "hi": "फ़ॉर्मेट करने के बाद USB वॉल्यूम नहीं मिला: %@",
+    "ar": "لم يتم العثور على وحدة تخزين USB بعد التنسيق: %@",
+    "fr": "Volume USB introuvable après le formatage : %@",
+    "he": "USB volume not found after formatting: %@"
+  },
+  "The ISO has neither sources/install.wim nor sources/install.esd.": {
+    "es": "La ISO no tiene fuentes/install.wim ni fuentes/install.esd.",
+    "zh-Hans": "ISO 既没有sources/install.wim，也没有sources/install.esd。",
+    "hi": "ISO के पास न तो source/install.wim है और न ही source/install.esd है।",
+    "ar": "The ISO has neither sources/install.wim nor sources/install.esd.",
+    "fr": "The ISO has neither sources/install.wim nor sources/install.esd.",
+    "he": "The ISO has neither sources/install.wim nor sources/install.esd."
+  },
+  "On FAT32 a single file cannot exceed ~4 GiB. The image contains files that cannot be split like install.wim:": {
+    "es": "En FAT32, un solo archivo no puede exceder ~4 GiB. La imagen contiene archivos que no se pueden dividir como install.wim:",
+    "zh-Hans": "在 FAT32 上，单个文件不能超过 ~4 GiB。该映像包含无法像 install.wim 那样分割的文件：",
+    "hi": "On FAT32 a single file cannot exceed ~4 GiB. The image contains files that cannot be split like install.wim:",
+    "ar": "في نظام FAT32، لا يمكن أن يتجاوز الملف الواحد حوالي 4 جيجا بايت. تحتوي الصورة على ملفات لا يمكن تقسيمها مثل install.wim:",
+    "fr": "Sur FAT32, un seul fichier ne peut pas dépasser ~ 4 Gio. L'image contient des fichiers qui ne peuvent pas être divisés comme install.wim :",
+    "he": "On FAT32 a single file cannot exceed ~4 GiB. The image contains files that cannot be split like install.wim:"
+  },
+  "Not enough space on the USB drive: need about %@, free %@.": {
+    "es": "No hay suficiente espacio en la unidad USB: se necesita aproximadamente %@, %@ libre.",
+    "zh-Hans": "USB 驱动器上空间不足：需要 %@ 左右，可用 %@。",
+    "hi": "यूएसबी ड्राइव पर पर्याप्त जगह नहीं: लगभग %@, मुफ़्त %@ की आवश्यकता है।",
+    "ar": "لا توجد مساحة كافية على محرك أقراص USB: تحتاج إلى حوالي %@، مجانًا %@.",
+    "fr": "Pas assez d'espace sur la clé USB : besoin d'environ %@, %@ libre.",
+    "he": "Not enough space on the USB drive: need about %@, free %@."
+  },
+  "Device %@ is already being written.": {
+    "es": "El dispositivo %@ ya se está escribiendo.",
+    "zh-Hans": "Device %@ is already being written.",
+    "hi": "Device %@ is already being written.",
+    "ar": "الجهاز %@ قيد الكتابة بالفعل.",
+    "fr": "Le périphérique %@ est déjà en cours d'écriture.",
+    "he": "Device %@ is already being written."
+  },
+  "— Fluffy Flash: bootable USB write —": {
+    "es": "- Fluffy Flash: escritura USB de arranque -",
+    "zh-Hans": "— Fluffy Flash: bootable USB write —",
+    "hi": "— Fluffy Flash: bootable USB write —",
+    "ar": "— Fluffy Flash: bootable USB write —",
+    "fr": "— Fluffy Flash : écriture USB bootable —",
+    "he": "— Fluffy Flash: bootable USB write —"
+  },
+  "Device: %@ — %@": {
+    "es": "Dispositivo: %@ - %@",
+    "zh-Hans": "设备： ％@ - ％@",
+    "hi": "उपकरण: %@ - %@",
+    "ar": "جهاز: ٪@ - ٪@",
+    "fr": "Appareil: %@ - %@",
+    "he": "Device: %@ — %@"
+  },
+  "ISO: %@": {
+    "es": "ISO: %@",
+    "zh-Hans": "国际标准化组织：%@",
+    "hi": "आईएसओ: %@",
+    "ar": "الآيزو: %@",
+    "fr": "ISO : %@",
+    "he": "ISO: %@"
+  },
+  "[1/7] Erasing as MS-DOS (FAT32), volume label %@…": {
+    "es": "[1/7] Borrando como MS-DOS (FAT32), etiqueta de volumen %@…",
+    "zh-Hans": "[1/7] 擦除为 MS-DOS (FAT32)，卷标 %@...",
+    "hi": "[1/7] MS-DOS (FAT32) के रूप में मिटाया जा रहा है, वॉल्यूम लेबल %@…",
+    "ar": "[1/7] المحو كـ MS-DOS (FAT32)، تسمية المجلد %@...",
+    "fr": "[1/7] Effacement sous MS-DOS (FAT32), étiquette de volume %@…",
+    "he": "[1/7] Erasing as MS-DOS (FAT32), volume label %@…"
+  },
+  "[2/7] Waiting for USB to mount…": {
+    "es": "[2/7] Waiting for USB to mount…",
+    "zh-Hans": "[2/7] 等待 USB 安装...",
+    "hi": "[2/7] यूएसबी माउंट होने की प्रतीक्षा की जा रही है...",
+    "ar": "[2/7] في انتظار تثبيت USB...",
+    "fr": "[2/7] Waiting for USB to mount…",
+    "he": "[2/7] Waiting for USB to mount…"
+  },
+  "[3/7] Mounting ISO (read-only)…": {
+    "es": "[3/7] Montaje ISO (solo lectura)…",
+    "zh-Hans": "[3/7]安装ISO（只读）...",
+    "hi": "[3/7] आईएसओ स्थापित करना (केवल पढ़ने के लिए)…",
+    "ar": "[3/7] جارٍ تركيب ISO (للقراءة فقط)…",
+    "fr": "[3/7] Montage ISO (lecture seule)…",
+    "he": "[3/7] Mounting ISO (read-only)…"
+  },
+  "ISO volume: %@": {
+    "es": "Volumen ISO: %@",
+    "zh-Hans": "ISO 卷：%@",
+    "hi": "आईएसओ वॉल्यूम: %@",
+    "ar": "حجم ISO: %@",
+    "fr": "Volume ISO : %@",
+    "he": "ISO volume: %@"
+  },
+  "[3b/7] Checking file sizes (FAT32 ≤ ~4 GiB per file)…": {
+    "es": "[3b/7] Comprobando el tamaño de los archivos (FAT32 ≤ ~4 GiB por archivo)…",
+    "zh-Hans": "[3b/7] 检查文件大小（FAT32 ≤ 每个文件 ~4 GiB）...",
+    "hi": "[3बी/7] फ़ाइल आकार की जाँच की जा रही है (FAT32 ≤ ~4 GiB प्रति फ़ाइल)…",
+    "ar": "[3b/7] التحقق من أحجام الملفات (FAT32 ≥ ~4 جيجا بايت لكل ملف)...",
+    "fr": "[3b/7] Vérification de la taille des fichiers (FAT32 ≤ ~4 Gio par fichier)…",
+    "he": "[3b/7] Checking file sizes (FAT32 ≤ ~4 GiB per file)…"
+  },
+  "[3c/7] USB free space vs copy size (without install.wim/esd)…": {
+    "es": "[3c/7] Espacio libre en USB vs tamaño de copia (sin install.wim/esd)…",
+    "zh-Hans": "[3c/7] USB free space vs copy size (without install.wim/esd)…",
+    "hi": "[3सी/7] यूएसबी मुक्त स्थान बनाम कॉपी आकार (इंस्टॉल.wim/esd के बिना)…",
+    "ar": "[3c/7] مساحة USB الخالية مقابل حجم النسخة (بدون install.wim/esd)...",
+    "fr": "[3c/7] Espace libre USB par rapport à la taille de la copie (sans install.wim/esd)…",
+    "he": "[3c/7] USB free space vs copy size (without install.wim/esd)…"
+  },
+  "[3d/7] Locating wimlib-imagex…": {
+    "es": "[3d/7] Localizando wimlib-imagex…",
+    "zh-Hans": "[3d/7] Locating wimlib-imagex…",
+    "hi": "[3d/7] Locating wimlib-imagex…",
+    "ar": "[3d/7] تحديد موقع wimlib-imagex...",
+    "fr": "[3d/7] Localisation de wimlib-imagex…",
+    "he": "[3d/7] Locating wimlib-imagex…"
+  },
+  "wimlib-imagex: %@": {
+    "es": "wimlib-imagex: %@",
+    "zh-Hans": "wimlib-imagex: %@",
+    "hi": "wimlib-imagex: %@",
+    "ar": "wimlib-imagex: %@",
+    "fr": "wimlib-imagex : %@",
+    "he": "wimlib-imagex: %@"
+  },
+  "[4/7] Copying files (no rsync; install.wim/esd skipped — split next)…": {
+    "es": "[4/7] Copying files (no rsync; install.wim/esd skipped — split next)…",
+    "zh-Hans": "[4/7] 复制文件（无 rsync；跳过 install.wim/esd — 接下来拆分）...",
+    "hi": "[4/7] फ़ाइलें कॉपी की जा रही हैं (कोई rsync नहीं; install.wim/esd छोड़ दिया गया - अगला विभाजित करें)…",
+    "ar": "[4/7] نسخ الملفات (لا يوجد rsync؛ تم تخطي install.wim/esd - التقسيم التالي)...",
+    "fr": "[4/7] Copie de fichiers (pas de rsync ; install.wim/esd ignoré - fractionné ensuite)…",
+    "he": "[4/7] Copying files (no rsync; install.wim/esd skipped — split next)…"
+  },
+  "[5/7] Splitting %@ (wimlib split)…": {
+    "es": "[5/7] Dividiendo %@ (división de wimlib)…",
+    "zh-Hans": "[5/7] Splitting %@ (wimlib split)…",
+    "hi": "[5/7] विभाजन %@ (विमलिब विभाजन)…",
+    "ar": "[5/7] تقسيم %@ (تقسيم wimlib)…",
+    "fr": "[5/7] Fractionnement %@ (split wimlib)…",
+    "he": "[5/7] Splitting %@ (wimlib split)…"
+  },
+  "Metadata written: %@": {
+    "es": "Metadata written: %@",
+    "zh-Hans": "Metadata written: %@",
+    "hi": "Metadata written: %@",
+    "ar": "البيانات الوصفية المكتوبة: %@",
+    "fr": "Métadonnées écrites : %@",
+    "he": "Metadata written: %@"
+  },
+  "Warning: could not write %@: %@": {
+    "es": "Advertencia: no se pudo escribir %@: %@",
+    "zh-Hans": "警告：无法写入%@：%@",
+    "hi": "चेतावनी: %@ नहीं लिख सका: %@",
+    "ar": "تحذير: لا يمكن الكتابة %@: %@",
+    "fr": "Attention : impossible d'écrire %@ : %@",
+    "he": "Warning: could not write %@: %@"
+  },
+  "[6/7] Detaching ISO volume…": {
+    "es": "[6/7] Desconectar el volumen ISO...",
+    "zh-Hans": "[6/7] 正在分离 ISO 卷...",
+    "hi": "[6/7] आईएसओ वॉल्यूम अलग किया जा रहा है…",
+    "ar": "[6/7] جارٍ فصل حجم ISO...",
+    "fr": "[6/7] Detaching ISO volume…",
+    "he": "[6/7] Detaching ISO volume…"
+  },
+  "[7/7] Sync and eject USB…": {
+    "es": "[7/7] Sincronizar y expulsar USB...",
+    "zh-Hans": "[7/7] 同步并弹出 USB...",
+    "hi": "[7/7] यूएसबी को सिंक करें और निकालें...",
+    "ar": "[7/7] مزامنة وإخراج USB…",
+    "fr": "[7/7] Sync and eject USB…",
+    "he": "[7/7] Sync and eject USB…"
+  },
+  "Done. You can unplug the drive and use it to install Windows.": {
+    "es": "Hecho. Puede desconectar la unidad y utilizarla para instalar Windows.",
+    "zh-Hans": "完毕。您可以拔下驱动器并使用它来安装 Windows。",
+    "hi": "Done. You can unplug the drive and use it to install Windows.",
+    "ar": "منتهي. يمكنك فصل محرك الأقراص واستخدامه لتثبيت Windows.",
+    "fr": "Done. You can unplug the drive and use it to install Windows.",
+    "he": "Done. You can unplug the drive and use it to install Windows."
+  },
+  "Operation canceled.": {
+    "es": "Operación cancelada.",
+    "zh-Hans": "操作已取消。",
+    "hi": "ऑपरेशन रद्द कर दिया गया.",
+    "ar": "Operation canceled.",
+    "fr": "Opération annulée.",
+    "he": "Operation canceled."
+  },
+  "Canceled.": {
+    "es": "Cancelado.",
+    "zh-Hans": "取消。",
+    "hi": "रद्द कर दिया गया.",
+    "ar": "Canceled.",
+    "fr": "Annulé.",
+    "he": "Canceled."
+  },
+  "External command exited with code 23 (partial failure).%@": {
+    "es": "External command exited with code 23 (partial failure).%@",
+    "zh-Hans": "外部命令退出，代码为 23（部分失败）。%@",
+    "hi": "बाहरी कमांड कोड 23 (आंशिक विफलता) के साथ बाहर निकल गया।%@",
+    "ar": "External command exited with code 23 (partial failure).%@",
+    "fr": "Commande externe terminée avec le code 23 (échec partiel).%@",
+    "he": "External command exited with code 23 (partial failure).%@"
+  },
+  "Warning: install.wim/esd size unknown — free space check skipped.": {
+    "es": "Advertencia: tamaño desconocido de install.wim/esd: se omitió la verificación de espacio libre.",
+    "zh-Hans": "警告：install.wim/esd 大小未知 — 已跳过可用空间检查。",
+    "hi": "चेतावनी: install.wim/esd आकार अज्ञात - खाली स्थान की जांच छोड़ दी गई।",
+    "ar": "Warning: install.wim/esd size unknown — free space check skipped.",
+    "fr": "Warning: install.wim/esd size unknown — free space check skipped.",
+    "he": "Warning: install.wim/esd size unknown — free space check skipped."
+  },
+  "Could not determine mount point for %@": {
+    "es": "No se pudo determinar el punto de montaje para %@",
+    "zh-Hans": "无法确定 %@ 的安装点",
+    "hi": "%@ के लिए आरोह बिंदु निर्धारित नहीं किया जा सका",
+    "ar": "تعذر تحديد نقطة التثبيت لـ %@",
+    "fr": "Impossible de déterminer le point de montage pour %@",
+    "he": "Could not determine mount point for %@"
+  },
+  "convert.sh was not found in the app bundle.": {
+    "es": "convert.sh no se encontró en el paquete de la aplicación.",
+    "zh-Hans": "在应用程序包中找不到convert.sh。",
+    "hi": "ऐप बंडल में Convert.sh नहीं मिला।",
+    "ar": "لم يتم العثور على تحويل.sh في حزمة التطبيق.",
+    "fr": "convert.sh n'a pas été trouvé dans l'ensemble d'applications.",
+    "he": "convert.sh was not found in the app bundle."
+  },
+  "Missing tools: %@. Release builds bundle them under Resources/Tools/bin. Or install manually: brew install aria2 cabextract wimlib cdrtools and chntpw (see README).": {
+    "es": "Herramientas faltantes: %@. Las versiones de lanzamiento las agrupan en Recursos/Herramientas/bin. O instálelo manualmente: brew install aria2 cabextract wimlib cdrtools y chntpw (consulte README).",
+    "zh-Hans": "缺少工具：%@。发布版本将它们捆绑在 Resources/Tools/bin 下。或者手动安装：brew install aria2 cabextract wimlib cdrtools 和 chntpw（请参阅自述文件）。",
+    "hi": "अनुपलब्ध उपकरण: %@. रिलीज़ बिल्ड उन्हें संसाधन/टूल्स/बिन के अंतर्गत बंडल करता है। या मैन्युअल रूप से इंस्टॉल करें: ब्रू इंस्टॉल एरिया2 कैबएक्सट्रैक्ट विमलिब सीडीआरटीओल्स और सीएचएनटीपीडब्ल्यू (रीडमी देखें)।",
+    "ar": "الأدوات المفقودة: %@. يتم تجميع إصدارات الإصدار ضمن الموارد/الأدوات/الحاوية. أو قم بالتثبيت يدويًا: قم بتثبيت aria2 cabextract wimlib cdrtools وchntpw (انظر التمهيد).",
+    "fr": "Outils manquants : %@. Les versions de version les regroupent sous Ressources/Outils/bin. Ou installez manuellement : Brew Install aria2 cabextract wimlib cdrtools et chntpw (voir README).",
+    "he": "Missing tools: %@. Release builds bundle them under Resources/Tools/bin. Or install manually: brew install aria2 cabextract wimlib cdrtools and chntpw (see README)."
+  },
+  "The script finished, but no .iso was found in the output folder.": {
+    "es": "El script finalizó, pero no se encontró ningún .iso en la carpeta de salida.",
+    "zh-Hans": "The script finished, but no .iso was found in the output folder.",
+    "hi": "स्क्रिप्ट समाप्त हो गई, लेकिन आउटपुट फ़ोल्डर में कोई .iso नहीं मिला।",
+    "ar": "انتهى البرنامج النصي، ولكن لم يتم العثور على ملف .iso في مجلد الإخراج.",
+    "fr": "Le script s'est terminé, mais aucun fichier .iso n'a été trouvé dans le dossier de sortie.",
+    "he": "The script finished, but no .iso was found in the output folder."
+  },
+  "aria2 (aria2c)": {
+    "es": "aria2 (aria2c)",
+    "zh-Hans": "aria2 (aria2c)",
+    "hi": "एरिया2 (एरिया2सी)",
+    "ar": "aria2 (aria2c)",
+    "fr": "aria2 (aria2c)",
+    "he": "aria2 (aria2c)"
+  },
+  "cabextract": {
+    "es": "extracto de cabe",
+    "zh-Hans": "cabextract",
+    "hi": "कैबएक्सट्रेक्ट",
+    "ar": "cabextract",
+    "fr": "extrait de cab",
+    "he": "cabextract"
+  },
+  "wimlib (wimlib-imagex)": {
+    "es": "wimlib (wimlib-imagex)",
+    "zh-Hans": "wimlib（wimlib-imagex）",
+    "hi": "विम्लिब (विम्लिब-इमेजेक्स)",
+    "ar": "ويمليب (ويمليب-إيماجإكس)",
+    "fr": "wimlib (wimlib-imagex)",
+    "he": "wimlib (wimlib-imagex)"
+  },
+  "chntpw (Apple Silicon: brew tap minacle/chntpw && brew install minacle/chntpw/chntpw)": {
+    "es": "chntpw (Apple Silicon: grifo de preparación minacle/chntpw && instalación de preparación minacle/chntpw/chntpw)",
+    "zh-Hans": "chntpw（Apple Silicon：brew tap minacle/chntpw &&brew install minacle/chntpw/chntpw）",
+    "hi": "सीएचएनटीपीडब्ल्यू (एप्पल सिलिकॉन: ब्रू टैप मिनेकल/सीएचएनटीपीडब्ल्यू && ब्रू इंस्टाल मिनेकल/सीएचएनटीपीडब्ल्यू/सीएचएनटीपीडब्ल्यू)",
+    "ar": "chntpw (Apple Silicon: Brew Tap Minacle/chntpw && Brere Install Minacle/chntpw/chntpw)",
+    "fr": "chntpw (Apple Silicon : Brew Tap Minacle/chntpw && Brew Install Minacle/chntpw/chntpw)",
+    "he": "chntpw (Apple Silicon: brew tap minacle/chntpw && brew install minacle/chntpw/chntpw)"
+  },
+  "cdrtools (mkisofs) or genisoimage": {
+    "es": "cdrtools (mkisofs) o genisoimagen",
+    "zh-Hans": "cdrtools (mkisofs) 或 genisoimage",
+    "hi": "cdrtools (mkisofs) या genisoimage",
+    "ar": "cdrtools (mkisofs) or genisoimage",
+    "fr": "cdrtools (mkisofs) ou genisoimage",
+    "he": "cdrtools (mkisofs) or genisoimage"
+  },
+  "Section": {
+    "es": "Section",
+    "zh-Hans": "部分",
+    "hi": "अनुभाग",
+    "ar": "قسم",
+    "fr": "Section",
+    "he": "Section"
+  },
+  "Could not copy “%@”: %@": {
+    "es": "No se pudo copiar “%@”: %@",
+    "zh-Hans": "无法复制“%@”：%@",
+    "hi": "की नकल नहीं कर सकता \"%@\": %@",
+    "ar": "تعذر نسخ \"%@\": %@",
+    "fr": "Impossible de copier « %@ » : %@",
+    "he": "Could not copy “%@”: %@"
+  },
+  "Skipping (split later): %@": {
+    "es": "Saltar (dividir más tarde): %@",
+    "zh-Hans": "跳过（稍后拆分）：%@",
+    "hi": "छोड़ना (बाद में विभाजित): %@",
+    "ar": "التخطي (التقسيم لاحقًا): %@",
+    "fr": "Sauter (diviser plus tard) : %@",
+    "he": "Skipping (split later): %@"
+  },
+  "Skipping: %@": {
+    "es": "Saltando: %@",
+    "zh-Hans": "跳过：%@",
+    "hi": "रस्सी कूदना: %@",
+    "ar": "التخطي: %@",
+    "fr": "Sauter : %@",
+    "he": "Skipping: %@"
+  },
+  "Copying: %@/ …": {
+    "es": "Copiando: %@/…",
+    "zh-Hans": "复制：%@/ …",
+    "hi": "प्रतिलिपि बनाना: %@/…",
+    "ar": "النسخ: %@/ …",
+    "fr": "Copie : %@/ …",
+    "he": "Copying: %@/ …"
+  },
+  "Run all": {
+    "es": "ejecutar todo",
+    "zh-Hans": "运行全部",
+    "hi": "सब चलाओ",
+    "ar": "تشغيل الكل",
+    "fr": "Exécutez tout",
+    "he": "Run all"
+  },
+  "The pipeline is running. Wait for the current step to finish.": {
+    "es": "El oleoducto está funcionando. Espere a que finalice el paso actual.",
+    "zh-Hans": "管道正在运行。等待当前步骤完成。",
+    "hi": "पाइपलाइन चल रही है. वर्तमान चरण समाप्त होने तक प्रतीक्षा करें.",
+    "ar": "The pipeline is running. Wait for the current step to finish.",
+    "fr": "The pipeline is running. Wait for the current step to finish.",
+    "he": "The pipeline is running. Wait for the current step to finish."
+  },
+  "Wait for the download to finish before running the full pipeline.": {
+    "es": "Wait for the download to finish before running the full pipeline.",
+    "zh-Hans": "等待下载完成，然后再运行完整的管道。",
+    "hi": "पूरी पाइपलाइन चलाने से पहले डाउनलोड समाप्त होने तक प्रतीक्षा करें।",
+    "ar": "انتظر حتى ينتهي التنزيل قبل تشغيل المسار الكامل.",
+    "fr": "Attendez la fin du téléchargement avant d'exécuter le pipeline complet.",
+    "he": "Wait for the download to finish before running the full pipeline."
+  },
+  "Wait for ISO conversion to finish before running the full pipeline.": {
+    "es": "Espere a que finalice la conversión ISO antes de ejecutar el proceso completo.",
+    "zh-Hans": "等待 ISO 转换完成，然后再运行完整的管道。",
+    "hi": "पूरी पाइपलाइन चलाने से पहले आईएसओ रूपांतरण समाप्त होने तक प्रतीक्षा करें।",
+    "ar": "انتظر حتى ينتهي تحويل ISO قبل تشغيل المسار الكامل.",
+    "fr": "Attendez la fin de la conversion ISO avant d’exécuter le pipeline complet.",
+    "he": "Wait for ISO conversion to finish before running the full pipeline."
+  },
+  "This action is not available yet.": {
+    "es": "Esta acción aún no está disponible.",
+    "zh-Hans": "此操作尚不可用。",
+    "hi": "This action is not available yet.",
+    "ar": "هذا الإجراء غير متوفر بعد.",
+    "fr": "Cette action n'est pas encore disponible.",
+    "he": "This action is not available yet."
+  }
+}

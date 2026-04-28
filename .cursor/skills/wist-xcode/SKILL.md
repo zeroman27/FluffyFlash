@@ -10,15 +10,15 @@ description: >-
 
 ## Где проект
 
-- **Проект Xcode**: `WinMist/Wist.xcodeproj` (относительно корня репозитория; каталог `WinMist/` — корень Xcode рядом с `ObsidianVault`).
-- **Схема**: `Wist` (macOS application).
-- Исходники синхронизируются через **File System Synchronized Groups** — папка `WinMist/Wist/` целиком в таргете.
+- **Проект Xcode**: `FluffyFlash/Fluffy Flash.xcodeproj` (относительно корня репозитория; каталог `FluffyFlash/` — корень Xcode рядом с `ObsidianVault`).
+- **Схема**: `FluffyFlash` (macOS application; отображаемое имя в системе — **Fluffy Flash**).
+- Исходники синхронизируются через **File System Synchronized Groups** — папка `FluffyFlash/Fluffy Flash/` целиком в таргете.
 
 ## Сборка из терминала
 
 ```bash
-cd WinMist
-xcodebuild -project Wist.xcodeproj -scheme Wist -configuration Debug -destination 'platform=macOS' build
+cd FluffyFlash
+xcodebuild -project "Fluffy Flash.xcodeproj" -scheme FluffyFlash -configuration Debug -destination 'platform=macOS' build
 ```
 
 Пропуск упаковки CLI-инструментов (если нужно ускорить сборку):
@@ -29,8 +29,8 @@ WIST_SKIP_TOOL_BUNDLE=1 xcodebuild ...
 
 ## Скрипты и артефакты
 
-- `WinMist/Scripts/bundle-mac-cli-tools.sh` — фаза **Bundle Embedded CLI Tools** (PATH: `/opt/homebrew/bin`, `/usr/local/bin`).
-- `WinMist/EmbeddedCLI/lib` — копируется в приложение фазой **Embed Tools dylibs** (`Contents/lib` и зеркало в Resources).
+- `FluffyFlash/Scripts/bundle-mac-cli-tools.sh` — фаза **Bundle Embedded CLI Tools** (PATH: `/opt/homebrew/bin`, `/usr/local/bin`).
+- `FluffyFlash/EmbeddedCLI/lib` — копируется в приложение фазой **Embed Tools dylibs** (`Contents/lib` и зеркало в Resources).
 
 ## Тесты
 
@@ -43,4 +43,4 @@ WIST_SKIP_TOOL_BUNDLE=1 xcodebuild ...
 
 ## Подпись и Bundle ID
 
-Подробно: `WinMist/docs/Signing.md`. Идентификаторы задаются в таргетах (**Signing & Capabilities**), в Swift не дублируются. Три разных `PRODUCT_BUNDLE_IDENTIFIER`: приложение, `WistTests`, `WistUITests`.
+Подробно: `FluffyFlash/docs/Signing.md`. Идентификаторы задаются в таргетах (**Signing & Capabilities**), в Swift не дублируются. Три разных `PRODUCT_BUNDLE_IDENTIFIER`: приложение, `FluffyFlashTests`, `FluffyFlashUITests`.

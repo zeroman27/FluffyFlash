@@ -1,15 +1,15 @@
-# Документация Wist
+# Wist Documentation
 
 ## Obsidian vault
 
-Каноническое расположение заметок проекта — папка **`ObsidianVault`** в корне репозитория (рядом с каталогом `WinMist/` с Xcode-проектом).
+The canonical location for project notes is the **`ObsidianVault`** folder at the repository root (next to the `WinMist/` directory with the Xcode project).
 
-Для удобства здесь есть симлинк:
+For convenience, there is a symlink:
 
-- **`docs/vault`** → `../ObsidianVault` — откройте в Obsidian через **Open folder as vault** (укажите путь к `docs/vault` или напрямую к `ObsidianVault`).
+- **`docs/vault`** → `../ObsidianVault` — open it in Obsidian via **Open folder as vault** (point to `docs/vault` or directly to `ObsidianVault`).
 
-Подробности — в [ObsidianVault/README.md](../ObsidianVault/README.md).
+Details: [ObsidianVault/README.md](../ObsidianVault/README.md).
 
-## Код
+## Code
 
-Исходники macOS-приложения: **`WinMist/Wist.xcodeproj`**.
+macOS app sources: **`FluffyFlash/Fluffy Flash.xcodeproj`**.

@@ -11,4 +11,22 @@ When you make **substantive** changes to the app (features, architecture, roadma
 2. Add or adjust a **session note** in `ObsidianVault/10-Project-Wist/Sessions/` when the work is worth a dated record.
 3. Do **not** duplicate full code in Obsidian; keep high-level bullets and links to modules/files.
 
+## Legal / third‑party (обязательное правило)
+
+Если в проект добавляется/обновляется **любая third‑party часть** (код, бинарник/CLI, ассеты, шрифты, скрипты, данные, SDK, лицензия меняется/уточняется):
+
+1. Обновить `FluffyFlash/THIRD_PARTY.md` (что бандлим/используем + лицензия + обязательства).
+2. Обновить `ObsidianVault/10-Project-Wist/Legal.md` (инвентарь и чеклист комплаенса).
+3. Для релизов с bundled tools: убедиться, что `FluffyFlash/THIRD_PARTY_NOTICES.txt` и source‑bundle (`Scripts/build_third_party_sources_bundle.sh`) актуальны.
+
 Skip updates for trivial one-line fixes or purely cosmetic edits unless the user asks.
+
+## Внешние правки (Cursor, агент, Git)
+
+Заметки — это **файлы на диске** в `ObsidianVault/`. Любое сохранение из Cursor или агента **сразу записывает файл**; отдельного шага «синхронизировать с Obsidian» не существует.
+
+**Obsidian** на macOS обычно **сам подхватывает** изменения от системы уведомлений о файлах: открытая заметка обновляется, когда её перезаписывают снаружи. Это не настраивается из репозитория — так устроено приложение [Obsidian](https://obsidian.md).
+
+Если интерфейс (редко) отстаёт — **Command palette** (`Cmd+O` / `Cmd+P`) → **«Reload app without saving»** или переключитесь на другую заметку и обратно. Массовые операции с файлами снаружи иногда не сразу видны в боковом файловом списке; это известный класс ограничений ([форум](https://forum.obsidian.md/)).
+
+Не обещать пользователю «Obsidian обновляется автоматически по волшебной настройке из GitHub» — технически верно: **диск всегда актуален**; **окно Obsidian** почти всегда догоняет само.

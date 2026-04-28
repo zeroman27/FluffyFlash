@@ -1,0 +1,769 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E8F0A0202FF00000007F5B09 /* PrivilegedHelperMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F0A0022FF00000007F5B09 /* PrivilegedHelperMain.swift */; };
+		E8F0A0212FF00000007F5B09 /* PrivilegedHelperProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F0A0032FF00000007F5B09 /* PrivilegedHelperProtocol.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C84181112F8E1D6A007F5B09 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C84180FB2F8E1D68007F5B09 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C84181022F8E1D68007F5B09;
+			remoteInfo = FluffyFlash;
+		};
+		C841811B2F8E1D6A007F5B09 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C84180FB2F8E1D68007F5B09 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C84181022F8E1D68007F5B09;
+			remoteInfo = FluffyFlash;
+		};
+		C8A0DA5E2F9F754900349E6F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C84180FB2F8E1D68007F5B09 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E8F0A0402FF00000007F5B09;
+			remoteInfo = PrivilegedHelper;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		C84181032F8E1D68007F5B09 /* FluffyFlash.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FluffyFlash.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C84181102F8E1D6A007F5B09 /* Fluffy FlashTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Fluffy FlashTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C841811A2F8E1D6A007F5B09 /* Fluffy FlashUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Fluffy FlashUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8F0A0012FF00000007F5B09 /* com.wist.Wist.PrivilegedHelper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = com.wist.Wist.PrivilegedHelper; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8F0A0022FF00000007F5B09 /* PrivilegedHelperMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PrivilegedHelperMain.swift; path = PrivilegedHelper/PrivilegedHelperMain.swift; sourceTree = "<group>"; };
+		E8F0A0032FF00000007F5B09 /* PrivilegedHelperProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PrivilegedHelperProtocol.swift; path = PrivilegedHelper/PrivilegedHelperProtocol.swift; sourceTree = "<group>"; };
+		E8F0A0042FF00000007F5B09 /* PrivilegedHelperInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = PrivilegedHelperInfo.plist; path = PrivilegedHelper/PrivilegedHelperInfo.plist; sourceTree = "<group>"; };
+		E8F0A0052FF00000007F5B09 /* com.wist.Wist.PrivilegedHelper.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = com.wist.Wist.PrivilegedHelper.plist; path = PrivilegedHelper/com.wist.Wist.PrivilegedHelper.plist; sourceTree = "<group>"; };
+		E8F0A04A2FF00000007F5B09 /* PrivilegedHelper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = PrivilegedHelper.entitlements; path = PrivilegedHelper/PrivilegedHelper.entitlements; sourceTree = "<group>"; };
+		E8F0A04B2FF00000007F5B09 /* FluffyFlash.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = FluffyFlash.entitlements; path = "Fluffy Flash/FluffyFlash.entitlements"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		C84181052F8E1D68007F5B09 /* Fluffy Flash */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Fluffy Flash";
+			sourceTree = "<group>";
+		};
+		C84181132F8E1D6A007F5B09 /* FluffyFlashTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = FluffyFlashTests;
+			sourceTree = "<group>";
+		};
+		C841811D2F8E1D6A007F5B09 /* FluffyFlashUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = FluffyFlashUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C84181002F8E1D68007F5B09 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C841810D2F8E1D6A007F5B09 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C84181172F8E1D6A007F5B09 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E8F0A0422FF00000007F5B09 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C84180FA2F8E1D68007F5B09 = {
+			isa = PBXGroup;
+			children = (
+				C84181052F8E1D68007F5B09 /* Fluffy Flash */,
+				C84181132F8E1D6A007F5B09 /* FluffyFlashTests */,
+				C841811D2F8E1D6A007F5B09 /* FluffyFlashUITests */,
+				E8F0A0102FF00000007F5B09 /* PrivilegedHelper */,
+				C84181042F8E1D68007F5B09 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C84181042F8E1D68007F5B09 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C84181032F8E1D68007F5B09 /* FluffyFlash.app */,
+				C84181102F8E1D6A007F5B09 /* Fluffy FlashTests.xctest */,
+				C841811A2F8E1D6A007F5B09 /* Fluffy FlashUITests.xctest */,
+				E8F0A0012FF00000007F5B09 /* com.wist.Wist.PrivilegedHelper */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E8F0A0102FF00000007F5B09 /* PrivilegedHelper */ = {
+			isa = PBXGroup;
+			children = (
+				E8F0A0022FF00000007F5B09 /* PrivilegedHelperMain.swift */,
+				E8F0A0032FF00000007F5B09 /* PrivilegedHelperProtocol.swift */,
+				E8F0A0042FF00000007F5B09 /* PrivilegedHelperInfo.plist */,
+				E8F0A04A2FF00000007F5B09 /* PrivilegedHelper.entitlements */,
+				E8F0A04B2FF00000007F5B09 /* FluffyFlash.entitlements */,
+				E8F0A0052FF00000007F5B09 /* com.wist.Wist.PrivilegedHelper.plist */,
+			);
+			name = PrivilegedHelper;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C84181022F8E1D68007F5B09 /* FluffyFlash */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C84181242F8E1D6A007F5B09 /* Build configuration list for PBXNativeTarget "FluffyFlash" */;
+			buildPhases = (
+				E8F0A0302FF00000007F5B09 /* Embed Privileged Helper */,
+				E84181332F8E1D6A007F5B09 /* Bundle Embedded CLI Tools */,
+				C84180FF2F8E1D68007F5B09 /* Sources */,
+				C84181002F8E1D68007F5B09 /* Frameworks */,
+				C84181012F8E1D68007F5B09 /* Resources */,
+				E84181342F8E1D6A007F5B09 /* Embed Tools dylibs */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E8F0A0502FF00000007F5B09 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C84181052F8E1D68007F5B09 /* Fluffy Flash */,
+			);
+			name = FluffyFlash;
+			packageProductDependencies = (
+			);
+			productName = FluffyFlash;
+			productReference = C84181032F8E1D68007F5B09 /* FluffyFlash.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C841810F2F8E1D6A007F5B09 /* Fluffy FlashTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C84181272F8E1D6A007F5B09 /* Build configuration list for PBXNativeTarget "Fluffy FlashTests" */;
+			buildPhases = (
+				C841810C2F8E1D6A007F5B09 /* Sources */,
+				C841810D2F8E1D6A007F5B09 /* Frameworks */,
+				C841810E2F8E1D6A007F5B09 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C84181122F8E1D6A007F5B09 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C84181132F8E1D6A007F5B09 /* FluffyFlashTests */,
+			);
+			name = "Fluffy FlashTests";
+			packageProductDependencies = (
+			);
+			productName = WistTests;
+			productReference = C84181102F8E1D6A007F5B09 /* Fluffy FlashTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C84181192F8E1D6A007F5B09 /* Fluffy FlashUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C841812A2F8E1D6A007F5B09 /* Build configuration list for PBXNativeTarget "Fluffy FlashUITests" */;
+			buildPhases = (
+				C84181162F8E1D6A007F5B09 /* Sources */,
+				C84181172F8E1D6A007F5B09 /* Frameworks */,
+				C84181182F8E1D6A007F5B09 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C841811C2F8E1D6A007F5B09 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C841811D2F8E1D6A007F5B09 /* FluffyFlashUITests */,
+			);
+			name = "Fluffy FlashUITests";
+			packageProductDependencies = (
+			);
+			productName = WistUITests;
+			productReference = C841811A2F8E1D6A007F5B09 /* Fluffy FlashUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		E8F0A0402FF00000007F5B09 /* PrivilegedHelper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E8F0A0432FF00000007F5B09 /* Build configuration list for PBXNativeTarget "PrivilegedHelper" */;
+			buildPhases = (
+				E8F0A0412FF00000007F5B09 /* Sources */,
+				E8F0A0422FF00000007F5B09 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PrivilegedHelper;
+			productName = com.wist.Wist.PrivilegedHelper;
+			productReference = E8F0A0012FF00000007F5B09 /* com.wist.Wist.PrivilegedHelper */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C84180FB2F8E1D68007F5B09 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2630;
+				LastUpgradeCheck = 2630;
+				TargetAttributes = {
+					C84181022F8E1D68007F5B09 = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					C841810F2F8E1D6A007F5B09 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = C84181022F8E1D68007F5B09;
+					};
+					C84181192F8E1D6A007F5B09 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = C84181022F8E1D68007F5B09;
+					};
+				};
+			};
+			buildConfigurationList = C84180FE2F8E1D68007F5B09 /* Build configuration list for PBXProject "Fluffy Flash" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				es,
+				"zh-Hans",
+				hi,
+				ar,
+				fr,
+				he,
+			);
+			mainGroup = C84180FA2F8E1D68007F5B09;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = C84181042F8E1D68007F5B09 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C84181022F8E1D68007F5B09 /* FluffyFlash */,
+				E8F0A0402FF00000007F5B09 /* PrivilegedHelper */,
+				C841810F2F8E1D6A007F5B09 /* Fluffy FlashTests */,
+				C84181192F8E1D6A007F5B09 /* Fluffy FlashUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C84181012F8E1D68007F5B09 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C841810E2F8E1D6A007F5B09 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C84181182F8E1D6A007F5B09 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E84181332F8E1D6A007F5B09 /* Bundle Embedded CLI Tools */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Bundle Embedded CLI Tools";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nexport PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"\ncd \"${PROJECT_DIR}\"\nif [ \"${WIST_SKIP_TOOL_BUNDLE}\" = \"1\" ]; then echo \"Fluffy Flash: skipping CLI bundle (WIST_SKIP_TOOL_BUNDLE=1)\"; exit 0; fi\nexec /bin/bash \"${PROJECT_DIR}/Scripts/bundle-mac-cli-tools.sh\"\n";
+		};
+		E84181342F8E1D6A007F5B09 /* Embed Tools dylibs */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Tools dylibs";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nAPP=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\"\nSRC=\"${PROJECT_DIR}/EmbeddedCLI/lib\"\nDST=\"${APP}/Contents/lib\"\nRSRC=\"${APP}/Contents/Resources/lib\"\nif [ -d \"$SRC\" ] && [ \"$(ls -A \"$SRC\" 2>/dev/null)\" ]; then\n  mkdir -p \"$DST\"\n  /usr/bin/ditto \"$SRC\" \"$DST\"\n  mkdir -p \"$RSRC\"\n  /usr/bin/ditto \"$SRC\" \"$RSRC\"\n  echo \"Fluffy Flash: embedded EmbeddedCLI/lib -> $DST (+ mirror $RSRC)\"\nfi\n";
+		};
+		E8F0A0302FF00000007F5B09 /* Embed Privileged Helper */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/com.wist.Wist.PrivilegedHelper",
+				"$(PROJECT_DIR)/PrivilegedHelper/com.wist.Wist.PrivilegedHelper.plist",
+			);
+			name = "Embed Privileged Helper";
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/Library/LaunchServices/com.wist.Wist.PrivilegedHelper",
+				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/Library/LaunchDaemons/com.wist.Wist.PrivilegedHelper.plist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nAPP=\"${TARGET_BUILD_DIR}/${CONTENTS_FOLDER_PATH}\"\nHELPER_SRC=\"${BUILT_PRODUCTS_DIR}/com.wist.Wist.PrivilegedHelper\"\nLAUNCHD_SRC=\"${PROJECT_DIR}/PrivilegedHelper/com.wist.Wist.PrivilegedHelper.plist\"\nmkdir -p \"${APP}/Library/LaunchServices\" \"${APP}/Library/LaunchDaemons\"\n/usr/bin/ditto \"${HELPER_SRC}\" \"${APP}/Library/LaunchServices/com.wist.Wist.PrivilegedHelper\"\n/usr/bin/ditto \"${LAUNCHD_SRC}\" \"${APP}/Library/LaunchDaemons/com.wist.Wist.PrivilegedHelper.plist\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C84180FF2F8E1D68007F5B09 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C841810C2F8E1D6A007F5B09 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C84181162F8E1D6A007F5B09 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E8F0A0412FF00000007F5B09 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8F0A0202FF00000007F5B09 /* PrivilegedHelperMain.swift in Sources */,
+				E8F0A0212FF00000007F5B09 /* PrivilegedHelperProtocol.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C84181122F8E1D6A007F5B09 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C84181022F8E1D68007F5B09 /* FluffyFlash */;
+			targetProxy = C84181112F8E1D6A007F5B09 /* PBXContainerItemProxy */;
+		};
+		C841811C2F8E1D6A007F5B09 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C84181022F8E1D68007F5B09 /* FluffyFlash */;
+			targetProxy = C841811B2F8E1D6A007F5B09 /* PBXContainerItemProxy */;
+		};
+		E8F0A0502FF00000007F5B09 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E8F0A0402FF00000007F5B09 /* PrivilegedHelper */;
+			targetProxy = C8A0DA5E2F9F754900349E6F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		C84181222F8E1D6A007F5B09 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		C84181232F8E1D6A007F5B09 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		C84181252F8E1D6A007F5B09 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Fluffy Flash/FluffyFlash.entitlements";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZSNU9GWW94;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "App-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Fluffy Flash";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fluffyflash.FluffyFlash;
+				PRODUCT_MODULE_NAME = Wist;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		C84181262F8E1D6A007F5B09 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Fluffy Flash/FluffyFlash.entitlements";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZSNU9GWW94;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "App-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Fluffy Flash";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fluffyflash.FluffyFlash;
+				PRODUCT_MODULE_NAME = Wist;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		C84181282F8E1D6A007F5B09 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fluffyflash.FluffyFlashTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FluffyFlash.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FluffyFlash";
+			};
+			name = Debug;
+		};
+		C84181292F8E1D6A007F5B09 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fluffyflash.FluffyFlashTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FluffyFlash.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FluffyFlash";
+			};
+			name = Release;
+		};
+		C841812B2F8E1D6A007F5B09 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fluffyflash.FluffyFlashUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = FluffyFlash;
+			};
+			name = Debug;
+		};
+		C841812C2F8E1D6A007F5B09 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fluffyflash.FluffyFlashUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = FluffyFlash;
+			};
+			name = Release;
+		};
+		E8F0A0442FF00000007F5B09 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = PrivilegedHelper/PrivilegedHelper.entitlements;
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEVELOPMENT_TEAM = ZSNU9GWW94;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = PrivilegedHelper/PrivilegedHelperInfo.plist;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_CODE_SIGN_FLAGS = "--identifier com.wist.Wist.PrivilegedHelper";
+				PRODUCT_BUNDLE_IDENTIFIER = com.wist.Wist.PrivilegedHelper;
+				PRODUCT_NAME = com.wist.Wist.PrivilegedHelper;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		E8F0A0452FF00000007F5B09 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = PrivilegedHelper/PrivilegedHelper.entitlements;
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEVELOPMENT_TEAM = ZSNU9GWW94;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = PrivilegedHelper/PrivilegedHelperInfo.plist;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_CODE_SIGN_FLAGS = "--identifier com.wist.Wist.PrivilegedHelper";
+				PRODUCT_BUNDLE_IDENTIFIER = com.wist.Wist.PrivilegedHelper;
+				PRODUCT_NAME = com.wist.Wist.PrivilegedHelper;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C84180FE2F8E1D68007F5B09 /* Build configuration list for PBXProject "Fluffy Flash" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C84181222F8E1D6A007F5B09 /* Debug */,
+				C84181232F8E1D6A007F5B09 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C84181242F8E1D6A007F5B09 /* Build configuration list for PBXNativeTarget "FluffyFlash" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C84181252F8E1D6A007F5B09 /* Debug */,
+				C84181262F8E1D6A007F5B09 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C84181272F8E1D6A007F5B09 /* Build configuration list for PBXNativeTarget "Fluffy FlashTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C84181282F8E1D6A007F5B09 /* Debug */,
+				C84181292F8E1D6A007F5B09 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C841812A2F8E1D6A007F5B09 /* Build configuration list for PBXNativeTarget "Fluffy FlashUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C841812B2F8E1D6A007F5B09 /* Debug */,
+				C841812C2F8E1D6A007F5B09 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E8F0A0432FF00000007F5B09 /* Build configuration list for PBXNativeTarget "PrivilegedHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E8F0A0442FF00000007F5B09 /* Debug */,
+				E8F0A0452FF00000007F5B09 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C84180FB2F8E1D68007F5B09 /* Project object */;
+}
