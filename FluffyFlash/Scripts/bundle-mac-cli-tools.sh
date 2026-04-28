@@ -1,0 +1,125 @@
+#!/bin/bash
+# Populates WinMist/Fluffy Flash/Tools/bin (+ EmbeddedCLI/lib) for embedding in the app bundle.
+# Invoked automatically from an Xcode Run Script phase.
+#
+# Requires: Homebrew (https://brew.sh). First run may download & install packages (needs network).
+# Skip: WIST_SKIP_TOOL_BUNDLE=1
+
+set -euo pipefail
+
+if [[ "${WIST_SKIP_TOOL_BUNDLE:-}" == "1" ]]; then
+  echo "Wist: skipping embedded CLI bundle (WIST_SKIP_TOOL_BUNDLE=1)"
+  exit 0
+fi
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+DEST_BIN="$ROOT/Fluffy Flash/Tools/bin"
+# Keep .dylibs OUTSIDE the synchronized Wist/ sources tree — otherwise Xcode adds this path to
+# LIBRARY_SEARCH_PATHS and links Wist.debug.dylib against OpenSSL/wimlib by mistake.
+DEST_LIB="$ROOT/EmbeddedCLI/lib"
+mkdir -p "$DEST_BIN" "$DEST_LIB"
+
+export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+
+if ! command -v brew &>/dev/null; then
+  echo "error: Homebrew is not installed. Install from https://brew.sh — it is required once on the build machine to fetch CLI tools into the app bundle."
+  echo "Alternatively set WIST_SKIP_TOOL_BUNDLE=1 and provide Tools/bin manually."
+  exit 1
+fi
+
+BREW_PREFIX="$(brew --prefix)"
+echo "Wist: using Homebrew at $BREW_PREFIX"
+
+brew_install_if_missing() {
+  local pkg="$1"
+  if brew list "$pkg" &>/dev/null; then return 0; fi
+  echo "Wist: brew install $pkg"
+  brew install "$pkg"
+}
+
+for pkg in aria2 cabextract wimlib cdrtools mist-cli; do
+  brew_install_if_missing "$pkg"
+done
+
+if [[ ! -x "$BREW_PREFIX/bin/chntpw" ]]; then
+  echo "Wist: installing chntpw (tap minacle/chntpw)"
+  brew tap minacle/chntpw 2>/dev/null || true
+  brew install minacle/chntpw/chntpw || brew install chntpw
+fi
+
+if ! command -v dylibbundler &>/dev/null; then
+  echo "Wist: brew install dylibbundler (pulls dependent .dylib into Tools/lib)"
+  brew install dylibbundler || true
+fi
+
+dedupe_lc_rpath() {
+  # dylibbundler can accumulate identical LC_RPATH entries across repeated runs.
+  # dyld aborts with "duplicate LC_RPATH ..." if the same rpath appears more than once.
+  local bin_path="$1"
+  local rpath="$2"
+  if [[ ! -f "$bin_path" ]]; then
+    return 0
+  fi
+  if ! command -v otool &>/dev/null || ! command -v install_name_tool &>/dev/null; then
+    return 0
+  fi
+  # Delete until only one remains (or none).
+  while true; do
+    local count
+    count="$(otool -l "$bin_path" 2>/dev/null | awk -v rp="$rpath" '
+      $1=="cmd" && $2=="LC_RPATH" {in_lc=1; next}
+      in_lc && $1=="path" { if ($2==rp) c++; in_lc=0; next }
+      END { print c+0 }
+    ')"
+    if [[ "${count:-0}" -le 1 ]]; then
+      break
+    fi
+    install_name_tool -delete_rpath "$rpath" "$bin_path" >/dev/null 2>&1 || break
+  done
+}
+
+copy_one() {
+  local name="$1"
+  local src="$BREW_PREFIX/bin/$name"
+  if [[ ! -x "$src" ]]; then
+    echo "error: missing executable: $src (Homebrew package not linked?)"
+    return 1
+  fi
+  echo "Wist: copy $src -> $DEST_BIN/"
+  cp -f "$src" "$DEST_BIN/$name"
+  chmod +x "$DEST_BIN/$name"
+  # mist-cli is a Swift toolchain binary that relies on Swift stdlib/concurrency rpaths.
+  # dylibbundler tends to rewrite/remove those rpaths and can break loading (SIGKILL) even
+  # when Homebrew-linked dependencies are otherwise system frameworks.
+  if [[ "$name" == "mist" ]]; then
+    if command -v codesign &>/dev/null; then
+      echo "  codesign (adhoc) mist"
+      codesign --force --deep --preserve-metadata=entitlements,requirements,flags,runtime --sign - "$DEST_BIN/$name" >/dev/null 2>&1 || true
+    fi
+    return 0
+  fi
+  if command -v dylibbundler &>/dev/null; then
+    echo "  dylibbundler $name"
+    (cd "$DEST_BIN" && dylibbundler -of -b -x "./$name" -d "$DEST_LIB" -p '@loader_path/../lib/') || true
+    # Normalize rpaths after bundling (prevents dyld duplicate LC_RPATH crashes).
+    dedupe_lc_rpath "$DEST_BIN/$name" "@loader_path/../lib/"
+  fi
+}
+
+for t in aria2c cabextract wimlib-imagex chntpw mkisofs mist; do
+  copy_one "$t"
+done
+
+fail=0
+for t in aria2c cabextract wimlib-imagex chntpw mkisofs mist; do
+  if [[ ! -x "$DEST_BIN/$t" ]]; then
+    echo "error: bundled tool missing: $DEST_BIN/$t"
+    fail=1
+  fi
+done
+if [[ "$fail" -ne 0 ]]; then
+  exit 1
+fi
+
+echo "Wist: embedded CLI tools OK → $DEST_BIN"
+echo "Wist: next build will copy them into Wist.app via the synchronized folder."

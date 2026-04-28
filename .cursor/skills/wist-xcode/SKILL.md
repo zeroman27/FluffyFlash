@@ -11,14 +11,14 @@ description: >-
 ## Где проект
 
 - **Проект Xcode**: `WinMist/Wist.xcodeproj` (относительно корня репозитория; каталог `WinMist/` — корень Xcode рядом с `ObsidianVault`).
-- **Схема**: `Wist` (macOS application).
+- **Схема**: `FluffyFlash` (macOS application; отображаемое имя в системе — **Fluffy Flash**).
 - Исходники синхронизируются через **File System Synchronized Groups** — папка `WinMist/Wist/` целиком в таргете.
 
 ## Сборка из терминала
 
 ```bash
 cd WinMist
-xcodebuild -project Wist.xcodeproj -scheme Wist -configuration Debug -destination 'platform=macOS' build
+xcodebuild -project Wist.xcodeproj -scheme FluffyFlash -configuration Debug -destination 'platform=macOS' build
 ```
 
 Пропуск упаковки CLI-инструментов (если нужно ускорить сборку):
