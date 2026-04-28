@@ -1,5 +1,5 @@
 #!/bin/bash
-# Populates WinMist/Fluffy Flash/Tools/bin (+ EmbeddedCLI/lib) for embedding in the app bundle.
+# Populates FluffyFlash/Fluffy Flash/Tools/bin (+ EmbeddedCLI/lib) for embedding in the app bundle.
 # Invoked automatically from an Xcode Run Script phase.
 #
 # Requires: Homebrew (https://brew.sh). First run may download & install packages (needs network).

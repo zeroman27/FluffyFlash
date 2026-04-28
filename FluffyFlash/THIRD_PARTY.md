@@ -8,8 +8,8 @@ Repository license: **Apache License 2.0** (see `LICENSE`).
 
 | Component | Where it lives (repo / app) | License | Why we use it | Compliance when shipping `.app` |
 |---|---|---|---|---|
-| CrystalFetch code (partial) | `WinMist/Fluffy Flash/ThirdParty/CrystalFetch/**` | Apache‑2.0 | UUPDump client + downloader patterns | Keep Apache headers; include Apache‑2.0 license text in distribution; keep attributions (and `NOTICE` if upstream ships one we incorporate). |
-| UUP converter `convert.sh` | `WinMist/Fluffy Flash/ThirdParty/UUPConverter/convert.sh` (invoked via `/bin/bash`) | MIT | Convert downloaded UUP → ISO | Include MIT license text + attribution in notices. |
+| CrystalFetch code (partial) | `FluffyFlash/Fluffy Flash/ThirdParty/CrystalFetch/**` | Apache‑2.0 | UUPDump client + downloader patterns | Keep Apache headers; include Apache‑2.0 license text in distribution; keep attributions (and `NOTICE` if upstream ships one we incorporate). |
+| UUP converter `convert.sh` | `FluffyFlash/Fluffy Flash/ThirdParty/UUPConverter/convert.sh` (invoked via `/bin/bash`) | MIT | Convert downloaded UUP → ISO | Include MIT license text + attribution in notices. |
 | `aria2c` (bundled tool) | `Wist.app/Contents/Resources/Tools/bin/aria2c` | GPL‑2.0‑or‑later | Fast/reliable large downloads (resume/segments) | Provide license text + **corresponding source** for the exact version shipped (as release asset or download). |
 | `cabextract` (bundled tool) | `.../Tools/bin/cabextract` | GPL‑3.0‑or‑later | Extract `.cab` (used by UUP converter) | Provide license text + **corresponding source** for the exact version shipped. |
 | `wimlib-imagex` (bundled tool) | `.../Tools/bin/wimlib-imagex` | GPL‑3.0‑or‑later | Split `install.wim` for FAT32; used by converter | Provide license text + **corresponding source** for the exact version shipped. |
@@ -40,9 +40,9 @@ The file `Wist/ThirdParty/UUPConverter/convert.sh` is the official **uup-dump/co
 
 ## Embedded CLI toolchain (optional in repo)
 
-Release maintainers bundle the toolchain using `WinMist/Scripts/bundle-mac-cli-tools.sh`.
+Release maintainers bundle the toolchain using `FluffyFlash/Scripts/bundle-mac-cli-tools.sh`.
 
-- Destination in repo: `WinMist/Fluffy Flash/Tools/bin/*` (then copied into `Wist.app/Contents/Resources/Tools/bin/*` by the build).
+- Destination in repo: `FluffyFlash/Fluffy Flash/Tools/bin/*` (then copied into `Wist.app/Contents/Resources/Tools/bin/*` by the build).
 - Tools: `aria2c`, `cabextract`, `wimlib-imagex`, `chntpw`, `mkisofs`, `mist` (+ dependent `.dylib` gathered via **dylibbundler** where applicable).
 
 ### What “GPL compliance” means for our releases

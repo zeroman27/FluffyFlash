@@ -11,17 +11,11 @@ import SwiftUI
 enum WistAppLanguage: String, CaseIterable, Identifiable {
     case system
     case en
-    case es
-    case zhHans = "zh-Hans"
-    case hi
-    case ar
-    case fr
-    case he
 
     var id: String { rawValue }
 
     static var selectable: [WistAppLanguage] {
-        [.system, .en, .es, .zhHans, .hi, .ar, .fr, .he]
+        [.system, .en]
     }
 
     /// Locale passed to SwiftUI; `system` uses the OS setting.
@@ -41,18 +35,6 @@ enum WistAppLanguage: String, CaseIterable, Identifiable {
             return "System default"
         case .en:
             return "English"
-        case .es:
-            return "Spanish"
-        case .zhHans:
-            return "Chinese (Simplified)"
-        case .hi:
-            return "Hindi"
-        case .ar:
-            return "Arabic"
-        case .fr:
-            return "French"
-        case .he:
-            return "Hebrew"
         }
     }
 }

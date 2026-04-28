@@ -1,46 +1,45 @@
-# Подпись, Bundle Identifier и метаданные
+# Signing, bundle identifier, and metadata
 
-В Swift-коде Bundle ID **нигде не зашит** — он задаётся в настройках таргетов Xcode (`PRODUCT_BUNDLE_IDENTIFIER`). Достаточно один раз настроить проект под ваш Apple ID / команду.
+The app’s bundle identifier is **not hardcoded in Swift**. It is configured in the Xcode target settings (`PRODUCT_BUNDLE_IDENTIFIER`). You only need to set up signing once for your Apple ID / team.
 
-## 1. Что вы задаёте сами
+## 1) What you set yourself
 
-| Поле | Где в Xcode | Заметки |
-|------|-------------|---------|
-| **Team** (команда разработчика) | Target **Wist** → *Signing & Capabilities* → **Team** | Нужен Apple ID с программой Developer (бесплатно для личной подписи) или платный аккаунт для распространения. |
-| **Bundle Identifier** (приложение) | Тот же экран, поле **Bundle Identifier** | Обратный DNS: `com.вашдомен.Wist` (латиница, без пробелов). Должен быть **уникальным** в экосистеме Apple для публикации. |
-| **Тестовые таргеты** | Targets **WistTests**, **WistUITests** → *Signing* | Свои Bundle ID, **отличные** от основного приложения. Текущая схема в репозитории: суффиксы `WistTests` и `WistUITests` к тому же префиксу (например `com.вашдомен.WistTests`). |
+| Field | Where in Xcode | Notes |
+|------|-----------------|------|
+| **Team** | Target **Wist** → *Signing & Capabilities* → **Team** | Requires an Apple ID (free for personal signing) or a paid account for distribution. |
+| **Bundle Identifier** (app) | Same screen → **Bundle Identifier** | Reverse-DNS, e.g. `com.yourdomain.Wist` (ASCII/latin only, no spaces). Must be **unique** in Apple’s ecosystem for public distribution. |
+| **Test targets** | Targets **WistTests**, **WistUITests** → *Signing* | Separate bundle IDs, **different** from the main app. Current convention: suffixes `WistTests` and `WistUITests` with the same prefix (e.g. `com.yourdomain.WistTests`). |
 
-После выбора **Team** с включённым **Automatically manage signing** Xcode сам создаст/привяжет provisioning profiles (для локального запуска на своём Mac этого достаточно).
+After selecting a **Team** with **Automatically manage signing** enabled, Xcode will create/attach provisioning profiles automatically (this is enough for running locally on your Mac).
 
-**Team ID** (строка вида `A1B2C3D4E5`) можно посмотреть на [developer.apple.com](https://developer.apple.com/account) → *Membership details*, либо он появится в проекте как `DEVELOPMENT_TEAM` после сохранения настроек.
+**Team ID** (a string like `A1B2C3D4E5`) can be found on Apple’s developer portal under *Membership details*, or it will appear in the project as `DEVELOPMENT_TEAM` after you save signing settings.
 
-## 2. Версии и copyright (при желании)
+## 2) Versions and copyright (optional)
 
-В **Build Settings** таргета **Wist**:
+In the **Build Settings** of the **Wist** target:
 
-| Ключ | Назначение |
-|------|------------|
-| **Marketing Version** (`MARKETING_VERSION`) | Версия для пользователя (например `1.0`). |
-| **Current Project Version** (`CURRENT_PROJECT_VERSION`) | Сборка (целое число, растёт при каждой загрузке в TestFlight/App Store). |
-| **Info.plist Values** → *Human Readable Copyright* | Соответствует `INFOPLIST_KEY_NSHumanReadableCopyright` — строка вида `Copyright © 2026 Ваше имя`. |
+| Key | Purpose |
+|-----|---------|
+| **Marketing Version** (`MARKETING_VERSION`) | User-facing version (e.g. `1.0`). |
+| **Current Project Version** (`CURRENT_PROJECT_VERSION`) | Build number (integer, typically increments per TestFlight/App Store upload). |
+| **Info.plist Values** → *Human Readable Copyright* | `INFOPLIST_KEY_NSHumanReadableCopyright`, e.g. `Copyright © 2026 Your Name`. |
 
-Сейчас copyright в настройках пустой; для публичного релиза лучше заполнить.
+## 3) Where these live in files
 
-## 3. Где это лежит в файлах
+If you prefer editing files instead of the UI, see `FluffyFlash/Fluffy Flash.xcodeproj/project.pbxproj`:
 
-Если правите не через UI, смотрите `WinMist/Wist.xcodeproj/project.pbxproj`:
+- `PRODUCT_BUNDLE_IDENTIFIER` — for each target / configuration (Debug/Release);
+- after signing is configured, Xcode adds **`DEVELOPMENT_TEAM`**;
+- `MARKETING_VERSION`, `CURRENT_PROJECT_VERSION`, `INFOPLIST_KEY_*` — under *XCBuildConfiguration* sections.
 
-- `PRODUCT_BUNDLE_IDENTIFIER` — для каждого из трёх таргетов (Debug/Release);
-- при сохранении подписи Xcode добавит **`DEVELOPMENT_TEAM`**;
-- `MARKETING_VERSION`, `CURRENT_PROJECT_VERSION`, `INFOPLIST_KEY_*` — в секциях *XCBuildConfiguration*.
+`App-Info.plist` contains ATS only; the app’s main `Info.plist` is **generated** (`GENERATE_INFOPLIST_FILE = YES`), and the bundle identifier is injected from `PRODUCT_BUNDLE_IDENTIFIER`.
 
-`App-Info.plist` содержит только ATS; основной `Info.plist` для приложения **генерируется** (`GENERATE_INFOPLIST_FILE = YES`), идентификатор подставляется из `PRODUCT_BUNDLE_IDENTIFIER`.
+## 4) Distribution (beyond local “Run”)
 
-## 4. Распространение (не только «Run» на своём Mac)
+- **Notarization and public distribution** typically require a **paid** Apple Developer Program membership and correct **Developer ID** / distribution signing.
+- For **TestFlight** / **Mac App Store**, the Bundle ID must match a registered **App ID** in Apple’s developer portal.
 
-- **Нотаризация и выкладка наружу** — нужен **платный** Apple Developer Program, корректный **Developer ID** / продуктовая подпись и, при необходимости, записи в App Store Connect.
-- Для **TestFlight** / **Mac App Store** Bundle ID должен совпадать с зарегистрированным **App ID** в [Identifiers](https://developer.apple.com/account/resources/identifiers/list).
+## 5) Repos and other machines
 
-## 5. Репозиторий и чужие машины
+Bundle identifiers and Teams are often **personal**. After you configure signing locally, `project.pbxproj` may gain a `DEVELOPMENT_TEAM` value. If you publish the repo publicly, keep neutral placeholders and document the setup steps (this file), or use a local non-committed override (e.g. an `.xcconfig` kept in `.gitignore`).
 
-Идентификаторы и Team часто **личные**. После настройки у вас в `project.pbxproj` может появиться `DEVELOPMENT_TEAM`. Если делитесь кодом публично — либо оставляйте нейтральные placeholder’ы и документируйте шаги (этот файл), либо используйте локальный незакоммиченный override (например `xcconfig` в `.gitignore`) — по желанию можно вынести позже.

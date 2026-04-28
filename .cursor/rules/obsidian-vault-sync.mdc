@@ -15,9 +15,9 @@ When you make **substantive** changes to the app (features, architecture, roadma
 
 Если в проект добавляется/обновляется **любая third‑party часть** (код, бинарник/CLI, ассеты, шрифты, скрипты, данные, SDK, лицензия меняется/уточняется):
 
-1. Обновить `WinMist/THIRD_PARTY.md` (что бандлим/используем + лицензия + обязательства).
+1. Обновить `FluffyFlash/THIRD_PARTY.md` (что бандлим/используем + лицензия + обязательства).
 2. Обновить `ObsidianVault/10-Project-Wist/Legal.md` (инвентарь и чеклист комплаенса).
-3. Для релизов с bundled tools: убедиться, что `WinMist/THIRD_PARTY_NOTICES.txt` и source‑bundle (`Scripts/build_third_party_sources_bundle.sh`) актуальны.
+3. Для релизов с bundled tools: убедиться, что `FluffyFlash/THIRD_PARTY_NOTICES.txt` и source‑bundle (`Scripts/build_third_party_sources_bundle.sh`) актуальны.
 
 Skip updates for trivial one-line fixes or purely cosmetic edits unless the user asks.
 
