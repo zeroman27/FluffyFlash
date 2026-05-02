@@ -20,7 +20,8 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-14
+    # Xcode 16+ required for project format 77 (objectVersion 77 / synchronized groups)
+    runs-on: macos-15
     timeout-minutes: 60
 
     env:
