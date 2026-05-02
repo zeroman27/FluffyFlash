@@ -555,7 +555,7 @@ final class USBWriterViewModel: ObservableObject {
         }
     }
 
-    static func formatETA(seconds: Double) -> String? {
+    nonisolated static func formatETA(seconds: Double) -> String? {
         guard seconds.isFinite, seconds >= 0, seconds < 365 * 24 * 3600 else { return nil }
         let s = Int(seconds.rounded())
         let h = s / 3600
