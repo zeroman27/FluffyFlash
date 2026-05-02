@@ -1,0 +1,26 @@
+---
+description: После существенных правок кода — обязательная проверка, что сборка/тесты не сломаны.
+alwaysApply: true
+---
+
+# Проверка после изменений (WinMist / Fluffy Flash)
+
+Перед тем как считать задачу завершённой, если менялись **исходники Swift**, **Xcode-проект**, **plist/entitlements**, **скрипты сборки** или **тесты**:
+
+1. **Сборка приложения** (из каталога `FluffyFlash`):
+
+```bash
+WIST_SKIP_TOOL_BUNDLE=1 xcodebuild -project "Fluffy Flash.xcodeproj" -scheme FluffyFlash -configuration Debug -destination 'platform=macOS' build
+```
+
+Ожидаемый результат: в конце вывода **`BUILD SUCCEEDED`**, exit code **0**. Если **FAILED** — исправить ошибки и повторить; не отвечать пользователю «готово», пока билд не зелёный.
+
+2. **По возможности** — прогнать юнит-тесты, если логично по объёму изменений:
+
+```bash
+WIST_SKIP_TOOL_BUNDLE=1 xcodebuild -project "Fluffy Flash.xcodeproj" -scheme FluffyFlash -configuration Debug -destination 'platform=macOS' test -only-testing:"Fluffy FlashTests"
+```
+
+3. Исключения (можно не гонять полный `xcodebuild`): правки **только** markdown в Obsidian без кода; **только** комментарии без изменения синтаксиса (на усмотрение — минимальный `build` всё равно предпочтителен после любых правок в таргете приложения).
+
+**Не полагаться на память** о предыдущем успешном билде — конфигурация и зависимости меняются одним файлом.

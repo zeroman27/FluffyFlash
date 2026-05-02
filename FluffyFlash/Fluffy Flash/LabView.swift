@@ -7,30 +7,16 @@ import SwiftUI
 
 #if DEBUG
 struct LabView: View {
-    enum LabTab: String, CaseIterable, Identifiable {
-        case modeDial
-        case rope
-
-        var id: String { rawValue }
-
-        var title: LocalizedStringKey {
-            switch self {
-            case .modeDial: return "Mode Dial"
-            case .rope: return "Rope progress"
-            }
-        }
-    }
-
-    @State private var tab: LabTab = .modeDial
-    @State private var demoMode: AppMode = .windows
-
     var body: some View {
+        #if LAB_LOCAL
+        LabExperimentsView()
+        #else
         MistDetailCanvas {
             VStack(alignment: .leading, spacing: 0) {
                 MistPageHeader(
                     eyebrow: "Lab",
-                    title: "Experiments",
-                    subtitle: "UI prototypes and motion tests.",
+                    title: "Internal only",
+                    subtitle: "Enable LAB_LOCAL to load local experiments.",
                     symbolName: "testtube.2",
                     assetName: "FluffyIconInfo"
                 )
@@ -39,50 +25,18 @@ struct LabView: View {
 
                 Divider().opacity(0.5)
 
-                Picker(String(localized: "Lab section"), selection: $tab) {
-                    ForEach(LabTab.allCases) { t in
-                        Text(t.title).tag(t)
-                    }
+                MistSectionCard(title: "Lab is disabled", systemImage: "lock.fill") {
+                    Text("This screen is intentionally kept out of git. Add experiments in LabExperiments.local.swift and enable the LAB_LOCAL compilation condition in Debug.")
+                        .font(WistFont.body(12))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                .labelsHidden()
-                .pickerStyle(.segmented)
-                .padding(.horizontal, WistTheme.pagePadding)
-                .padding(.top, WistTheme.gutter)
+                .padding(WistTheme.pagePadding)
 
-                ScrollView {
-                    VStack(alignment: .leading, spacing: WistTheme.gutter) {
-                        switch tab {
-                        case .modeDial:
-                            modeDialSection
-                        case .rope:
-                            RopeProgressTestView()
-                        }
-                    }
-                    .padding(WistTheme.pagePadding)
-                }
+                Spacer(minLength: 0)
             }
         }
-    }
-
-    private var modeDialSection: some View {
-        MistSectionCard(title: "ModeDial variants", systemImage: "dial.medium") {
-            VStack(alignment: .leading, spacing: 14) {
-                Text("Tap or drag the dial. This is a live prototype.")
-                    .font(WistFont.caption(11))
-                    .foregroundStyle(.secondary)
-
-                HStack(spacing: 14) {
-                    ModeDial(mode: $demoMode, size: 92, variant: .variantA)
-                    ModeDial(mode: $demoMode, size: 92, variant: .variantB)
-                    ModeDial(mode: $demoMode, size: 92, variant: .variantC)
-                    Spacer()
-                }
-
-                Text("Selected: \(demoMode.title)")
-                    .font(WistFont.caption(11).monospacedDigit())
-                    .foregroundStyle(.secondary)
-            }
-        }
+        #endif
     }
 }
 

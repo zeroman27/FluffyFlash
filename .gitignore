@@ -68,3 +68,6 @@ ObsidianVault/.obsidian/workspace-mobile.json
 
 # Логи
 *.log
+
+# Wist: локальные (не коммитим) Swift-файлы, например Lab-эксперименты
+*.local.swift

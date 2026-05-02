@@ -5,6 +5,31 @@
 
 import Foundation
 
+/// Collects streamed `mist` lines so privileged-download failures aren't opaque `exitCode` only.
+private final class MistOutputTailBuffer: @unchecked Sendable {
+    private let lock = NSLock()
+    private var lines: [String] = []
+    private let maxLines: Int
+
+    init(maxLines: Int = 48) {
+        self.maxLines = maxLines
+    }
+
+    func append(_ line: String) {
+        lock.lock()
+        lines.append(line)
+        if lines.count > maxLines { lines.removeFirst(lines.count - maxLines) }
+        lock.unlock()
+    }
+
+    func joined() -> String {
+        lock.lock()
+        let s = lines.joined(separator: "\n")
+        lock.unlock()
+        return s
+    }
+}
+
 enum MistCLIToolError: LocalizedError {
     case invalidExportFile(String)
 
@@ -132,16 +157,48 @@ enum MistCLITool: Sendable {
         args.append(search)
         args.append(contentsOf: outputTypes.map(\.rawValue))
 
-        onOutputLine?(String(localized: "Administrator password required — mist downloads installers as root."))
-        let pidFile = outputDirectory.appendingPathComponent("mist-download.pid")
-        try await MistPrivilegedShellRunner.run(
-            executable: exe,
+        // Run `mist download installer` through the privileged helper, not `osascript`, so the
+        // entire macOS pipeline shares a single approval (the helper install) instead of asking
+        // the user for administrator credentials each phase.
+        try await PrivilegedHelperClient.prepareSession()
+        onOutputLine?(String(localized: "Running mist as root via the privileged helper."))
+
+        let tail = MistOutputTailBuffer()
+        let exitCode = try await PrivilegedHelperClient.runCommandStreaming(
+            executablePath: exe.path,
             arguments: args,
             environment: HostToolPaths.environmentForBundledAndHostCLI(),
-            recursiveChownAfterSuccess: outputDirectory,
-            pidFileURL: pidFile
+            onLine: { line in
+                tail.append(line)
+                onOutputLine?(line)
+            }
         )
+        if exitCode != 0 {
+            let detail = tail.joined()
+            let hint = detail.isEmpty ? "" : "\n\(detail)\n"
+            throw ProcessRunnerError.failed(
+                exitCode: exitCode,
+                stderr: "\(hint)mist download installer failed (\(exitCode))."
+            )
+        }
+
+        try await Self.chownOutputDirectoryToInvoker(outputDirectory, onOutputLine: onOutputLine)
         return try parseRawJSONDict(at: exportURL)
+    }
+
+    /// Root-owned cache tree → revert to the GUI user (same as after a successful `mist download`).
+    static func chownOutputDirectoryToInvoker(_ outputDirectory: URL, onOutputLine: ((String) -> Void)? = nil) async throws {
+        let runUID = getuid()
+        let runGID = getgid()
+        let chownExit = try await PrivilegedHelperClient.runCommandStreaming(
+            executablePath: "/usr/sbin/chown",
+            arguments: ["-R", "\(runUID):\(runGID)", outputDirectory.path],
+            environment: [:],
+            onLine: { line in onOutputLine?(line) }
+        )
+        if chownExit != 0 {
+            onOutputLine?("warning: chown returned \(chownExit) for \(outputDirectory.path)")
+        }
     }
 
     /// `mist download firmware "<search>" --output-directory ... --export file.json`

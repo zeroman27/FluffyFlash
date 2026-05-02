@@ -28,7 +28,11 @@ enum USBWriterError: LocalizedError {
         case .metadataWriteFailed(let s):
             return s
         case .fat32OversizeUnsupported(let detail):
-            return String(localized: "On FAT32 a single file cannot exceed ~4 GiB. The image contains files that cannot be split like install.wim:") + "\n" + detail
+            // Two-line friendly explanation, then the list of files we cannot place
+            // on FAT32. The technical "wimlib split" / 2^32-1 trivia stays in the log.
+            let header = String(localized: "This USB is formatted as FAT32 and cannot store a single file larger than about 4 GB.")
+            let middle = String(localized: "Fluffy splits the Windows install image (install.wim / install.esd) automatically, but this ISO has other oversized files we can’t split:")
+            return "\(header)\n\(middle)\n\(detail)"
         case .insufficientSpace(let needed, let free):
             return String(format: String(localized: "Not enough space on the USB drive: need about %@, free %@."), needed, free)
         }
@@ -72,6 +76,8 @@ final class USBWriterViewModel: ObservableObject {
         var stepEtaSeconds: Double?
         /// Best-effort ETA (seconds remaining) to finish the whole drive write.
         var overallEtaSeconds: Double?
+        /// Smoothed throughput for the current step (bytes per second). 0 means unknown.
+        var stepBytesPerSecond: Double = 0
     }
 
     @Published private(set) var logLines: [String] = []
@@ -86,7 +92,9 @@ final class USBWriterViewModel: ObservableObject {
     private var splitEtaState: [String: SplitETAState] = [:]
 
     private let usbVolumeLabel = "WINSETUP"
-    private let wimChunkMB = "3800"
+    /// Chunk size for `wimlib-imagex split` in MiB.
+    /// FAT32 max file size is 4,294,967,295 bytes; 4095 MiB stays safely below that limit.
+    private let wimChunkMB = "4095"
     private let applyFinderIconKey = "fluffy.applyVolumeIconsToFluffyDrives"
 
     func clearLog() {
@@ -122,7 +130,16 @@ final class USBWriterViewModel: ObservableObject {
     /// - Parameter metadata: optional sidecar JSON at the volume root (`FluffyFlash.meta.json`) before sync/eject.
     /// - Returns: `nil` on success, otherwise a user-facing error string (also stored in `lastError` when no concurrent write overwrites it).
     @discardableResult
-    func writeWindowsInstaller(isoURL: URL, drive: RemovableDriveInfo, metadata: WistUSBMetadata? = nil) async -> String? {
+    /// `preMountedISO` — when supplied, we skip our own `hdiutil attach`/`detach`
+    /// and reuse the caller's mount. The caller is responsible for detaching when
+    /// every parallel writer finishes. This avoids racing N attach calls when the
+    /// user flashes several USBs from the same ISO.
+    func writeWindowsInstaller(
+        isoURL: URL,
+        drive: RemovableDriveInfo,
+        metadata: WistUSBMetadata? = nil,
+        preMountedISO: URL? = nil
+    ) async -> String? {
         guard !activeWriteDeviceIds.contains(drive.deviceIdentifier) else {
             let msg = String(format: String(localized: "Device %@ is already being written."), drive.deviceIdentifier)
             log(msg)
@@ -168,26 +185,37 @@ final class USBWriterViewModel: ObservableObject {
             let usbMount = try await waitForUSBMountPoint(wholeDisk: drive.deviceIdentifier)
             setDriveStep(drive.deviceIdentifier, .waitingForMount, stepProgress: 1, detail: usbMount.path)
 
-            log(String(localized: "[3/7] Mounting ISO (read-only)…"))
-            setDriveStep(drive.deviceIdentifier, .mountingISO, stepProgress: 0, detail: nil)
             let isoMount: URL
-            do {
-                isoMount = try await HdiutilAttach.attachISOReadOnly(at: isoURL) { [weak self] line in
-                    Task { @MainActor in self?.log(line) }
+            let ownsISOMount: Bool
+            if let preMountedISO {
+                log(String(format: String(localized: "[3/7] Reusing shared ISO mount: %@"), preMountedISO.path))
+                setDriveStep(drive.deviceIdentifier, .mountingISO, stepProgress: 1, detail: preMountedISO.path)
+                isoMount = preMountedISO
+                ownsISOMount = false
+            } else {
+                log(String(localized: "[3/7] Mounting ISO (read-only)…"))
+                setDriveStep(drive.deviceIdentifier, .mountingISO, stepProgress: 0, detail: nil)
+                do {
+                    isoMount = try await HdiutilAttach.attachISOReadOnly(at: isoURL) { [weak self] line in
+                        Task { @MainActor in self?.log(line) }
+                    }
+                } catch {
+                    throw USBWriterError.isoMountFailed(error.localizedDescription)
                 }
-            } catch {
-                throw USBWriterError.isoMountFailed(error.localizedDescription)
+                log(String(format: String(localized: "ISO volume: %@"), isoMount.path))
+                setDriveStep(drive.deviceIdentifier, .mountingISO, stepProgress: 1, detail: isoMount.path)
+                ownsISOMount = true
             }
-            log(String(format: String(localized: "ISO volume: %@"), isoMount.path))
-            setDriveStep(drive.deviceIdentifier, .mountingISO, stepProgress: 1, detail: isoMount.path)
 
             let installWim = isoMount.appendingPathComponent("sources/install.wim")
             let installEsd = isoMount.appendingPathComponent("sources/install.esd")
             let hasWim = FileManager.default.fileExists(atPath: installWim.path)
             let hasEsd = FileManager.default.fileExists(atPath: installEsd.path)
             guard hasWim || hasEsd else {
-                try? await HdiutilAttach.detach(mountPoint: isoMount) { [weak self] line in
-                    Task { @MainActor in self?.log(line) }
+                if ownsISOMount {
+                    try? await HdiutilAttach.detach(mountPoint: isoMount) { [weak self] line in
+                        Task { @MainActor in self?.log(line) }
+                    }
                 }
                 throw USBWriterError.installImageMissing
             }
@@ -207,12 +235,20 @@ final class USBWriterViewModel: ObservableObject {
             do {
                 wimlib = try BundledToolLocator.wimlibImagexExecutable()
             } catch {
-                try? await HdiutilAttach.detach(mountPoint: isoMount) { [weak self] line in
-                    Task { @MainActor in self?.log(line) }
+                if ownsISOMount {
+                    try? await HdiutilAttach.detach(mountPoint: isoMount) { [weak self] line in
+                        Task { @MainActor in self?.log(line) }
+                    }
                 }
                 throw USBWriterError.wimlibMissing(error.localizedDescription)
             }
             log(String(format: String(localized: "wimlib-imagex: %@"), wimlib.path))
+
+            // Source ISO SHA-256 in the background, so it usually finishes by the time
+            // we get to writing metadata. Best-effort — if it fails, we just store nil.
+            let sourceISOHashTask: Task<String?, Never> = Task.detached(priority: .utility) {
+                await SHA256Hasher.hashFileBestEffort(at: isoURL)
+            }
 
             log(String(localized: "[4/7] Copying files (no rsync; install.wim/esd skipped — split next)…"))
             setDriveStep(drive.deviceIdentifier, .copyingFiles, stepProgress: 0, detail: nil)
@@ -239,8 +275,14 @@ final class USBWriterViewModel: ObservableObject {
             )
             setDriveStep(drive.deviceIdentifier, .splittingInstallImage, stepProgress: 1, detail: nil)
 
-            if let metadata {
+            if var metadata {
+                let chunks = await collectSplitChunkInfos(in: usbMount.appendingPathComponent("sources"))
+                metadata.splitChunks = chunks.isEmpty ? nil : chunks
+                metadata.sourceIsoSHA256 = await sourceISOHashTask.value
                 try await writeAndVerifyMetadata(metadata, to: usbMount, wholeDisk: drive.deviceIdentifier)
+                if !chunks.isEmpty {
+                    log(String(format: String(localized: "Hashed %lld split chunk(s) for verification."), Int64(chunks.count)))
+                }
                 log(String(format: String(localized: "Metadata written: %@"), WistUSBMetadata.fileName))
 
                 // Optional: apply Finder icon automatically to Fluffy drives.
@@ -251,22 +293,34 @@ final class USBWriterViewModel: ObservableObject {
                     let style = FluffyUSBIconStyle.resolve(rawValue: raw)
                     try? FluffyVolumeIconManager.setVolumeIcon(style: style, mountPoint: usbMount)
                 }
+            } else {
+                sourceISOHashTask.cancel()
             }
 
-            log(String(localized: "[6/7] Detaching ISO volume…"))
-            setDriveStep(drive.deviceIdentifier, .detachingISO, stepProgress: 0, detail: nil)
-            try await HdiutilAttach.detach(mountPoint: isoMount) { [weak self] line in
-                Task { @MainActor in self?.log(line) }
+            if ownsISOMount {
+                log(String(localized: "[6/7] Detaching ISO volume…"))
+                setDriveStep(drive.deviceIdentifier, .detachingISO, stepProgress: 0, detail: nil)
+                try await HdiutilAttach.detach(mountPoint: isoMount) { [weak self] line in
+                    Task { @MainActor in self?.log(line) }
+                }
+                setDriveStep(drive.deviceIdentifier, .detachingISO, stepProgress: 1, detail: nil)
+            } else {
+                log(String(localized: "[6/7] ISO mount stays attached for the other parallel writers."))
+                setDriveStep(drive.deviceIdentifier, .detachingISO, stepProgress: 1, detail: nil)
             }
-            setDriveStep(drive.deviceIdentifier, .detachingISO, stepProgress: 1, detail: nil)
 
-            log(String(localized: "[7/7] Sync and eject USB…"))
+            log(String(localized: "[7/7] Sync and finalising USB…"))
             setDriveStep(drive.deviceIdentifier, .syncingAndEjecting, stepProgress: 0, detail: nil)
             try await runProcess(URL(fileURLWithPath: "/bin/sync"), arguments: [])
-            try await runProcess(
-                BundledToolLocator.diskutil,
-                arguments: ["eject", devPath]
-            )
+            if WistPreferences.autoEjectAfterWrite {
+                try await runProcess(
+                    BundledToolLocator.diskutil,
+                    arguments: ["eject", devPath]
+                )
+                log(String(localized: "Drive ejected. You can unplug it now."))
+            } else {
+                log(String(localized: "Auto-eject is off — drive stays mounted so you can drop extra files on it."))
+            }
             setDriveStep(drive.deviceIdentifier, .syncingAndEjecting, stepProgress: 1, detail: nil)
 
             log(String(localized: "Done. You can unplug the drive and use it to install Windows."))
@@ -347,48 +401,47 @@ final class USBWriterViewModel: ObservableObject {
             return 0
         }()
 
-        async let run: Void = ProcessRunner.runCollectingOutput(
-            executableURL: wimlibExecutable,
-            arguments: [
-                "split",
-                installImage.path,
-                splitDest.path,
-                wimChunkMB,
-            ],
-            currentDirectoryURL: nil,
-            environment: HostToolPaths.environmentForBundledAndHostCLI(),
-            onStdoutLine: { [weak self] line in Task { @MainActor in self?.log(line) } },
-            onStderrLine: { [weak self] line in Task { @MainActor in self?.log(line) } }
-        )
+        let completion = CompletionFlag()
+        let runTask = Task {
+            defer { completion.markFinished() }
+            try await ProcessRunner.runCollectingOutput(
+                executableURL: wimlibExecutable,
+                arguments: [
+                    "split",
+                    installImage.path,
+                    splitDest.path,
+                    wimChunkMB,
+                ],
+                currentDirectoryURL: nil,
+                environment: HostToolPaths.environmentForBundledAndHostCLI(),
+                onStdoutLine: { [weak self] line in Task { @MainActor in self?.log(line) } },
+                onStderrLine: { [weak self] line in Task { @MainActor in self?.log(line) } }
+            )
+        }
 
         // Poll the produced install*.swm sizes as a proxy for progress.
         // Best-effort: updates only while the process runs.
-        while true {
+        while !completion.isFinished {
             try Task.checkCancellation()
             do {
-                try await Task.sleep(nanoseconds: 350_000_000)
+                // Avoid hammering the USB filesystem with frequent directory scans.
+                try await Task.sleep(nanoseconds: 1_000_000_000)
             } catch {
-                // cancellation
+                runTask.cancel()
                 throw error
             }
 
-            // If `run` already finished, break out after awaiting it below.
-            // (No direct non-blocking check, so we just keep polling until await succeeds.)
             let written = swmWrittenBytes(usbMount: usbMount)
             if installBytes > 0, written > 0 {
                 let p = Double(min(written, installBytes)) / Double(installBytes)
                 updateSplitETA(deviceId: deviceId, writtenBytes: min(written, installBytes), totalBytes: installBytes)
                 setDriveStep(deviceId, .splittingInstallImage, stepProgress: p, detail: installImage.lastPathComponent)
             }
-
-            // Heuristic exit: if we already wrote at least the source size, `wimlib` is likely done soon.
-            if installBytes > 0, written >= installBytes {
-                break
-            }
         }
 
         // Ensure the process actually completed (or throws).
-        try await run
+        try await runTask.value
+        setDriveStep(deviceId, .splittingInstallImage, stepProgress: 1, detail: installImage.lastPathComponent)
     }
 
     private func swmWrittenBytes(usbMount: URL) -> UInt64 {
@@ -420,6 +473,23 @@ final class USBWriterViewModel: ObservableObject {
         var emaBytesPerSecond: Double = 0
     }
 
+    private final class CompletionFlag: @unchecked Sendable {
+        private let lock = NSLock()
+        private var finished = false
+
+        var isFinished: Bool {
+            lock.lock()
+            defer { lock.unlock() }
+            return finished
+        }
+
+        func markFinished() {
+            lock.lock()
+            finished = true
+            lock.unlock()
+        }
+    }
+
     private static let etaRemainingAfterCopySeconds: Double = 12
     private static let etaRemainingAfterSplitSeconds: Double = 6
 
@@ -449,6 +519,7 @@ final class USBWriterViewModel: ObservableObject {
         if var p = perDriveProgress[deviceId], p.step == .copyingFiles {
             p.stepEtaSeconds = (eta.isFinite && eta >= 0 && eta < 365 * 24 * 3600) ? eta : nil
             p.overallEtaSeconds = p.stepEtaSeconds.map { $0 + Self.etaRemainingAfterCopySeconds }
+            p.stepBytesPerSecond = state.emaBytesPerSecond
             perDriveProgress[deviceId] = p
         }
     }
@@ -479,6 +550,7 @@ final class USBWriterViewModel: ObservableObject {
         if var p = perDriveProgress[deviceId], p.step == .splittingInstallImage {
             p.stepEtaSeconds = (eta.isFinite && eta >= 0 && eta < 365 * 24 * 3600) ? eta : nil
             p.overallEtaSeconds = p.stepEtaSeconds.map { $0 + Self.etaRemainingAfterSplitSeconds }
+            p.stepBytesPerSecond = state.emaBytesPerSecond
             perDriveProgress[deviceId] = p
         }
     }
@@ -564,6 +636,39 @@ final class USBWriterViewModel: ObservableObject {
             try await Task.sleep(nanoseconds: 250_000_000)
         }
         throw USBWriterError.usbVolumeMissing(String(format: String(localized: "Could not determine mount point for %@"), wholeDisk))
+    }
+
+    /// Walks `sources/install.swm*` and returns one `SplitChunkInfo` per chunk
+    /// (with streamed SHA-256). Robust to drives without any chunks.
+    private func collectSplitChunkInfos(in sourcesDir: URL) async -> [SplitChunkInfo] {
+        let fm = FileManager.default
+        guard let entries = try? fm.contentsOfDirectory(
+            at: sourcesDir,
+            includingPropertiesForKeys: [.fileSizeKey],
+            options: [.skipsHiddenFiles]
+        ) else {
+            return []
+        }
+        let chunks = entries
+            .filter { $0.lastPathComponent.lowercased().hasPrefix("install.swm") }
+            .sorted { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending }
+        var out: [SplitChunkInfo] = []
+        out.reserveCapacity(chunks.count)
+        for url in chunks {
+            let size: UInt64 = {
+                if let v = try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize {
+                    return UInt64(max(0, v))
+                }
+                return 0
+            }()
+            let hash = await SHA256Hasher.hashFileBestEffort(at: url) ?? ""
+            out.append(SplitChunkInfo(
+                fileName: url.lastPathComponent,
+                sizeBytes: size,
+                sha256: hash
+            ))
+        }
+        return out
     }
 
     private func writeAndVerifyMetadata(_ metadata: WistUSBMetadata, to usbMount: URL, wholeDisk: String) async throws {

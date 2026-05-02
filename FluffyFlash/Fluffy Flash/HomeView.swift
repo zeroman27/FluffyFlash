@@ -24,18 +24,45 @@ struct HomeView: View {
     @ObservedObject var history: WriteHistoryStore
 
     @Binding var selectedUSBDeviceIds: Set<String>
+    /// When set from Library → History “Repeat”, Home applies the configuration then clears the binding.
+    @Binding var historyRepeatEntryId: UUID?
 
+    @AppStorage("wist.appMode") private var appModeStorageRaw: String = AppMode.windows.rawValue
     @AppStorage("fluffy.expertMode") private var expertModeEnabled: Bool = false
     @AppStorage("fluffy.maxConcurrentWrites") private var maxConcurrentWrites: Int = 3
     @AppStorage(FluffyUSBIconStyle.appStorageKey) private var usbIconStyleRaw: String = FluffyUSBIconStyle.defaultStyle.rawValue
 
     @State private var isPresentingBuildPicker = false
-    @State private var useExistingISO: Bool = false
-    @State private var existingISOURL: URL?
-    @State private var isoPickerPresented = false
+    @SceneStorage("wist.useExistingISO") private var useExistingISO: Bool = false
+    @SceneStorage("wist.existingISOPath") private var existingISOPath: String = ""
     @State private var confirmFlash = false
     @State private var confirmUpgradeDrive: DriveUpgradeOffer?
+    @State private var confirmMacOSUpgrade: MacOSDriveUpgradeOffer?
     @State private var doneRingProgress: Double = 0
+    @State private var isISODropTargeted: Bool = false
+    @State private var knownDeviceIds: Set<String> = []
+    @State private var smartRepeatOffer: SmartRepeatOffer?
+    @AppStorage(WistPreferences.Keys.productionLineMode) private var productionLineMode: Bool = false
+    @ObservedObject private var openISOBridge = WistOpenISOBridge.shared
+
+    /// Wall-clock start of the current Windows flash pipeline (for History duration).
+    @State private var windowsFlashStartedAt: Date?
+
+    private struct SmartRepeatOffer: Identifiable, Equatable {
+        let id = UUID()
+        let drive: RemovableDriveInfo
+        let isoURL: URL
+        let buildSummary: String
+
+        static func == (lhs: SmartRepeatOffer, rhs: SmartRepeatOffer) -> Bool {
+            lhs.id == rhs.id
+        }
+    }
+
+    private var existingISOURL: URL? {
+        get { existingISOPath.isEmpty ? nil : URL(fileURLWithPath: existingISOPath) }
+        nonmutating set { existingISOPath = newValue?.path ?? "" }
+    }
 
     private static let byteFormatter: ByteCountFormatter = {
         let f = ByteCountFormatter()
@@ -43,6 +70,54 @@ struct HomeView: View {
         f.countStyle = .file
         return f
     }()
+
+    /// Optional payload size (in bytes) for ETA math. We use the source ISO size
+    /// when available (existing ISO or freshly built); otherwise no ETA is shown.
+    private var payloadBytesForEta: UInt64? {
+        let path: String?
+        if useExistingISO {
+            path = existingISOURL?.path
+        } else {
+            path = downloadModel.lastProducedISOPath
+        }
+        guard let path, !path.isEmpty,
+              let attrs = try? FileManager.default.attributesOfItem(atPath: path) else {
+            return nil
+        }
+        if let n = attrs[.size] as? NSNumber, n.uint64Value > 0 {
+            return n.uint64Value
+        }
+        if let u = attrs[.size] as? UInt64, u > 0 {
+            return u
+        }
+        return nil
+    }
+
+    /// Friendly "Usually 6–8 MB/s · about 12–16 min" line for a known drive.
+    /// Returns nil for drives we have never written to before.
+    private func speedHint(for drive: RemovableDriveInfo) -> String? {
+        guard let range = history.expectedSpeedRange(for: drive.mediaName) else { return nil }
+        let speedPart = String(
+            format: String(localized: "Usually %.0f–%.0f MB/s"),
+            range.lowMBps,
+            range.highMBps
+        )
+        guard let payload = payloadBytesForEta,
+              let etaRange = history.expectedDurationRangeSeconds(for: drive.mediaName, payloadBytes: payload) else {
+            return speedPart
+        }
+        let lowMin = Int((etaRange.lowerBound / 60).rounded())
+        let highMin = Int((etaRange.upperBound / 60).rounded())
+        let etaPart: String
+        if lowMin <= 0 && highMin <= 0 {
+            etaPart = String(localized: "less than a minute")
+        } else if lowMin == highMin || lowMin <= 0 {
+            etaPart = String(format: String(localized: "about %lld min"), Int64(max(1, highMin)))
+        } else {
+            etaPart = String(format: String(localized: "about %lld–%lld min"), Int64(max(1, lowMin)), Int64(max(1, highMin)))
+        }
+        return "\(speedPart) · \(etaPart)"
+    }
 
     var body: some View {
         MistDetailCanvas {
@@ -63,10 +138,16 @@ struct HomeView: View {
                     VStack(alignment: .leading, spacing: WistTheme.gutter) {
                         switch appMode {
                         case .windows:
+                            if let offer = smartRepeatOffer {
+                                smartRepeatBanner(offer)
+                            }
+
                             if e2e.isActive {
                                 runningSection
                             } else if case .completed = e2e.phase {
                                 doneSection
+                            } else if case .failed(let message) = e2e.phase {
+                                windowsFailedSection(message: message)
                             }
 
                             upgradeHeroStack
@@ -91,6 +172,7 @@ struct HomeView: View {
                             } else if case .failed(let message) = macOSE2E.phase {
                                 macosFailedSection(message: message)
                             }
+                            macOSUpgradeHeroStack
                             if shouldShowMacOSForm {
                                 macosFormCard
                             }
@@ -100,15 +182,37 @@ struct HomeView: View {
                 }
             }
         }
-        .fileImporter(
-            isPresented: $isoPickerPresented,
-            allowedContentTypes: [UTType(filenameExtension: "iso") ?? .data],
-            allowsMultipleSelection: false
-        ) { result in
-            if case .success(let urls) = result, let first = urls.first {
-                existingISOURL = first
+        .onDrop(of: [.fileURL], isTargeted: $isISODropTargeted) { providers in
+            handleISODrop(providers: providers)
+        }
+        .onAppear {
+            knownDeviceIds = Set(diskManager.drives.map(\.deviceIdentifier))
+            if let url = openISOBridge.lastURL {
+                applyOpenedISO(url)
             }
         }
+        .onChange(of: diskManager.drives.map(\.deviceIdentifier)) { _, newIds in
+            handleProductionLineCandidates(newIds: newIds)
+        }
+        .onChange(of: openISOBridge.lastURL) { _, url in
+            if let url { applyOpenedISO(url) }
+        }
+        .overlay(alignment: .topTrailing) {
+            if isISODropTargeted {
+                Label(String(localized: "Drop the .iso here"), systemImage: "tray.and.arrow.down.fill")
+                    .font(WistFont.headlineRounded(13))
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(FluffyColor.purple.opacity(0.85))
+                    )
+                    .foregroundStyle(Color.white)
+                    .padding(20)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .animation(.easeInOut(duration: 0.15), value: isISODropTargeted)
         .sheet(isPresented: $isPresentingBuildPicker) {
             FluffyBuildPickerSheet(
                 model: downloadModel,
@@ -153,11 +257,39 @@ struct HomeView: View {
         } message: {
             Text(String(localized: "The drive will be formatted and written with the newer build."))
         }
+        .alert(String(localized: "Update this macOS installer USB?"), isPresented: Binding(
+            get: { confirmMacOSUpgrade != nil },
+            set: { if !$0 { confirmMacOSUpgrade = nil } }
+        )) {
+            Button(String(localized: "Cancel"), role: .cancel) { confirmMacOSUpgrade = nil }
+            Button(String(localized: "Erase and update"), role: .destructive) {
+                if let offer = confirmMacOSUpgrade {
+                    Task { await startMacOSUpgrade(offer: offer) }
+                }
+                confirmMacOSUpgrade = nil
+            }
+        } message: {
+            Text(String(localized: "The drive will be erased and replaced using the newer installer from Apple’s catalog (stable channel)."))
+        }
         .task {
             if downloadModel.allBuilds.isEmpty && !downloadModel.isLoadingBuilds {
                 await downloadModel.loadBuilds()
             }
         }
+        .onAppear {
+            processPendingHistoryRepeat()
+        }
+        .onChange(of: historyRepeatEntryId) { _, _ in
+            processPendingHistoryRepeat()
+        }
+    }
+
+    /// Handles Library → «Repeat» after navigating to Home (`onAppear` covers first paint when binding is already set).
+    private func processPendingHistoryRepeat() {
+        guard let id = historyRepeatEntryId else { return }
+        historyRepeatEntryId = nil
+        guard let entry = history.entries.first(where: { $0.id == id }) else { return }
+        Task { await applyHistoryRepeat(entry) }
     }
 
     private var headerTitle: String {
@@ -174,7 +306,7 @@ struct HomeView: View {
         case .windows:
             return String(localized: "Pick a Windows build, choose one or more USB drives, tap Flash. Detected Fluffy Flash drives show upgrade offers automatically.")
         case .macos:
-            return String(localized: "Pick a macOS installer, choose a USB drive, download, then create bootable install media.")
+            return String(localized: "Pick a macOS installer, choose a USB drive, download, then create bootable install media. Installer USBs written by Fluffy can show one-click upgrade offers when Apple ships a newer build.")
         }
     }
 
@@ -197,6 +329,62 @@ struct HomeView: View {
                 ForEach(actionable) { offer in
                     upgradeHeroRow(offer: offer)
                 }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var macOSUpgradeHeroStack: some View {
+        let actionable = upgradeDetector.macOSOffers.filter(\.isNewer)
+        if !actionable.isEmpty, !macOSE2E.isActive, !macOSUSBWriter.isWriting {
+            VStack(alignment: .leading, spacing: 12) {
+                ForEach(actionable) { offer in
+                    macOSUpgradeHeroRow(offer: offer)
+                }
+            }
+        }
+    }
+
+    private func macOSUpgradeHeroRow(offer: MacOSDriveUpgradeOffer) -> some View {
+        MistSectionCard(
+            title: String(localized: "Newer macOS installer available"),
+            systemImage: "arrow.up.circle.fill"
+        ) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(offer.drive.mediaName)
+                            .font(WistFont.headline(14))
+                        Text(
+                            String(
+                                format: String(localized: "On USB: %@ (%@)  →  Latest: %@ (%@)"),
+                                offer.currentMeta.installerShortVersion ?? "—",
+                                offer.currentMeta.installerBundleVersion ?? "—",
+                                offer.latestInstaller.version,
+                                offer.latestInstaller.build
+                            )
+                        )
+                        .font(WistFont.caption(11))
+                        .foregroundStyle(.secondary)
+                        Text(offer.latestInstaller.name)
+                            .font(WistFont.caption(10))
+                            .foregroundStyle(.tertiary)
+                            .lineLimit(2)
+                    }
+                    Spacer(minLength: 8)
+                    Button {
+                        confirmMacOSUpgrade = offer
+                    } label: {
+                        Label(String(localized: "Update in one click"), systemImage: "bolt.fill")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .disabled(macOSE2E.isActive || macOSUSBWriter.isWriting)
+                }
+                Text(String(localized: "Compared against Apple’s standard software-update catalog (release installers). Betas are not considered."))
+                    .font(WistFont.caption(10))
+                    .foregroundStyle(.quaternary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
     }
@@ -341,12 +529,136 @@ struct HomeView: View {
             }
             Spacer(minLength: 8)
             Button {
-                isoPickerPresented = true
+                presentISOOpenPanel()
             } label: {
                 Label(String(localized: "Choose ISO…"), systemImage: "doc.badge.plus")
             }
             .buttonStyle(.bordered)
             .controlSize(.large)
+        }
+    }
+
+    /// Apply an ISO URL that arrived through `WistOpenISOBridge` (Dock drop /
+    /// open-with). Switches to "Use existing ISO" and stores the path.
+    private func applyOpenedISO(_ url: URL) {
+        guard appMode == .windows, !e2e.isActive else { return }
+        useExistingISO = true
+        existingISOURL = url
+    }
+
+    /// Production Line / Smart Repeat: when a brand-new drive shows up that
+    /// has no Fluffy sidecar metadata, react based on the user's preference:
+    /// - production line on → flash immediately;
+    /// - production line off → show a toast with a "Repeat" button.
+    private func handleProductionLineCandidates(newIds: [String]) {
+        defer { knownDeviceIds = Set(newIds) }
+        guard !e2e.isActive, appMode == .windows else { return }
+        let added = Set(newIds).subtracting(knownDeviceIds)
+        guard !added.isEmpty else { return }
+        guard let config = history.latestSuccessfulConfig,
+              let isoPath = config.isoPath,
+              FileManager.default.fileExists(atPath: isoPath),
+              isWithinSmartRepeatWindow(date: config.date) else { return }
+        for newId in added {
+            guard let drive = diskManager.drives.first(where: { $0.deviceIdentifier == newId }) else { continue }
+            if drive.wistSidecarMeta != nil { continue }
+            let isoURL = URL(fileURLWithPath: isoPath)
+            if productionLineMode {
+                Task {
+                    windowsFlashStartedAt = Date()
+                    await e2e.writeExistingISOToDrives(
+                        isoURL: isoURL,
+                        download: downloadModel,
+                        usb: usbWriter,
+                        drives: [drive],
+                        maxConcurrentUSBWrites: 1
+                    )
+                    recordHistoryAfterRun(drives: [drive], isoPath: isoURL.path, historyKindOverride: .windowsExistingISO)
+                }
+            } else {
+                let summary: String = {
+                    let title = config.buildTitle ?? config.buildNumber
+                    let edition = config.editionToken.isEmpty ? "" : " · \(config.editionToken)"
+                    return "\(title)\(edition)"
+                }()
+                smartRepeatOffer = SmartRepeatOffer(drive: drive, isoURL: isoURL, buildSummary: summary)
+            }
+            break
+        }
+    }
+
+    /// Smart Repeat is offered only if the last successful write happened in
+    /// the last 24 hours — older configs get out of date too quickly.
+    private func isWithinSmartRepeatWindow(date: Date?) -> Bool {
+        guard let date else { return false }
+        return Date().timeIntervalSince(date) < 24 * 3600
+    }
+
+    private func acceptSmartRepeat(_ offer: SmartRepeatOffer) {
+        smartRepeatOffer = nil
+        Task {
+            windowsFlashStartedAt = Date()
+            await e2e.writeExistingISOToDrives(
+                isoURL: offer.isoURL,
+                download: downloadModel,
+                usb: usbWriter,
+                drives: [offer.drive],
+                maxConcurrentUSBWrites: 1
+            )
+            recordHistoryAfterRun(drives: [offer.drive], isoPath: offer.isoURL.path, historyKindOverride: .windowsExistingISO)
+        }
+    }
+
+    /// Drag a file straight onto a single drive row → kick off a one-shot write
+    /// to that drive only. We require Windows mode (the only path that uses
+    /// `e2e.writeExistingISOToDrives`).
+    private func handleISODroppedOn(drive: RemovableDriveInfo, url: URL) {
+        guard !e2e.isActive else { return }
+        guard appMode == .windows else { return }
+        useExistingISO = true
+        existingISOURL = url
+        Task {
+            windowsFlashStartedAt = Date()
+            await e2e.writeExistingISOToDrives(
+                isoURL: url,
+                download: downloadModel,
+                usb: usbWriter,
+                drives: [drive],
+                maxConcurrentUSBWrites: 1
+            )
+            recordHistoryAfterRun(drives: [drive], isoPath: url.path, historyKindOverride: .windowsExistingISO)
+        }
+    }
+
+    /// Accept a file URL drop, switch to "Use existing ISO" and store the path.
+    /// Returns `true` when at least one provider produced a valid `.iso` URL.
+    private func handleISODrop(providers: [NSItemProvider]) -> Bool {
+        guard !e2e.isActive else { return false }
+        for provider in providers {
+            _ = provider.loadObject(ofClass: URL.self) { url, _ in
+                guard let url, url.pathExtension.lowercased() == "iso" else { return }
+                Task { @MainActor in
+                    useExistingISO = true
+                    existingISOURL = url
+                }
+            }
+        }
+        return true
+    }
+
+    /// Native open panel for picking an `.iso`, anchored to the user's preferred folder
+    /// (Settings → ISO browse folder) or, if not set, to the app cache root.
+    private func presentISOOpenPanel() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [UTType(filenameExtension: "iso") ?? .data]
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        panel.directoryURL = WistPreferences.isoPickerStartingDirectory()
+        panel.prompt = String(localized: "Choose ISO")
+        panel.title = String(localized: "Choose a Windows ISO")
+        if panel.runModal() == .OK, let url = panel.url {
+            existingISOURL = url
         }
     }
 
@@ -435,7 +747,12 @@ struct HomeView: View {
                         FluffyDriveRow(
                             drive: drive,
                             isSelected: selectedUSBDeviceIds.contains(drive.deviceIdentifier),
-                            sizeText: Self.byteFormatter.string(fromByteCount: drive.totalSizeBytes)
+                            sizeText: Self.byteFormatter.string(fromByteCount: drive.totalSizeBytes),
+                            isKnownSlow: history.isKnownSlowDrive(mediaName: drive.mediaName),
+                            speedHintText: speedHint(for: drive),
+                            onISODropped: { url in
+                                handleISODroppedOn(drive: drive, url: url)
+                            }
                         ) {
                             toggleDriveSelection(drive.deviceIdentifier)
                         }
@@ -509,6 +826,10 @@ struct HomeView: View {
         if !useExistingISO, downloadModel.selectedEditionToken.isEmpty {
             return String(localized: "Pick an edition")
         }
+        let slowSelected = resolvedSelectedDrives.contains { history.isKnownSlowDrive(mediaName: $0.mediaName) }
+        if slowSelected {
+            return String(localized: "Ready · slow drive selected, write may take longer")
+        }
         return String(localized: "Ready")
     }
 
@@ -525,15 +846,74 @@ struct HomeView: View {
 
     // MARK: - Running
 
+    private func smartRepeatBanner(_ offer: SmartRepeatOffer) -> some View {
+        MistSectionCard(title: String(localized: "Repeat last write?"), systemImage: "arrow.triangle.2.circlepath") {
+            VStack(alignment: .leading, spacing: 10) {
+                Text(String(format: String(localized: "%@ just appeared. Flash it again with %@?"), offer.drive.mediaName, offer.buildSummary))
+                    .font(WistFont.body(12))
+                    .fixedSize(horizontal: false, vertical: true)
+
+                HStack {
+                    Spacer()
+                    Button(role: .cancel) {
+                        smartRepeatOffer = nil
+                    } label: {
+                        Label(String(localized: "Dismiss"), systemImage: "xmark.circle")
+                    }
+                    .buttonStyle(.bordered)
+
+                    Button {
+                        acceptSmartRepeat(offer)
+                    } label: {
+                        Label(String(localized: "Repeat write"), systemImage: "play.fill")
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            }
+        }
+    }
+
     private var runningSection: some View {
-        FluffyStepProgressView(
-            downloadModel: downloadModel,
-            usbWriter: usbWriter,
-            e2e: e2e,
-            drives: resolvedSelectedDrives,
-            isPresentingLog: $isPresentingFailureLog
-        ) {
-            copyFailureLogToPasteboard()
+        VStack(alignment: .leading, spacing: 12) {
+            FluffyStepProgressView(
+                downloadModel: downloadModel,
+                usbWriter: usbWriter,
+                e2e: e2e,
+                drives: resolvedSelectedDrives,
+                isPresentingLog: $isPresentingFailureLog
+            ) {
+                copyFailureLogToPasteboard()
+            }
+
+            FluffyPerDriveStrip(
+                usbWriter: usbWriter,
+                drives: resolvedSelectedDrives
+            )
+
+            MistSectionCard(title: String(localized: "Live throughput"), systemImage: "waveform.path.ecg") {
+                FluffySpeedSparklineView(usbWriter: usbWriter)
+            }
+
+            HStack {
+                Button {
+                    FluffyFloatingProgressController.shared.toggle(e2e: e2e, usb: usbWriter)
+                } label: {
+                    Label(String(localized: "Pop out progress"), systemImage: "macwindow.on.rectangle")
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+
+                Spacer()
+                Button(role: .destructive) {
+                    e2e.requestCancel()
+                } label: {
+                    Label(String(localized: "Stop"), systemImage: "stop.circle.fill")
+                        .font(WistFont.headlineRounded(13))
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .disabled(!e2e.canCancel)
+            }
         }
     }
 
@@ -693,6 +1073,7 @@ struct HomeView: View {
         let conc = max(1, min(4, maxConcurrentWrites))
         if useExistingISO, let iso = existingISOURL {
             Task {
+                windowsFlashStartedAt = Date()
                 await e2e.writeExistingISOToDrives(
                     isoURL: iso,
                     download: downloadModel,
@@ -700,10 +1081,11 @@ struct HomeView: View {
                     drives: drives,
                     maxConcurrentUSBWrites: conc
                 )
-                recordHistoryAfterRun(drives: drives, isoPath: iso.path)
+                recordHistoryAfterRun(drives: drives, isoPath: iso.path, historyKindOverride: .windowsExistingISO)
             }
         } else {
             Task {
+                windowsFlashStartedAt = Date()
                 // Make the “1-click” flow actually 1-click: if the user picked a build but
                 // hasn't expanded language/edition yet, fetch details automatically and
                 // default to the first available options.
@@ -722,9 +1104,33 @@ struct HomeView: View {
                     drives: drives,
                     maxConcurrentUSBWrites: conc
                 )
-                recordHistoryAfterRun(drives: drives, isoPath: downloadModel.lastProducedISOPath)
+                recordHistoryAfterRun(drives: drives, isoPath: downloadModel.lastProducedISOPath, historyKindOverride: .windowsUUP)
             }
         }
+    }
+
+    private func startMacOSUpgrade(offer: MacOSDriveUpgradeOffer) async {
+        macOSModel.sourceKind = .installer
+        macOSModel.selectedInstaller = offer.latestInstaller
+        selectedUSBDeviceIds = [offer.drive.deviceIdentifier]
+        let drives = resolvedSelectedDrives
+        guard drives.count == 1, drives[0].deviceIdentifier == offer.drive.deviceIdentifier else { return }
+        let types = Array(macOSModel.installerOutputTypes)
+        let inst = offer.latestInstaller
+        let started = Date()
+        await macOSE2E.runInstallerToUSB(
+            buildOrNameSearch: inst.build,
+            outputTypes: types,
+            outputDirectory: MacOSCache.rootDirectory,
+            expectedDownloadBytes: inst.sizeBytes,
+            drives: drives,
+            usbWriter: macOSUSBWriter,
+            catalog: .standard,
+            includeBetas: false,
+            forceOverwrite: false,
+            logSink: { _ in }
+        )
+        recordMacOSHistoryIfNeeded(started: started, catalogBuild: inst.build, catalogInstallerName: inst.name, drives: drives)
     }
 
     private func startUpgrade(offer: DriveUpgradeOffer) async {
@@ -735,6 +1141,7 @@ struct HomeView: View {
         let drives = [offer.drive]
         let conc = max(1, min(4, maxConcurrentWrites))
 
+        windowsFlashStartedAt = Date()
         let cachedISO = lookupCachedISO(for: offer.latestBuild.uuid)
         if let cached = cachedISO {
             await e2e.writeExistingISOToDrives(
@@ -744,7 +1151,7 @@ struct HomeView: View {
                 drives: drives,
                 maxConcurrentUSBWrites: conc
             )
-            recordHistoryAfterRun(drives: drives, isoPath: cached.path)
+            recordHistoryAfterRun(drives: drives, isoPath: cached.path, historyKindOverride: .windowsExistingISO)
         } else {
             await e2e.runFullPipeline(
                 download: downloadModel,
@@ -752,7 +1159,7 @@ struct HomeView: View {
                 drives: drives,
                 maxConcurrentUSBWrites: conc
             )
-            recordHistoryAfterRun(drives: drives, isoPath: downloadModel.lastProducedISOPath)
+            recordHistoryAfterRun(drives: drives, isoPath: downloadModel.lastProducedISOPath, historyKindOverride: .windowsUUP)
         }
     }
 
@@ -768,6 +1175,7 @@ struct HomeView: View {
             path = nil
         }
         guard let url = path else { return }
+        windowsFlashStartedAt = Date()
         await e2e.writeExistingISOToDrives(
             isoURL: url,
             download: downloadModel,
@@ -775,10 +1183,11 @@ struct HomeView: View {
             drives: drives,
             maxConcurrentUSBWrites: conc
         )
-        recordHistoryAfterRun(drives: drives, isoPath: url.path)
+        let override: WriteHistoryKind = useExistingISO ? .windowsExistingISO : .windowsExistingISO
+        recordHistoryAfterRun(drives: drives, isoPath: url.path, historyKindOverride: override)
     }
 
-    private func recordHistoryAfterRun(drives: [RemovableDriveInfo], isoPath: String?) {
+    private func recordHistoryAfterRun(drives: [RemovableDriveInfo], isoPath: String?, historyKindOverride: WriteHistoryKind? = nil) {
         let succeeded: Bool
         var errorMessage: String?
         let fullLogText: String?
@@ -793,15 +1202,30 @@ struct HomeView: View {
         default:
             return
         }
-        let metadata = WistUSBMetadata(
-            buildUuid: downloadModel.selectedBuild?.uuid ?? "",
-            buildNumber: downloadModel.selectedBuild?.build ?? "",
-            arch: downloadModel.selectedBuild?.arch ?? "",
-            language: downloadModel.selectedLanguageCode,
-            editionToken: downloadModel.selectedEditionToken,
-            buildTitle: downloadModel.selectedBuild?.title,
-            sourceIsoPath: isoPath
-        )
+        let duration: Double? = {
+            guard let t = windowsFlashStartedAt else { return nil }
+            let d = Date().timeIntervalSince(t)
+            return d.isFinite && d >= 0 ? d : nil
+        }()
+        windowsFlashStartedAt = nil
+        let flashKind = historyKindOverride ?? (useExistingISO ? WriteHistoryKind.windowsExistingISO : WriteHistoryKind.windowsUUP)
+        let metadata: WistUSBMetadata? = downloadModel.selectedBuild.map { build in
+            WistUSBMetadata(
+                buildUuid: build.uuid,
+                buildNumber: build.build,
+                arch: build.arch,
+                language: downloadModel.selectedLanguageCode,
+                editionToken: downloadModel.selectedEditionToken,
+                buildTitle: build.title,
+                sourceIsoPath: isoPath
+            )
+        }
+        var speeds: [String: Double] = [:]
+        for drive in drives {
+            if let p = usbWriter.perDriveProgress[drive.deviceIdentifier], p.stepBytesPerSecond > 0 {
+                speeds[drive.deviceIdentifier] = p.stepBytesPerSecond
+            }
+        }
         history.record(
             build: downloadModel.selectedBuild,
             metadata: metadata,
@@ -809,8 +1233,85 @@ struct HomeView: View {
             isoPath: isoPath,
             succeeded: succeeded,
             errorMessage: errorMessage,
-            fullLogText: fullLogText
+            fullLogText: fullLogText,
+            speedsByDeviceId: speeds,
+            historyKind: flashKind,
+            durationSeconds: duration
         )
+    }
+
+    private func recordMacOSHistoryIfNeeded(
+        started: Date,
+        catalogBuild: String,
+        catalogInstallerName: String?,
+        drives: [RemovableDriveInfo]
+    ) {
+        let ended = Date()
+        let succeeded: Bool
+        var errorMessage: String?
+        let fullLogText: String?
+        switch macOSE2E.phase {
+        case .completed:
+            succeeded = true
+            fullLogText = nil
+        case .failed(let m):
+            succeeded = false
+            errorMessage = m
+            fullLogText = macOSE2E.lastFailureLog ?? macOSUSBWriter.fullLogText
+        default:
+            return
+        }
+        history.recordMacOSInstallerRun(
+            drives: drives,
+            succeeded: succeeded,
+            errorMessage: errorMessage,
+            fullLogText: fullLogText,
+            catalogBuild: catalogBuild,
+            catalogInstallerName: catalogInstallerName,
+            startedAt: started,
+            endedAt: ended,
+            speedsByDeviceId: [:]
+        )
+    }
+
+    /// Applies Library “Repeat” for a history row (switches mode, restores ISO/installer, selects drive by name when still connected).
+    private func applyHistoryRepeat(_ entry: WriteHistoryEntry) async {
+        await diskManager.refresh()
+        switch entry.resolvedKind {
+        case .macOSInstaller:
+            appModeStorageRaw = AppMode.macos.rawValue
+            macOSModel.sourceKind = .installer
+            await macOSModel.refreshList()
+            let build = entry.macOSCatalogBuild ?? entry.buildNumber
+            if !build.isEmpty {
+                macOSModel.selectedInstaller = macOSModel.installers.first { $0.build == build }
+                    ?? macOSModel.installers.first { $0.version == (entry.installerMarketingVersion ?? "") }
+            }
+            if let d = diskManager.drives.first(where: { $0.mediaName == entry.driveMediaName }) {
+                selectedUSBDeviceIds = [d.deviceIdentifier]
+            } else {
+                selectedUSBDeviceIds = []
+            }
+        case .windowsUUP, .windowsExistingISO:
+            appModeStorageRaw = AppMode.windows.rawValue
+            if let iso = entry.isoPath, FileManager.default.fileExists(atPath: iso) {
+                useExistingISO = true
+                existingISOURL = URL(fileURLWithPath: iso)
+            } else {
+                useExistingISO = false
+                if !entry.buildUuid.isEmpty {
+                    downloadModel.selectedBuildUUID = entry.buildUuid
+                }
+                downloadModel.selectedLanguageCode = entry.language
+                downloadModel.selectedEditionToken = entry.editionToken
+                await downloadModel.loadDetailsAndEditionsForSelection()
+            }
+            if let d = diskManager.drives.first(where: { $0.mediaName == entry.driveMediaName }) {
+                selectedUSBDeviceIds = [d.deviceIdentifier]
+            } else {
+                selectedUSBDeviceIds = []
+            }
+        }
     }
 
     /// Best-effort lookup: scans UUP cache folders for an ISO whose parent folder matches the build UUID.
@@ -1061,6 +1562,7 @@ struct HomeView: View {
         let drives = resolvedSelectedDrives
         guard let installer = macOSModel.selectedInstaller else { return }
         let types = Array(macOSModel.installerOutputTypes)
+        let started = Date()
         await macOSE2E.runInstallerToUSB(
             buildOrNameSearch: installer.build,
             outputTypes: types,
@@ -1070,9 +1572,60 @@ struct HomeView: View {
             usbWriter: macOSUSBWriter,
             catalog: macOSModel.selectedCatalog,
             includeBetas: macOSModel.includeBetas,
-            forceOverwrite: true,
+            // `mist --force` nukes/re-fetches even when the installer is already cached. Default
+            // to `false` so repeat runs can skip redundant multi-gigabyte downloads.
+            forceOverwrite: false,
             logSink: { _ in }
         )
+        recordMacOSHistoryIfNeeded(
+            started: started,
+            catalogBuild: installer.build,
+            catalogInstallerName: installer.name,
+            drives: drives
+        )
+    }
+
+    /// Displays the friendly localized error message after a Windows write
+    /// pipeline failure, with quick access to the full log. Without this view
+    /// the user only sees the empty form again after the pipeline ends.
+    private func windowsFailedSection(message: String) -> some View {
+        MistSectionCard(title: String(localized: "Something went wrong"), systemImage: "exclamationmark.triangle.fill") {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(message)
+                    .font(WistFont.body(12))
+                    .foregroundStyle(.primary)
+                    .textSelection(.enabled)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                HStack(spacing: 10) {
+                    Button {
+                        isPresentingFailureLog = true
+                    } label: {
+                        Label(String(localized: "View log"), systemImage: "doc.text")
+                    }
+                    .buttonStyle(.bordered)
+
+                    Button {
+                        copyFailureLogToPasteboard()
+                    } label: {
+                        Label(String(localized: "Copy error"), systemImage: "doc.on.doc")
+                    }
+                    .buttonStyle(.bordered)
+
+                    Spacer()
+
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.22)) {
+                            e2e.reset()
+                        }
+                    } label: {
+                        Label(String(localized: "Dismiss"), systemImage: "xmark.circle")
+                    }
+                    .buttonStyle(.bordered)
+                }
+            }
+        }
     }
 
     private func macosFailedSection(message: String) -> some View {
@@ -1091,6 +1644,24 @@ struct HomeView: View {
                         Label(String(localized: "View log"), systemImage: "doc.text")
                     }
                     .buttonStyle(.bordered)
+
+                    if message.localizedCaseInsensitiveContains("Full Disk Access") ||
+                        message.localizedCaseInsensitiveContains("Permission denied") ||
+                        message.localizedCaseInsensitiveContains("EPERM") {
+                        Button {
+                            PrivilegedHelperClient.openFullDiskAccessPrivacySettings()
+                        } label: {
+                            Label(String(localized: "Open Full Disk Access"), systemImage: "hand.raised.fill")
+                        }
+                        .buttonStyle(.bordered)
+
+                        Button {
+                            PrivilegedHelperClient.revealInstalledHelperInFinder()
+                        } label: {
+                            Label(String(localized: "Reveal installed helper"), systemImage: "magnifyingglass")
+                        }
+                        .buttonStyle(.bordered)
+                    }
 
                     Button {
                         withAnimation(.easeInOut(duration: 0.22)) {
@@ -1131,10 +1702,69 @@ struct HomeView: View {
     }
 
     private var macosDoneSection: some View {
-        MistSectionCard(title: String(localized: "Done"), systemImage: "checkmark.seal.fill") {
-            Text(macOSE2E.statusLine.isEmpty ? String(localized: "Your macOS USB is ready.") : macOSE2E.statusLine)
-                .font(WistFont.body(12))
-                .foregroundStyle(.secondary)
+        let style = FluffyUSBIconStyle.resolve(rawValue: usbIconStyleRaw)
+        return VStack(spacing: 0) {
+            VStack(spacing: 18) {
+                ZStack {
+                    FluffyCircularProgress(value: doneRingProgress, lineWidth: 14)
+                        .frame(width: 168, height: 168)
+                    Image(style.assetName)
+                        .resizable()
+                        .interpolation(.high)
+                        .scaledToFit()
+                        .frame(width: 132, height: 132)
+                        .shadow(color: Color.black.opacity(0.28), radius: 14, y: 6)
+                }
+                Text(String(localized: "DONE"))
+                    .font(WistFont.displayRounded(36))
+                    .tracking(0.6)
+                Text(macOSE2E.statusLine.isEmpty ? String(localized: "Your macOS USB is ready.") : macOSE2E.statusLine)
+                    .font(WistFont.body(13))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 520)
+
+                Button {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        macOSE2E.reset()
+                        macOSUSBWriter.clearLog()
+                        doneRingProgress = 0
+                    }
+                } label: {
+                    Label(String(localized: "Home"), systemImage: "house.fill")
+                        .font(WistFont.headlineRounded(14))
+                }
+                .buttonStyle(WistCTAGradientButtonStyle(isEnabled: true))
+                .frame(maxWidth: 220)
+            }
+            .padding(.vertical, 34)
+            .padding(.horizontal, 24)
+            .frame(maxWidth: .infinity)
+            .background {
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                FluffyColor.purpleGlow.opacity(0.20),
+                                FluffyColor.elevated.opacity(0.65),
+                                FluffyColor.surface.opacity(0.85),
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 22, style: .continuous)
+                            .strokeBorder(Color.white.opacity(0.10), lineWidth: 1)
+                    )
+                    .shadow(color: FluffyColor.purpleGlow.opacity(0.35), radius: 24, y: 10)
+            }
+        }
+        .onAppear {
+            doneRingProgress = 0
+            withAnimation(.easeInOut(duration: 0.7)) {
+                doneRingProgress = 1
+            }
         }
     }
 }
@@ -1295,9 +1925,16 @@ struct FluffyDriveRow: View {
     let drive: RemovableDriveInfo
     let isSelected: Bool
     let sizeText: String
+    var isKnownSlow: Bool = false
+    /// Optional "smart suggestion" line for previously-seen drives, e.g.
+    /// "Usually ~6–8 MB/s · about 12–16 min". Caller composes the string so
+    /// this row stays presentation-only.
+    var speedHintText: String? = nil
+    var onISODropped: ((URL) -> Void)? = nil
     let onTap: () -> Void
 
     @State private var isHovered = false
+    @State private var isDropTargeted = false
     @AppStorage(FluffyUSBIconStyle.appStorageKey) private var iconStyleRaw: String = FluffyUSBIconStyle.defaultStyle.rawValue
 
     private var iconStyle: FluffyUSBIconStyle {
@@ -1322,7 +1959,7 @@ struct FluffyDriveRow: View {
                             .font(WistFont.headline(13))
                             .foregroundStyle(.primary)
                             .lineLimit(1)
-                        if drive.wistSidecarMeta != nil {
+                        if drive.hasFluffySidecar {
                             Text(String(localized: "Fluffy"))
                                 .font(WistFont.caption(9))
                                 .fontWeight(.semibold)
@@ -1336,12 +1973,39 @@ struct FluffyDriveRow: View {
                                 )
                                 .foregroundStyle(Color.white.opacity(0.95))
                         }
+                        if isKnownSlow {
+                            Label(String(localized: "Slow"), systemImage: "tortoise.fill")
+                                .labelStyle(.titleAndIcon)
+                                .font(WistFont.caption(9))
+                                .fontWeight(.semibold)
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 2)
+                                .background(
+                                    Capsule().fill(FluffyColor.orange.opacity(0.28))
+                                )
+                                .overlay(
+                                    Capsule().strokeBorder(FluffyColor.orange.opacity(0.55), lineWidth: 0.5)
+                                )
+                                .foregroundStyle(Color.white.opacity(0.95))
+                                .help(String(localized: "Last write to this drive was below 8 MB/s. Expect a long split."))
+                        }
                     }
                     Text("/dev/\(drive.deviceIdentifier)")
                         .font(WistFont.caption(10).monospacedDigit())
                         .foregroundStyle(.secondary)
                     if let meta = drive.wistSidecarMeta {
                         Text("\(meta.buildNumber) · \(meta.language) · \(meta.arch) · \(meta.editionToken)")
+                            .font(WistFont.caption(10))
+                            .foregroundStyle(.tertiary)
+                            .lineLimit(1)
+                    } else if let mac = drive.fluffyMacOSSidecarMeta {
+                        Text(mac.summarySubtitle)
+                            .font(WistFont.caption(10))
+                            .foregroundStyle(.tertiary)
+                            .lineLimit(2)
+                    }
+                    if let speedHintText, !speedHintText.isEmpty {
+                        Label(speedHintText, systemImage: "speedometer")
                             .font(WistFont.caption(10))
                             .foregroundStyle(.tertiary)
                             .lineLimit(1)
@@ -1378,8 +2042,30 @@ struct FluffyDriveRow: View {
         }
         .buttonStyle(.plain)
         .onHover { isHovered = $0 }
+        .overlay {
+            if isDropTargeted {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(FluffyColor.purpleGlow.opacity(0.95), lineWidth: 2.4)
+                    .shadow(color: FluffyColor.purpleGlow.opacity(0.6), radius: 14)
+                    .allowsHitTesting(false)
+            }
+        }
+        .onDrop(of: [.fileURL], isTargeted: $isDropTargeted) { providers in
+            handleDrop(providers: providers)
+        }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+
+    private func handleDrop(providers: [NSItemProvider]) -> Bool {
+        guard let onISODropped else { return false }
+        for provider in providers {
+            _ = provider.loadObject(ofClass: URL.self) { url, _ in
+                guard let url, url.pathExtension.lowercased() == "iso" else { return }
+                Task { @MainActor in onISODropped(url) }
+            }
+        }
+        return true
     }
 
     private var selectionIndicator: some View {

@@ -12,6 +12,10 @@ import SwiftUI
 struct SettingsView: View {
     @ObservedObject var upgradeDetector: WistUSBUpgradeDetector
 
+    @StateObject private var permissionsService = PermissionsService()
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var showPermissionsDetails = false
+
     @AppStorage("wist.appLanguage") private var appLanguageRaw: String = WistAppLanguage.system.rawValue
     @AppStorage("fluffy.maxConcurrentWrites") private var maxConcurrentWrites: Int = 3
     @AppStorage("fluffy.expertMode") private var expertModeEnabled: Bool = false
@@ -19,9 +23,15 @@ struct SettingsView: View {
     @AppStorage("fluffy.upgradeCheckEnabled") private var upgradeCheckEnabled: Bool = true
     @AppStorage(FluffyUSBIconStyle.appStorageKey) private var usbIconStyleRaw: String = FluffyUSBIconStyle.defaultStyle.rawValue
     @AppStorage("fluffy.applyVolumeIconsToFluffyDrives") private var applyVolumeIconsToFluffyDrives: Bool = true
+    @AppStorage(WistPreferences.Keys.preferredISOFolder) private var preferredISOFolderPath: String = ""
+    @AppStorage(WistPreferences.Keys.autoEjectAfterWrite) private var autoEjectAfterWrite: Bool = true
+    @AppStorage(WistPreferences.Keys.notifyOnComplete) private var notifyOnComplete: Bool = true
+    @AppStorage(WistPreferences.Keys.productionLineMode) private var productionLineMode: Bool = false
 
     @State private var cacheSize: Int64 = 0
     @State private var showingClearCacheConfirm = false
+    @State private var manualFinderDrives: [RemovableDriveInfo] = []
+    @State private var manualFinderDeviceId: String = ""
 
     private static let byteFormatter: ByteCountFormatter = {
         let f = ByteCountFormatter()
@@ -48,7 +58,10 @@ struct SettingsView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: WistTheme.gutter) {
                         appearanceCard
+                        privacyPermissionsCard
                         languageCard
+                        writeBehaviourCard
+                        isoFolderCard
                         concurrencyCard
                         upgradeCard
                         expertModeCard
@@ -59,6 +72,17 @@ struct SettingsView: View {
             }
         }
         .task { refreshCacheSize() }
+        .task {
+            await permissionsService.refresh()
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                Task { await permissionsService.refresh() }
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            Task { await permissionsService.refresh() }
+        }
         .alert(String(localized: "Clear cache?"), isPresented: $showingClearCacheConfirm) {
             Button(String(localized: "Cancel"), role: .cancel) {}
             Button(String(localized: "Delete"), role: .destructive) { clearCache() }
@@ -74,7 +98,7 @@ struct SettingsView: View {
                     .font(WistFont.caption(11))
                     .foregroundStyle(.secondary)
 
-                Toggle(String(localized: "Also set this icon in Finder for Fluffy drives"), isOn: $applyVolumeIconsToFluffyDrives)
+                Toggle(String(localized: "Also set this icon in Finder for drives written by Fluffy (Windows or macOS)"), isOn: $applyVolumeIconsToFluffyDrives)
                     .font(WistFont.body(12))
 
                 let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 4)
@@ -103,33 +127,108 @@ struct SettingsView: View {
                         Label(String(localized: "Reset icons"), systemImage: "arrow.uturn.backward")
                     }
                 }
+
+                Divider().opacity(0.35)
+
+                Text(String(localized: "Apply the selected artwork to any mounted USB volume (Finder only). Does not require Fluffy metadata on the drive."))
+                    .font(WistFont.caption(11))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                HStack(spacing: 10) {
+                    Picker(String(localized: "Volume"), selection: $manualFinderDeviceId) {
+                        Text(String(localized: "Choose a drive…")).tag("")
+                        ForEach(manualFinderDrives.filter { $0.mountPoint != nil }) { d in
+                            Text("\(d.mediaName) — \(d.deviceIdentifier)").tag(d.deviceIdentifier)
+                        }
+                    }
+                    .frame(minWidth: 220, maxWidth: 360, alignment: .leading)
+                    .labelsHidden()
+
+                    Button {
+                        Task { await refreshManualFinderDrives(selectFirstIfNeeded: false) }
+                    } label: {
+                        Label(String(localized: "Refresh list"), systemImage: "arrow.clockwise")
+                    }
+                }
+
+                HStack(spacing: 10) {
+                    Button {
+                        Task { await applyManualFinderIconToSelection() }
+                    } label: {
+                        Label(String(localized: "Apply icon to selected volume"), systemImage: "paintbrush.pointed.fill")
+                    }
+                    .disabled(manualFinderDeviceId.isEmpty)
+
+                    Button(role: .destructive) {
+                        Task { await clearManualFinderIconForSelection() }
+                    } label: {
+                        Label(String(localized: "Reset icon on selected volume"), systemImage: "arrow.uturn.backward")
+                    }
+                    .disabled(manualFinderDeviceId.isEmpty)
+                }
             }
+        }
+        .task {
+            await refreshManualFinderDrives(selectFirstIfNeeded: true)
         }
     }
 
     @MainActor
     private func applyFinderIconsToConnectedFluffyDrives() async {
-        let style = FluffyUSBIconStyle.resolve(rawValue: usbIconStyleRaw)
-        // Best-effort: apply to currently mounted Fluffy drives only.
-        let dm = DiskManager()
-        await dm.refresh()
-        for d in dm.drives where d.wistSidecarMeta != nil {
-            guard let mount = d.mountPoint else { continue }
-            // Per-drive override wins.
-            let overrideRaw = FluffyDriveIconOverrides.overrideStyleRawValue(for: d.deviceIdentifier)
-            let resolved = FluffyUSBIconStyle.resolve(rawValue: overrideRaw ?? style.rawValue)
-            try? FluffyVolumeIconManager.setVolumeIcon(style: resolved, mountPoint: mount)
-        }
+        await FluffyFinderIconAutomation.applyToConnectedFluffyDrivesIfSettingEnabled()
     }
 
     @MainActor
     private func clearFinderIconsFromConnectedFluffyDrives() async {
         let dm = DiskManager()
         await dm.refresh()
-        for d in dm.drives where d.wistSidecarMeta != nil {
+        for d in dm.drives where d.hasFluffySidecar {
             guard let mount = d.mountPoint else { continue }
             try? FluffyVolumeIconManager.clearVolumeIcon(mountPoint: mount)
         }
+    }
+
+    @MainActor
+    private func refreshManualFinderDrives(selectFirstIfNeeded: Bool) async {
+        let dm = DiskManager()
+        await dm.refresh()
+        manualFinderDrives = dm.drives
+        let mounted = dm.drives.filter { $0.mountPoint != nil }.map(\.deviceIdentifier)
+        if manualFinderDeviceId.isEmpty || !mounted.contains(manualFinderDeviceId) {
+            if selectFirstIfNeeded {
+                manualFinderDeviceId = dm.drives.first(where: { $0.mountPoint != nil })?.deviceIdentifier ?? ""
+            } else if !mounted.contains(manualFinderDeviceId) {
+                manualFinderDeviceId = ""
+            }
+        }
+    }
+
+    @MainActor
+    private func applyManualFinderIconToSelection() async {
+        guard !manualFinderDeviceId.isEmpty else { return }
+        let dm = DiskManager()
+        await dm.refresh()
+        manualFinderDrives = dm.drives
+        guard let d = dm.drives.first(where: { $0.deviceIdentifier == manualFinderDeviceId }),
+              let mount = d.mountPoint
+        else { return }
+        let style = FluffyUSBIconStyle.resolve(rawValue: usbIconStyleRaw)
+        FluffyDriveIconOverrides.setOverride(deviceIdentifier: d.deviceIdentifier, styleRawValue: style.rawValue)
+        try? FluffyVolumeIconManager.setVolumeIcon(style: style, mountPoint: mount)
+    }
+
+    @MainActor
+    private func clearManualFinderIconForSelection() async {
+        guard !manualFinderDeviceId.isEmpty else { return }
+        let dm = DiskManager()
+        await dm.refresh()
+        manualFinderDrives = dm.drives
+        guard let d = dm.drives.first(where: { $0.deviceIdentifier == manualFinderDeviceId }),
+              let mount = d.mountPoint
+        else { return }
+        FluffyDriveIconOverrides.clearOverride(deviceIdentifier: d.deviceIdentifier)
+        try? FluffyVolumeIconManager.clearVolumeIcon(mountPoint: mount)
     }
 
     private var languageCard: some View {
@@ -146,6 +245,94 @@ struct SettingsView: View {
                 Text(String(localized: "Only English is available for now."))
                     .font(WistFont.caption(11))
                     .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private var isoFolderCard: some View {
+        MistSectionCard(title: String(localized: "ISO browse folder"), systemImage: "folder.badge.gearshape") {
+            VStack(alignment: .leading, spacing: 10) {
+                Text(String(localized: "When you tap “Choose ISO…” we open this folder by default. Leave empty to use the app cache."))
+                    .font(WistFont.caption(11))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(displayedISOFolderPath)
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundStyle(.secondary)
+                    .textSelection(.enabled)
+                    .lineLimit(2)
+                    .truncationMode(.middle)
+
+                HStack(spacing: 10) {
+                    Button {
+                        presentISOFolderPicker()
+                    } label: {
+                        Label(String(localized: "Choose…"), systemImage: "folder")
+                    }
+                    Button {
+                        let url = preferredISOFolderPath.isEmpty
+                            ? WistCache.uupRootDirectory
+                            : URL(fileURLWithPath: preferredISOFolderPath, isDirectory: true)
+                        NSWorkspace.shared.activateFileViewerSelecting([url])
+                    } label: {
+                        Label(String(localized: "Reveal"), systemImage: "arrow.up.right.square")
+                    }
+                    Button(role: .destructive) {
+                        preferredISOFolderPath = ""
+                    } label: {
+                        Label(String(localized: "Reset"), systemImage: "arrow.uturn.backward")
+                    }
+                    .disabled(preferredISOFolderPath.isEmpty)
+                }
+            }
+        }
+    }
+
+    private var displayedISOFolderPath: String {
+        if preferredISOFolderPath.isEmpty {
+            return String(format: String(localized: "Default: %@"), WistCache.uupRootDirectory.path)
+        }
+        return preferredISOFolderPath
+    }
+
+    private func presentISOFolderPicker() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.allowsMultipleSelection = false
+        panel.directoryURL = WistPreferences.isoPickerStartingDirectory()
+        panel.prompt = String(localized: "Use this folder")
+        panel.title = String(localized: "Choose default ISO folder")
+        if panel.runModal() == .OK, let url = panel.url {
+            preferredISOFolderPath = url.path
+        }
+    }
+
+    private var writeBehaviourCard: some View {
+        MistSectionCard(title: String(localized: "Write behaviour"), systemImage: "externaldrive.badge.checkmark") {
+            VStack(alignment: .leading, spacing: 10) {
+                Toggle(String(localized: "Auto-eject after a successful write"), isOn: $autoEjectAfterWrite)
+                Text(String(localized: "When off, the drive is unmounted but stays connected so you can drop extra files on it."))
+                    .font(WistFont.caption(11))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Divider().opacity(0.3)
+
+                Toggle(String(localized: "Notify when a write finishes"), isOn: $notifyOnComplete)
+                Text(String(localized: "Posts a system notification and updates the Dock badge while writes are running."))
+                    .font(WistFont.caption(11))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Divider().opacity(0.3)
+
+                Toggle(String(localized: "Production Line mode"), isOn: $productionLineMode)
+                Text(String(localized: "Auto-flash a freshly inserted blank USB drive using the last successful settings."))
+                    .font(WistFont.caption(11))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
     }
@@ -172,7 +359,7 @@ struct SettingsView: View {
     private var upgradeCard: some View {
         MistSectionCard(title: String(localized: "Upgrade detection"), systemImage: "arrow.up.circle") {
             VStack(alignment: .leading, spacing: 10) {
-                Toggle(String(localized: "Check UUPDump for newer builds"), isOn: $upgradeCheckEnabled)
+                Toggle(String(localized: "Check for newer builds (Windows via UUP; macOS via Mist catalog)"), isOn: $upgradeCheckEnabled)
                     .onChange(of: upgradeCheckEnabled) {
                         upgradeDetector.isNetworkProbingEnabled = upgradeCheckEnabled
                     }
@@ -200,6 +387,95 @@ struct SettingsView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+        }
+    }
+
+    private var privacyPermissionsCard: some View {
+        MistSectionCard(title: String(localized: "Privacy & permissions"), systemImage: "hand.raised.fill") {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(String(localized: "Fluffy Flash needs a few macOS permissions for USB workflows, icons, and notifications."))
+                    .font(WistFont.caption(11))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(String(localized: "Privileged helper: tap Install — macOS will ask for your password once (Apple does not allow silent install). Other items open the right Settings pane."))
+                    .font(WistFont.caption(10))
+                    .foregroundStyle(.tertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                ForEach(PermissionItem.allCases) { item in
+                    settingsPermissionRow(item: item)
+                }
+
+                if let helperErr = permissionsService.lastPrivilegedHelperInstallError {
+                    Text(helperErr)
+                        .font(WistFont.caption(10))
+                        .foregroundStyle(.red)
+                        .textSelection(.enabled)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                HStack(spacing: 10) {
+                    Button {
+                        Task { await permissionsService.refresh() }
+                    } label: {
+                        Label(String(localized: "Re-check all"), systemImage: "arrow.clockwise")
+                    }
+                    Spacer()
+                }
+
+                DisclosureGroup(isExpanded: $showPermissionsDetails) {
+                    MacOSPermissionsChecklistView()
+                        .padding(.top, 8)
+                } label: {
+                    Text(String(localized: "Show details"))
+                        .font(WistFont.caption(11).weight(.medium))
+                }
+                .tint(.secondary)
+            }
+        }
+    }
+
+    private func settingsPermissionRow(item: PermissionItem) -> some View {
+        let st = permissionsService.statuses[item] ?? .unknown
+        return HStack(alignment: .center, spacing: 10) {
+            Image(systemName: settingsStatusIcon(st))
+                .foregroundStyle(settingsStatusColor(st))
+                .frame(width: 22, alignment: .center)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.title)
+                    .font(WistFont.headline(12))
+                Text(item.detail)
+                    .font(WistFont.caption(10))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 8)
+            Button {
+                Task { await permissionsService.grantFlow(for: item) }
+            } label: {
+                Text(item == .privilegedHelper ? String(localized: "Install helper…") : String(localized: "Open"))
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+        }
+        .padding(.vertical, 4)
+    }
+
+    private func settingsStatusIcon(_ st: PermissionStatus) -> String {
+        switch st {
+        case .granted: return "checkmark.circle.fill"
+        case .denied: return "exclamationmark.triangle.fill"
+        case .notDetermined: return "questionmark.circle.fill"
+        case .unknown: return "ellipsis.circle.fill"
+        }
+    }
+
+    private func settingsStatusColor(_ st: PermissionStatus) -> Color {
+        switch st {
+        case .granted: return .green
+        case .denied: return .orange
+        case .notDetermined: return .secondary
+        case .unknown: return .secondary
         }
     }
 

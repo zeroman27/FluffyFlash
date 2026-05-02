@@ -4,13 +4,35 @@
 <dict>
 	<key>SMPrivilegedExecutables</key>
 	<dict>
-		<key>com.wist.Wist.PrivilegedHelper</key>
-		<string>identifier "com.wist.Wist.PrivilegedHelper" and anchor apple generic and certificate leaf[subject.OU] = "ZSNU9GWW94"</string>
+		<key>com.fluffyflash.FluffyFlash.PrivilegedHelper</key>
+		<string>identifier "com.fluffyflash.FluffyFlash.PrivilegedHelper" and anchor apple generic and certificate leaf[subject.OU] = "UGVM5Y6DU8"</string>
 	</dict>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Disk Image</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.iso-image</string>
+				<string>com.apple.disk-image-iso</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>Fluffy Flash needs access to USB drives to read installer metadata and apply Finder icons.</string>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>Fluffy Flash may save built ISOs to your Desktop when you choose that location.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>Fluffy Flash may save built ISOs to your Downloads folder when you choose that location.</string>
 </dict>
 </plist>

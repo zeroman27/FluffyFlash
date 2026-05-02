@@ -7,10 +7,19 @@
 
 import Foundation
 
+/// One record per `.swm` chunk produced by `wimlib-imagex split`.
+/// Lets us re-verify the drive later (USB Doctor) without re-reading source ISO.
+struct SplitChunkInfo: Codable, Equatable, Hashable, Sendable {
+    let fileName: String
+    let sizeBytes: UInt64
+    /// Lower-case hex SHA-256.
+    let sha256: String
+}
+
 /// Written to `FluffyFlash.meta.json` at the root of the `WINSETUP` volume before eject.
 struct WistUSBMetadata: Codable, Equatable, Hashable, Sendable {
     static let fileName = "FluffyFlash.meta.json"
-    static let currentSchema = 1
+    static let currentSchema = 2
 
     var schemaVersion: Int
     /// UUP build uuid (or synthetic id for ISO-only path).
@@ -25,6 +34,10 @@ struct WistUSBMetadata: Codable, Equatable, Hashable, Sendable {
     var sourceIsoPath: String?
     /// ISO8601
     var writtenAt: String
+    /// SHA-256 of the source ISO (lower-case hex). Optional so old metadata still decodes.
+    var sourceIsoSHA256: String?
+    /// Per-chunk metadata for `install.swmN`. Optional so old metadata still decodes.
+    var splitChunks: [SplitChunkInfo]?
 
     init(
         buildUuid: String,
@@ -34,7 +47,9 @@ struct WistUSBMetadata: Codable, Equatable, Hashable, Sendable {
         editionToken: String,
         buildTitle: String? = nil,
         sourceIsoPath: String? = nil,
-        writtenAt: Date = Date()
+        writtenAt: Date = Date(),
+        sourceIsoSHA256: String? = nil,
+        splitChunks: [SplitChunkInfo]? = nil
     ) {
         self.schemaVersion = Self.currentSchema
         self.buildUuid = buildUuid
@@ -47,6 +62,8 @@ struct WistUSBMetadata: Codable, Equatable, Hashable, Sendable {
         let f = ISO8601DateFormatter()
         f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         self.writtenAt = f.string(from: writtenAt)
+        self.sourceIsoSHA256 = sourceIsoSHA256
+        self.splitChunks = splitChunks
     }
 
     func write(to volumeRoot: URL) throws {

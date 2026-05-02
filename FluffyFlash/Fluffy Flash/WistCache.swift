@@ -53,6 +53,15 @@ enum WistCache: Sendable {
         return out
     }
 
+    /// `true` when the folder already contains at least one `.iso` (build finished; show ISO on ISOs tab only).
+    static func folderContainsBuiltISO(at folderURL: URL) -> Bool {
+        let fm = FileManager.default
+        guard let children = try? fm.contentsOfDirectory(at: folderURL, includingPropertiesForKeys: nil) else {
+            return false
+        }
+        return children.contains { $0.pathExtension.lowercased() == "iso" }
+    }
+
     private static func directorySize(_ url: URL) throws -> Int64 {
         let fm = FileManager.default
         guard let enumerator = fm.enumerator(at: url, includingPropertiesForKeys: [.fileSizeKey], options: [.skipsHiddenFiles]) else {

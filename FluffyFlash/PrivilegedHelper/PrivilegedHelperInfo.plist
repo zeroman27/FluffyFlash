@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleIdentifier</key>
-	<string>com.wist.Wist.PrivilegedHelper</string>
+	<string>com.fluffyflash.FluffyFlash.PrivilegedHelper</string>
 	<key>CFBundleName</key>
 	<string>PrivilegedHelper</string>
 	<key>CFBundlePackageType</key>
@@ -14,7 +14,7 @@
 	<string>1</string>
 	<key>SMAuthorizedClients</key>
 	<array>
-		<string>identifier "com.fluffyflash.FluffyFlash" and anchor apple generic and certificate leaf[subject.OU] = "ZSNU9GWW94"</string>
+		<string>identifier "com.fluffyflash.FluffyFlash" and anchor apple generic and certificate leaf[subject.OU] = "UGVM5Y6DU8"</string>
 	</array>
 </dict>
 </plist>

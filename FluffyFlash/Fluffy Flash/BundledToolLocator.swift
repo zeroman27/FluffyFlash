@@ -84,7 +84,10 @@ enum BundledToolLocator: Sendable {
     static var hasEmbeddedUUPToolchain: Bool {
         let need = ["aria2c", "cabextract", "wimlib-imagex", "chntpw"]
         guard need.allSatisfy({ urlForBundledCLI(named: $0) != nil }) else { return false }
-        let iso = urlForBundledCLI(named: "mkisofs") != nil || urlForBundledCLI(named: "genisoimage") != nil
+        let iso =
+            urlForBundledCLI(named: "mkisofs") != nil
+            || urlForBundledCLI(named: "genisoimage") != nil
+            || urlForBundledCLI(named: "xorriso") != nil
         return iso
     }
 

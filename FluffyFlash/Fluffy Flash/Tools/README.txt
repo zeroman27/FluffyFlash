@@ -6,8 +6,10 @@ Place executables here so the app works without Homebrew:
   Tools/bin/cabextract
   Tools/bin/wimlib-imagex
   Tools/bin/chntpw
-  Tools/bin/mkisofs   (from Homebrew cdrtools; or genisoimage under the same name)
-  Tools/bin/mist      (from Homebrew mist-cli; used for macOS mode)
+  Tools/bin/xorriso       (Homebrew `xorriso`, GPL-3.0+; ISO image creation)
+  Tools/bin/genisoimage   (auto-generated wrapper: exec xorriso -as mkisofs "$@")
+  Tools/bin/mkisofs       (auto-generated wrapper: exec xorriso -as mkisofs "$@")
+  Tools/bin/mist          (from Homebrew mist-cli; used for macOS mode)
 
 From the repository root:
 

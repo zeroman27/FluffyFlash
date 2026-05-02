@@ -16,6 +16,14 @@ struct AppLaunchGateView: View {
     /// Skip splash when this process has already left the gate once, or after closing the window without quitting.
     @State private var launchFinished = AppLaunchSession.hasPassedLaunchGateThisProcess
 
+    @StateObject private var welcomePermissions = PermissionsService()
+    @AppStorage(WistPreferences.Keys.welcomeShownVersion) private var welcomeShownVersion: String = ""
+    @State private var showWelcomePermissionsSheet = false
+
+    private var appShortVersion: String {
+        (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String) ?? "0"
+    }
+
     private var videoURL: URL? {
         Bundle.main.url(forResource: "AppLaunchVideo", withExtension: "mp4", subdirectory: "Resources")
             ?? Bundle.main.url(forResource: "AppLaunchVideo", withExtension: "mp4")
@@ -25,6 +33,26 @@ struct AppLaunchGateView: View {
         Group {
             if launchFinished {
                 RootView()
+                    .sheet(isPresented: $showWelcomePermissionsSheet) {
+                        WelcomePermissionsSheet(
+                            permissions: welcomePermissions,
+                            isPresented: $showWelcomePermissionsSheet,
+                            currentAppVersion: appShortVersion
+                        )
+                    }
+                    .task(id: launchFinished) {
+                        guard launchFinished else { return }
+                        guard welcomeShownVersion != appShortVersion else { return }
+                        await welcomePermissions.refresh()
+                        let allGranted = PermissionItem.allCases.allSatisfy { item in
+                            (welcomePermissions.statuses[item] ?? .unknown) == .granted
+                        }
+                        if allGranted {
+                            welcomeShownVersion = appShortVersion
+                        } else {
+                            showWelcomePermissionsSheet = true
+                        }
+                    }
             } else if accessibilityReduceMotion || videoURL == nil {
                 Color.black
                     .ignoresSafeArea()

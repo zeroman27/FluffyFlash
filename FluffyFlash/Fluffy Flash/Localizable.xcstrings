@@ -1,12 +1,12 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "  • %@ — %.1f MiB" : {
+    "  • %@ — %@" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "  • %1$@ — %2$.1f MiB"
+            "value" : "  • %1$@ — %2$@"
           }
         }
       }
@@ -29,6 +29,9 @@
     "[3/7] Mounting ISO (read-only)…" : {
 
     },
+    "[3/7] Reusing shared ISO mount: %@" : {
+
+    },
     "[3b/7] Checking file sizes (FAT32 ≤ ~4 GiB per file)…" : {
 
     },
@@ -47,11 +50,27 @@
     "[6/7] Detaching ISO volume…" : {
 
     },
-    "[7/7] Sync and eject USB…" : {
+    "[6/7] ISO mount stays attached for the other parallel writers." : {
+
+    },
+    "[7/7] Sync and finalising USB…" : {
 
     },
     "/dev/%@" : {
 
+    },
+    "%.0f s" : {
+
+    },
+    "%@ — %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ — %2$@"
+          }
+        }
+      }
     },
     "%@ · %@" : {
       "localizations" : {
@@ -93,10 +112,36 @@
         }
       }
     },
+    "%@ just appeared. Flash it again with %@?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ just appeared. Flash it again with %2$@?"
+          }
+        }
+      }
+    },
+    "%@: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@: %2$@"
+          }
+        }
+      }
+    },
+    "%@/s" : {
+
+    },
     "%lld" : {
 
     },
     "%lld cache folders" : {
+
+    },
+    "%lld drives are ready." : {
 
     },
     "%lld entries" : {
@@ -107,6 +152,16 @@
     },
     "%lld items" : {
 
+    },
+    "%lld min %lld s" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld min %2$lld s"
+          }
+        }
+      }
     },
     "%lld of %lld" : {
       "localizations" : {
@@ -158,13 +213,29 @@
     "60 minutes" : {
 
     },
+    "about %lld min" : {
+
+    },
+    "about %lld–%lld min" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "about %1$lld–%2$lld min"
+          }
+        }
+      }
+    },
     "Adds manual Download / Build ISO / Write USB buttons and a live log to the Home screen." : {
 
     },
     "Administrator approval was canceled." : {
 
     },
-    "Administrator password required — mist downloads installers as root." : {
+    "All" : {
+
+    },
+    "All %lld chunks verified." : {
 
     },
     "All cached UUP downloads and built ISOs will be removed. This cannot be undone." : {
@@ -173,7 +244,7 @@
     "All selected drives finished." : {
 
     },
-    "Also set this icon in Finder for Fluffy drives" : {
+    "Also set this icon in Finder for drives written by Fluffy (Windows or macOS)" : {
 
     },
     "App language" : {
@@ -182,7 +253,13 @@
     "Apple Silicon" : {
       "comment" : "PrettyString"
     },
+    "Apply icon to selected volume" : {
+
+    },
     "Apply now" : {
+
+    },
+    "Apply the selected artwork to any mounted USB volume (Finder only). Does not require Fluffy metadata on the drive." : {
 
     },
     "Apply this icon in Finder" : {
@@ -194,10 +271,19 @@
     "aria2 (aria2c)" : {
 
     },
-    "Attach a USB drive previously formatted by this app to see upgrade offers." : {
+    "Attach a USB drive written by Fluffy (look for Fluffy metadata on the volume) to see it here." : {
 
     },
-    "Attach a USB drive previously written by Fluffy Flash to see automatic upgrade offers." : {
+    "Attach a USB drive written by Fluffy Flash (Windows or macOS installer) to see automatic upgrade offers." : {
+
+    },
+    "Auto-eject after a successful write" : {
+
+    },
+    "Auto-eject is off — drive stays mounted so you can drop extra files on it." : {
+
+    },
+    "Auto-flash a freshly inserted blank USB drive using the last successful settings." : {
 
     },
     "Bear" : {
@@ -239,7 +325,7 @@
     "Cache" : {
 
     },
-    "Cached UUP downloads, built ISOs, recent write history, and detected Fluffy drives." : {
+    "Cached and ready." : {
 
     },
     "Caches · history · drives" : {
@@ -254,8 +340,14 @@
     "Canceled." : {
 
     },
+    "Cancelled." : {
+
+    },
     "Cannot find data from the server response." : {
       "comment" : "UUPDumpAPI"
+    },
+    "Cannot read %@." : {
+
     },
     "Cat" : {
 
@@ -264,9 +356,6 @@
 
     },
     "CATALOG" : {
-
-    },
-    "cdrtools (mkisofs) or genisoimage" : {
 
     },
     "Change" : {
@@ -281,16 +370,19 @@
     "Channel" : {
 
     },
+    "Check for newer builds (Windows via UUP; macOS via Mist catalog)" : {
+
+    },
     "Check interval" : {
 
     },
     "Check now" : {
 
     },
-    "Check UUPDump for newer builds" : {
+    "Checking dependencies…" : {
 
     },
-    "Checking dependencies…" : {
+    "Checking installer…" : {
 
     },
     "Chest" : {
@@ -299,7 +391,13 @@
     "chntpw (Apple Silicon: brew tap minacle/chntpw && brew install minacle/chntpw/chntpw)" : {
 
     },
+    "Choose a drive…" : {
+
+    },
     "Choose a Windows build" : {
+
+    },
+    "Choose a Windows ISO" : {
 
     },
     "Choose an installer" : {
@@ -308,10 +406,16 @@
     "Choose an ISO file" : {
 
     },
+    "Choose default ISO folder" : {
+
+    },
     "Choose Finder icon…" : {
 
     },
     "Choose firmware" : {
+
+    },
+    "Choose ISO" : {
 
     },
     "Choose ISO…" : {
@@ -344,6 +448,9 @@
     "Close" : {
 
     },
+    "Compared against Apple’s standard software-update catalog (release installers). Betas are not considered." : {
+
+    },
     "Connect one or more USB drives and tap Refresh. Internal disks are hidden." : {
 
     },
@@ -362,7 +469,13 @@
     "Converting cached UUP into an ISO…" : {
 
     },
+    "Copied" : {
+
+    },
     "Copy error" : {
+
+    },
+    "Copy installed helper path" : {
 
     },
     "Copy log" : {
@@ -387,7 +500,19 @@
     "Could not determine mount point for %@" : {
 
     },
+    "Could not find a large file to read." : {
+
+    },
     "Could not launch process: %@" : {
+
+    },
+    "Could not read from drive." : {
+
+    },
+    "Could not read installer Info.plist." : {
+
+    },
+    "Could not read the installer app Info.plist." : {
 
     },
     "Could not update the Finder icon for %@." : {
@@ -434,13 +559,28 @@
     "Cyber" : {
 
     },
+    "Default: %@" : {
+
+    },
     "Delete" : {
 
     },
     "Delete cache folder" : {
 
     },
-    "Delete ISO" : {
+    "Delete folder" : {
+
+    },
+    "Delete ISO only" : {
+
+    },
+    "Delete the UUP source folder?" : {
+
+    },
+    "Delete UUP source folder" : {
+
+    },
+    "Denied or not installed" : {
 
     },
     "Detaching ISO" : {
@@ -495,6 +635,9 @@
     "Download canceled." : {
 
     },
+    "Download complete." : {
+
+    },
     "Download failed." : {
 
     },
@@ -507,13 +650,10 @@
     "Download UUP + build ISO" : {
 
     },
-    "Downloaded UUP folders will appear here." : {
+    "Downloaded UUP folders appear here until an ISO is built — then they move to the ISOs tab." : {
 
     },
     "Downloading" : {
-
-    },
-    "Downloading macOS installer…" : {
 
     },
     "Downloading the macOS installer into cache" : {
@@ -535,16 +675,41 @@
     "Downloading…" : {
 
     },
-    "Downloads" : {
-
-    },
     "Downloads and exports from the macOS mode will appear here." : {
 
     },
-    "Drives previously written by Fluffy Flash. Badges reflect the newest known stable build for each tuple (arch · language · edition)." : {
+    "Drive ejected. You can unplug it now." : {
+
+    },
+    "Drive not mounted." : {
+
+    },
+    "Drop the .iso here" : {
+
+    },
+    "Duration" : {
 
     },
     "Edition" : {
+
+    },
+    "Eject" : {
+
+    },
+    "Elapsed %02d:%02d" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Elapsed %1$02d:%2$02d"
+          }
+        }
+      }
+    },
+    "Embedded helper:" : {
+
+    },
+    "Embedded launchd plist:" : {
 
     },
     "English" : {
@@ -617,7 +782,7 @@
     "Fetching UUP files into cache" : {
 
     },
-    "Finalizing…" : {
+    "Finalizing download…" : {
 
     },
     "Firmware (IPSW)" : {
@@ -641,10 +806,43 @@
     "Fluffy Flash" : {
 
     },
+    "Fluffy Flash — done" : {
+
+    },
+    "Fluffy Flash — failed" : {
+
+    },
+    "Fluffy Flash needs a few macOS permissions for USB workflows, icons, and notifications." : {
+
+    },
+    "Fluffy splits the Windows install image (install.wim / install.esd) automatically, but this ISO has other oversized files we can’t split:" : {
+
+    },
     "Formatting and writing the selected drives" : {
 
     },
     "Fox" : {
+
+    },
+    "Full Disk Access" : {
+
+    },
+    "Grant the permissions you need now, or skip and open Settings later." : {
+
+    },
+    "Grant…" : {
+
+    },
+    "Granted" : {
+
+    },
+    "Hash mismatch on %@." : {
+
+    },
+    "Hashed %lld split chunk(s) for verification." : {
+
+    },
+    "Hashing %@…" : {
 
     },
     "hdiutil: could not parse output." : {
@@ -653,13 +851,22 @@
     "hdiutil: no mount point in plist." : {
 
     },
+    "Hide floating window" : {
+
+    },
     "Higher values flash more drives at once but can saturate USB bandwidth. 3 is a good default." : {
 
     },
     "History" : {
 
     },
+    "History filter" : {
+
+    },
     "Home" : {
+
+    },
+    "Idle" : {
 
     },
     "In progress" : {
@@ -671,7 +878,22 @@
     "Insider" : {
 
     },
+    "Install helper…" : {
+
+    },
+    "Installed" : {
+
+    },
+    "Installed helper (after SMJobBless):" : {
+
+    },
+    "Installed launchd plist:" : {
+
+    },
     "Installer" : {
+
+    },
+    "Installer and sidecar metadata match." : {
 
     },
     "Intel x64" : {
@@ -687,6 +909,9 @@
 
     },
     "Invalid UUPDump response (missing response field). Check the network and try again." : {
+
+    },
+    "ISO browse folder" : {
 
     },
     "ISO build failed." : {
@@ -713,13 +938,25 @@
     "Last check: %@" : {
 
     },
+    "Last write to this drive was below 8 MB/s. Expect a long split." : {
+
+    },
     "Latest stable: %@" : {
+
+    },
+    "less than a minute" : {
+
+    },
+    "Lets the app verify system paths and complete some diagnostics." : {
 
     },
     "Library" : {
 
     },
     "Library section" : {
+
+    },
+    "Live throughput" : {
 
     },
     "Load language and edition" : {
@@ -749,7 +986,19 @@
     "macOS artefacts" : {
 
     },
+    "macOS installer" : {
+
+    },
+    "macOS installer USB" : {
+
+    },
     "Max parallel writes: %lld" : {
+
+    },
+    "MB/s" : {
+
+    },
+    "Metadata updated." : {
 
     },
     "Metadata written: %@" : {
@@ -758,7 +1007,7 @@
     "Missing icon asset: %@" : {
 
     },
-    "Missing tools: %@. Release builds bundle them under Resources/Tools/bin. Or install manually: brew install aria2 cabextract wimlib cdrtools and chntpw (see README)." : {
+    "Missing tools: %@. Release builds bundle them under Resources/Tools/bin. Or install manually: brew install aria2 cabextract wimlib xorriso and chntpw (see README)." : {
 
     },
     "mist (mist-cli) was not found. Release builds include it under Tools/bin. Otherwise: brew install mist-cli" : {
@@ -770,16 +1019,29 @@
     "Mounting ISO" : {
 
     },
+    "Mounting volume…" : {
+
+    },
     "Network timed out. Try again later." : {
+
+    },
+    "Newer installer: %@ (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Newer installer: %1$@ (%2$@)"
+          }
+        }
+      }
+    },
+    "Newer macOS installer available" : {
 
     },
     "No build selected" : {
 
     },
     "No builds match your filters" : {
-
-    },
-    "No downloads yet" : {
 
     },
     "No drives found" : {
@@ -797,6 +1059,15 @@
     "No Fluffy drives connected" : {
 
     },
+    "No Fluffy metadata." : {
+
+    },
+    "No installer app found." : {
+
+    },
+    "No installer app with createinstallmedia on this volume." : {
+
+    },
     "No installers in this catalog yet. Try Refresh or another seed catalog." : {
 
     },
@@ -812,6 +1083,18 @@
     "No macOS artefacts yet" : {
 
     },
+    "No matches" : {
+
+    },
+    "No UUP folders in progress" : {
+
+    },
+    "No verification data, looks OK." : {
+
+    },
+    "Not determined" : {
+
+    },
     "Not enough space on the USB drive: need about %@, free %@." : {
       "localizations" : {
         "en" : {
@@ -822,11 +1105,27 @@
         }
       }
     },
+    "Not installed" : {
+
+    },
     "Nothing yet" : {
 
     },
-    "On FAT32 a single file cannot exceed ~4 GiB. The image contains files that cannot be split like install.wim:" : {
+    "Notifications" : {
 
+    },
+    "Notify when a write finishes" : {
+
+    },
+    "On USB: %@ (%@)  →  Latest: %@ (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "On USB: %1$@ (%2$@)  →  Latest: %3$@ (%4$@)"
+          }
+        }
+      }
     },
     "One or more drives failed." : {
 
@@ -834,7 +1133,19 @@
     "Only English is available for now." : {
 
     },
+    "Open" : {
+
+    },
+    "Open Full Disk Access" : {
+
+    },
+    "Open UUP folder" : {
+
+    },
     "Operation canceled." : {
+
+    },
+    "Optional alerts when a long write finishes." : {
 
     },
     "Original" : {
@@ -846,13 +1157,28 @@
     "Parallel USB writes" : {
 
     },
-    "Pick a macOS installer, choose a USB drive, download, then create bootable install media." : {
+    "Per-drive progress" : {
+
+    },
+    "Permissions check" : {
+
+    },
+    "Pick a macOS installer, choose a USB drive, download, then create bootable install media. Installer USBs written by Fluffy can show one-click upgrade offers when Apple ships a newer build." : {
 
     },
     "Pick a Windows build, choose one or more USB drives, tap Flash. Detected Fluffy Flash drives show upgrade offers automatically." : {
 
     },
     "Pick an edition" : {
+
+    },
+    "Plug in a USB you flashed with Fluffy Flash (Windows or macOS) and it will appear here." : {
+
+    },
+    "Pop out progress" : {
+
+    },
+    "Posts a system notification and updates the Dock badge while writes are running." : {
 
     },
     "Preferences" : {
@@ -862,6 +1188,21 @@
 
     },
     "Premium Orange" : {
+
+    },
+    "Preparing download…" : {
+
+    },
+    "Preparing…" : {
+
+    },
+    "Privacy & permissions" : {
+
+    },
+    "Privileged helper" : {
+
+    },
+    "Privileged helper: tap Install — macOS will ask for your password once (Apple does not allow silent install). Other items open the right Settings pane." : {
 
     },
     "Process exited with code %lld.%@" : {
@@ -875,6 +1216,9 @@
       }
     },
     "Product" : {
+
+    },
+    "Production Line mode" : {
 
     },
     "Progress" : {
@@ -892,7 +1236,28 @@
     "Radiation" : {
 
     },
+    "Re-apply Finder icon" : {
+
+    },
+    "Re-check all" : {
+
+    },
+    "Re-verify drives written by Fluffy Flash: Windows (install.swm chunk hashes) or macOS (installer + sidecar JSON). Run a quick read speed test." : {
+
+    },
+    "Re-write metadata" : {
+
+    },
+    "Read installer metadata and apply Finder icons on USB volumes." : {
+
+    },
+    "Read speed test…" : {
+
+    },
     "Ready" : {
+
+    },
+    "Ready · slow drive selected, write may take longer" : {
 
     },
     "Ready to download." : {
@@ -910,13 +1275,37 @@
     "Refresh catalog" : {
 
     },
+    "Refresh list" : {
+
+    },
     "Release Preview" : {
       "comment" : "PrettyString"
+    },
+    "Removable volumes" : {
+
+    },
+    "Repeat last write?" : {
+
+    },
+    "Repeat on Home" : {
+
+    },
+    "Repeat write" : {
+
     },
     "Requesting file list…" : {
 
     },
+    "Required to erase volumes and run privileged USB workflows." : {
+
+    },
+    "Reset" : {
+
+    },
     "Reset Finder icon" : {
+
+    },
+    "Reset icon on selected volume" : {
 
     },
     "Reset icons" : {
@@ -934,7 +1323,13 @@
     "Reveal in Finder" : {
 
     },
+    "Reveal installed helper" : {
+
+    },
     "Reveal ISO" : {
+
+    },
+    "Reveal ISO in Finder" : {
 
     },
     "Robot" : {
@@ -949,6 +1344,12 @@
     "Running createinstallmedia…" : {
 
     },
+    "Running mist as root via the privileged helper." : {
+
+    },
+    "Search build, drive, installer…" : {
+
+    },
     "Search by name, build, UUID…" : {
 
     },
@@ -959,9 +1360,6 @@
 
     },
     "Select a language." : {
-
-    },
-    "Select a Windows build (for on-drive metadata)." : {
 
     },
     "Select a Windows build." : {
@@ -988,10 +1386,25 @@
     "Settings" : {
 
     },
+    "Shared ISO mount: %@" : {
+
+    },
     "Shield" : {
 
     },
+    "Show details" : {
+
+    },
     "Show step-by-step controls on Home" : {
+
+    },
+    "Sidecar is out of date vs installer on disk — use “Re-write metadata”." : {
+
+    },
+    "Sidecar JSON missing on volume." : {
+
+    },
+    "Skip for now" : {
 
     },
     "Skipping (split later): %@" : {
@@ -1000,16 +1413,31 @@
     "Skipping: %@" : {
 
     },
+    "Slow" : {
+
+    },
     "Something went wrong" : {
 
     },
     "Source" : {
 
     },
+    "Speed test" : {
+
+    },
     "Splitting install image" : {
 
     },
     "Standard" : {
+
+    },
+    "Starting download…" : {
+
+    },
+    "Starts after the installer is downloaded." : {
+
+    },
+    "Stop" : {
 
     },
     "Successful or failed USB writes will be logged here." : {
@@ -1024,10 +1452,16 @@
     "System default" : {
 
     },
+    "t" : {
+
+    },
     "Tap Languages & editions first." : {
 
     },
     "The catalog loads in the background. Tap Choose to pick an installer." : {
+
+    },
+    "The drive will be erased and replaced using the newer installer from Apple’s catalog (stable channel)." : {
 
     },
     "The drive will be formatted and written with the newer build." : {
@@ -1051,10 +1485,22 @@
     "This drive is not mounted, so its icon cannot be changed." : {
 
     },
+    "This removes the UUP cache directory that contained the ISO. The ISO file will be deleted too." : {
+
+    },
+    "This USB is formatted as FAT32 and cannot store a single file larger than about 4 GB." : {
+
+    },
     "Tip" : {
 
     },
+    "Tip: In Full Disk Access, click “+”, then press Cmd+Shift+G and paste the installed helper path to add it quickly." : {
+
+    },
     "Total size: %@" : {
+
+    },
+    "Try another filter or search query." : {
 
     },
     "Unicorn" : {
@@ -1063,6 +1509,9 @@
     "Unknown" : {
       "comment" : "PrettyString"
     },
+    "Unknown — try Re-check in Settings" : {
+
+    },
     "Up-to-date" : {
 
     },
@@ -1070,6 +1519,9 @@
 
     },
     "Update this drive?" : {
+
+    },
+    "Update this macOS installer USB?" : {
 
     },
     "Upgrade available" : {
@@ -1081,10 +1533,16 @@
     "Upgrade detection" : {
 
     },
+    "USB Doctor" : {
+
+    },
     "USB drive icon" : {
 
     },
     "USB drives" : {
+
+    },
+    "USB drives that contain Fluffy metadata (Windows installer or macOS installer). Upgrade badges apply to Windows tuples (arch · language · edition)." : {
 
     },
     "USB volume not found after formatting:" : {
@@ -1099,7 +1557,29 @@
     "Use this build" : {
 
     },
+    "Use this folder" : {
+
+    },
+    "Using cached installer from disk." : {
+
+    },
+    "Usually %.0f–%.0f MB/s" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Usually %1$.0f–%2$.0f MB/s"
+          }
+        }
+      }
+    },
+    "UUP" : {
+
+    },
     "UUP cache" : {
+
+    },
+    "UUP caches (in progress), built ISOs, recent write history, and detected Fluffy drives." : {
 
     },
     "UUP download" : {
@@ -1111,7 +1591,16 @@
     "UUP folder missing after download: %@" : {
 
     },
+    "Verify" : {
+
+    },
+    "Verifying chunks…" : {
+
+    },
     "View log" : {
+
+    },
+    "Volume" : {
 
     },
     "Waiting for download output…" : {
@@ -1129,7 +1618,32 @@
     "Waiting for mount…" : {
 
     },
+    "Waiting…" : {
+
+    },
+    "Warning: could not locate mounted installer volume to write metadata." : {
+
+    },
+    "Warning: could not write %@ — %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Warning: could not write %1$@ — %2$@"
+          }
+        }
+      }
+    },
     "Warning: install.wim/esd size unknown — free space check skipped." : {
+
+    },
+    "Welcome to Fluffy Flash" : {
+
+    },
+    "When off, the drive is unmounted but stays connected so you can drop extra files on it." : {
+
+    },
+    "When you tap “Choose ISO…” we open this folder by default. Leave empty to use the app cache." : {
 
     },
     "White" : {
@@ -1144,7 +1658,19 @@
     "wimlib-imagex: %@" : {
 
     },
+    "Windows" : {
+
+    },
+    "Windows · ISO" : {
+
+    },
+    "Windows · UUP" : {
+
+    },
     "Windows build" : {
+
+    },
+    "Windows installer USB" : {
 
     },
     "Working…" : {
@@ -1162,6 +1688,9 @@
           }
         }
       }
+    },
+    "Write behaviour" : {
+
     },
     "Write log" : {
 
@@ -1182,13 +1711,19 @@
     "Writing installer to USB…" : {
 
     },
+    "Writing installer…" : {
+
+    },
+    "Writing metadata…" : {
+
+    },
     "Writing to USB" : {
 
     },
     "Writing to USB…" : {
 
     },
-    "Writing…" : {
+    "xorriso (or compatible mkisofs/genisoimage)" : {
 
     },
     "Your artefacts" : {

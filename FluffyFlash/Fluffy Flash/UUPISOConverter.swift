@@ -19,7 +19,7 @@ enum UUPISOConverterError: LocalizedError {
             return String(localized: "convert.sh was not found in the app bundle.")
         case .missingDependencies(let names):
             return String(
-                format: String(localized: "Missing tools: %@. Release builds bundle them under Resources/Tools/bin. Or install manually: brew install aria2 cabextract wimlib cdrtools and chntpw (see README)."),
+                format: String(localized: "Missing tools: %@. Release builds bundle them under Resources/Tools/bin. Or install manually: brew install aria2 cabextract wimlib xorriso and chntpw (see README)."),
                 names.joined(separator: ", ")
             )
         case .isoNotFoundAfterConversion:
@@ -37,7 +37,7 @@ enum UUPISOConverter: Sendable {
         if !HostToolPaths.hasExecutable(named: "cabextract") { out.append(String(localized: "cabextract")) }
         if !HostToolPaths.hasExecutable(named: "wimlib-imagex") { out.append(String(localized: "wimlib (wimlib-imagex)")) }
         if !HostToolPaths.hasExecutable(named: "chntpw") { out.append(String(localized: "chntpw (Apple Silicon: brew tap minacle/chntpw && brew install minacle/chntpw/chntpw)")) }
-        if !HostToolPaths.hasMkIsoTool() { out.append(String(localized: "cdrtools (mkisofs) or genisoimage")) }
+        if !HostToolPaths.hasMkIsoTool() { out.append(String(localized: "xorriso (or compatible mkisofs/genisoimage)")) }
         return out
     }
 

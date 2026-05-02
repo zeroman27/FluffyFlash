@@ -19,6 +19,13 @@ struct RemovableDriveInfo: Identifiable, Hashable {
     let totalSizeBytes: Int64
     /// Parsed from `FluffyFlash.meta.json` (or legacy `Wist.meta.json`) on a mounted volume belonging to this whole disk, if present.
     var wistSidecarMeta: WistUSBMetadata?
+    /// Parsed from `FluffyFlash.macos.meta.json` on a mounted volume belonging to this whole disk, if present.
+    var fluffyMacOSSidecarMeta: FluffyMacOSUSBMetadata?
+
+    /// Either Windows installer sidecar or macOS installer sidecar from Fluffy.
+    var hasFluffySidecar: Bool {
+        wistSidecarMeta != nil || fluffyMacOSSidecarMeta != nil
+    }
     /// A mounted volume path belonging to this whole disk (best-effort). Needed
     /// for Finder-level customization like setting a custom volume icon.
     var mountPoint: URL?
@@ -186,7 +193,9 @@ final class DiskManager: ObservableObject {
             deviceIdentifier: deviceIdentifier,
             mediaName: title,
             totalSizeBytes: totalSize,
-            wistSidecarMeta: nil
+            wistSidecarMeta: nil,
+            fluffyMacOSSidecarMeta: nil,
+            mountPoint: nil
         )
     }
 
@@ -197,7 +206,13 @@ final class DiskManager: ObservableObject {
             return drives
         }
         var metaByWholeDisk: [String: WistUSBMetadata] = [:]
+        var macMetaByWholeDisk: [String: FluffyMacOSUSBMetadata] = [:]
+        /// First-seen mount per disk (fallback only).
         var mountByWholeDisk: [String: URL] = [:]
+        /// Mount path where we actually read Windows sidecar — use for `mountPoint` when present.
+        var winMetaMount: [String: URL] = [:]
+        /// Mount path where we actually read macOS sidecar — installer volume, not necessarily the first slice.
+        var macMetaMount: [String: URL] = [:]
         for name in names where !name.hasPrefix(".") {
             let vol = volumesRoot.appendingPathComponent(name)
             var isDir: ObjCBool = false
@@ -206,16 +221,26 @@ final class DiskManager: ObservableObject {
             if mountByWholeDisk[whole] == nil {
                 mountByWholeDisk[whole] = vol
             }
-            guard let meta = WistUSBMetadata.read(from: vol) else { continue }
-            metaByWholeDisk[whole] = meta
+            if let meta = WistUSBMetadata.read(from: vol) {
+                metaByWholeDisk[whole] = meta
+                winMetaMount[whole] = vol
+            }
+            if let macMeta = FluffyMacOSUSBMetadata.read(from: vol) {
+                macMetaByWholeDisk[whole] = macMeta
+                macMetaMount[whole] = vol
+            }
         }
-        guard !metaByWholeDisk.isEmpty || !mountByWholeDisk.isEmpty else { return drives }
+        guard !metaByWholeDisk.isEmpty || !macMetaByWholeDisk.isEmpty || !mountByWholeDisk.isEmpty else { return drives }
         return drives.map { d in
             var copy = d
             if let m = metaByWholeDisk[d.deviceIdentifier] {
                 copy.wistSidecarMeta = m
             }
-            if let mount = mountByWholeDisk[d.deviceIdentifier] {
+            if let mm = macMetaByWholeDisk[d.deviceIdentifier] {
+                copy.fluffyMacOSSidecarMeta = mm
+            }
+            // Prefer the volume where sidecar JSON lives so Finder icon + paths match what the user sees in `/Volumes/…`.
+            if let mount = macMetaMount[d.deviceIdentifier] ?? winMetaMount[d.deviceIdentifier] ?? mountByWholeDisk[d.deviceIdentifier] {
                 copy.mountPoint = mount
             }
             return copy

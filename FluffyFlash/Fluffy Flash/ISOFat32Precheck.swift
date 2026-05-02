@@ -54,9 +54,12 @@ enum ISOFat32Precheck: Sendable {
         let allowed: Set<String> = ["sources/install.wim", "sources/install.esd"]
         let bad = entries.filter { !allowed.contains($0.relativePath.lowercased()) }
         guard !bad.isEmpty else { return }
+        let formatter = ByteCountFormatter()
+        formatter.allowedUnits = [.useGB, .useMB]
+        formatter.countStyle = .file
         let detail = bad.map { e in
-            let mb = Double(e.sizeBytes) / (1024 * 1024)
-            return String(format: String(localized: "  • %@ — %.1f MiB"), e.relativePath, mb)
+            let size = formatter.string(fromByteCount: Int64(min(UInt64(Int64.max), e.sizeBytes)))
+            return String(format: String(localized: "  • %@ — %@"), e.relativePath, size)
         }.joined(separator: "\n")
         throw USBWriterError.fat32OversizeUnsupported(detail)
     }

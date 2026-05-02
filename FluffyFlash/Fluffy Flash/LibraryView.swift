@@ -9,22 +9,42 @@
 import AppKit
 import SwiftUI
 
-enum LibraryTab: String, CaseIterable, Identifiable {
-    case downloads
-    case isos
+private enum LibraryHistoryFilter: String, CaseIterable, Identifiable {
+    case all
+    case windows
     case macos
-    case history
-    case drives
+    case failed
 
     var id: String { rawValue }
 
     var label: LocalizedStringKey {
         switch self {
-        case .downloads: return "Downloads"
+        case .all: return "All"
+        case .windows: return "Windows"
+        case .macos: return "macOS"
+        case .failed: return "Failed"
+        }
+    }
+}
+
+enum LibraryTab: String, CaseIterable, Identifiable {
+    case uup
+    case isos
+    case macos
+    case history
+    case drives
+    case doctor
+
+    var id: String { rawValue }
+
+    var label: LocalizedStringKey {
+        switch self {
+        case .uup: return "UUP"
         case .isos: return "ISOs"
         case .macos: return "macOS"
         case .history: return "History"
         case .drives: return "Fluffy drives"
+        case .doctor: return "USB Doctor"
         }
     }
 }
@@ -36,13 +56,18 @@ struct LibraryView: View {
     @ObservedObject var e2e: EndToEndMediaPipeline
     @ObservedObject var upgradeDetector: WistUSBUpgradeDetector
     @ObservedObject var history: WriteHistoryStore
+    /// Switches to Home and passes the entry id so `HomeView` can restore ISO/installer + drive selection.
+    var onRequestHistoryRepeat: (UUID) -> Void
 
-    @State private var tab: LibraryTab = .downloads
+    @State private var tab: LibraryTab = .uup
     @State private var cacheFolders: [UUPCacheFolder] = []
     @State private var macosArtefacts: [MacOSCache.Artefact] = []
     @State private var isPresentingHistoryLog = false
     @State private var historyLogTitle: String = ""
     @State private var historyLogText: String = ""
+    @State private var pendingDeleteUUPParent: URL?
+    @State private var historyFilter: LibraryHistoryFilter = .all
+    @State private var historySearch: String = ""
 
     private static let byteFormatter: ByteCountFormatter = {
         let f = ByteCountFormatter()
@@ -57,7 +82,7 @@ struct LibraryView: View {
                 MistPageHeader(
                     eyebrow: String(localized: "Library"),
                     title: String(localized: "Your artefacts"),
-                    subtitle: String(localized: "Cached UUP downloads, built ISOs, recent write history, and detected Fluffy drives."),
+                    subtitle: String(localized: "UUP caches (in progress), built ISOs, recent write history, and detected Fluffy drives."),
                     symbolName: "books.vertical",
                     assetName: "FluffyIconLibrary"
                 )
@@ -79,11 +104,13 @@ struct LibraryView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: WistTheme.gutter) {
                         switch tab {
-                        case .downloads: downloadsSection
+                        case .uup: uupSection
                         case .isos: isosSection
                         case .macos: macosSection
                         case .history: historySection
                         case .drives: drivesSection
+                        case .doctor:
+                            FluffyUSBDoctorView(diskManager: diskManager)
                         }
                     }
                     .padding(WistTheme.pagePadding)
@@ -101,13 +128,34 @@ struct LibraryView: View {
             reloadMacOSCache()
         }
         .onChange(of: tab) {
-            if tab == .downloads || tab == .isos { reloadCache() }
+            if tab == .uup || tab == .isos { reloadCache() }
             if tab == .macos { reloadMacOSCache() }
+        }
+        .confirmationDialog(
+            String(localized: "Delete the UUP source folder?"),
+            isPresented: Binding(
+                get: { pendingDeleteUUPParent != nil },
+                set: { if !$0 { pendingDeleteUUPParent = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button(String(localized: "Delete folder"), role: .destructive) {
+                if let u = pendingDeleteUUPParent {
+                    try? FileManager.default.removeItem(at: u)
+                    pendingDeleteUUPParent = nil
+                    reloadCache()
+                }
+            }
+            Button(String(localized: "Cancel"), role: .cancel) {
+                pendingDeleteUUPParent = nil
+            }
+        } message: {
+            Text(String(localized: "This removes the UUP cache directory that contained the ISO. The ISO file will be deleted too."))
         }
     }
 
     private func reloadCache() {
-        cacheFolders = WistCache.listUUPFolders()
+        cacheFolders = WistCache.listUUPFolders().filter { !WistCache.folderContainsBuiltISO(at: $0.url) }
     }
 
     private func reloadMacOSCache() {
@@ -116,9 +164,9 @@ struct LibraryView: View {
         macosArtefacts = MacOSCache.listArtefacts()
     }
 
-    // MARK: - Downloads (UUP cache)
+    // MARK: - UUP (folders without a built ISO yet)
 
-    private var downloadsSection: some View {
+    private var uupSection: some View {
         MistSectionCard(title: String(localized: "UUP cache"), systemImage: "tray.full") {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
@@ -140,8 +188,8 @@ struct LibraryView: View {
                 if cacheFolders.isEmpty {
                     MistEmptyState(
                         systemImage: "tray",
-                        title: String(localized: "No downloads yet"),
-                        message: String(localized: "Downloaded UUP folders will appear here.")
+                        title: String(localized: "No UUP folders in progress"),
+                        message: String(localized: "Downloaded UUP folders appear here until an ISO is built — then they move to the ISOs tab.")
                     )
                 } else {
                     ForEach(cacheFolders) { folder in
@@ -221,12 +269,13 @@ struct LibraryView: View {
                     )
                 } else {
                     ForEach(isos, id: \.self) { url in
+                        let uupParent = url.deletingLastPathComponent()
                         HStack(alignment: .top, spacing: 12) {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(url.lastPathComponent)
                                     .font(WistFont.headline(13))
                                     .lineLimit(1)
-                                Text(url.deletingLastPathComponent().path)
+                                Text(uupParent.path)
                                     .font(WistFont.caption(9))
                                     .foregroundStyle(.tertiary)
                                     .lineLimit(1)
@@ -239,14 +288,25 @@ struct LibraryView: View {
                             Spacer()
                             Button {
                                 NSWorkspace.shared.activateFileViewerSelecting([url])
+                            } label: { Image(systemName: "opticaldisc") }
+                                .buttonStyle(.borderless)
+                                .help(String(localized: "Reveal ISO in Finder"))
+                            Button {
+                                NSWorkspace.shared.activateFileViewerSelecting([uupParent])
                             } label: { Image(systemName: "folder") }
                                 .buttonStyle(.borderless)
-                                .help(String(localized: "Reveal in Finder"))
+                                .help(String(localized: "Open UUP folder"))
+                            Button(role: .destructive) {
+                                pendingDeleteUUPParent = uupParent
+                            } label: { Image(systemName: "folder.badge.minus") }
+                                .buttonStyle(.borderless)
+                                .help(String(localized: "Delete UUP source folder"))
                             Button(role: .destructive) {
                                 try? FileManager.default.removeItem(at: url)
+                                reloadCache()
                             } label: { Image(systemName: "trash") }
                                 .buttonStyle(.borderless)
-                                .help(String(localized: "Delete ISO"))
+                                .help(String(localized: "Delete ISO only"))
                         }
                         .padding(10)
                         .background {
@@ -350,6 +410,38 @@ struct LibraryView: View {
 
     // MARK: - History
 
+    private var filteredHistoryEntries: [WriteHistoryEntry] {
+        let q = historySearch.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        return history.entries.filter { entry in
+            switch historyFilter {
+            case .all:
+                break
+            case .windows:
+                if entry.resolvedKind == .macOSInstaller { return false }
+            case .macos:
+                if entry.resolvedKind != .macOSInstaller { return false }
+            case .failed:
+                if entry.succeeded { return false }
+            }
+            if q.isEmpty { return true }
+            let hay = [
+                entry.buildNumber,
+                entry.buildTitle,
+                entry.arch,
+                entry.language,
+                entry.editionToken,
+                entry.driveMediaName,
+                entry.installerDisplayName,
+                entry.installerMarketingVersion,
+                entry.macOSCatalogBuild,
+            ]
+            .compactMap { $0 }
+            .joined(separator: " ")
+            .lowercased()
+            return hay.contains(q)
+        }
+    }
+
     private var historySection: some View {
         MistSectionCard(title: String(localized: "Recent writes"), systemImage: "clock.arrow.circlepath") {
             VStack(alignment: .leading, spacing: 12) {
@@ -365,14 +457,33 @@ struct LibraryView: View {
                     }
                     .disabled(history.entries.isEmpty)
                 }
+
+                Picker(String(localized: "History filter"), selection: $historyFilter) {
+                    ForEach(LibraryHistoryFilter.allCases) { f in
+                        Text(f.label).tag(f)
+                    }
+                }
+                .labelsHidden()
+                .pickerStyle(.segmented)
+
+                TextField(String(localized: "Search build, drive, installer…"), text: $historySearch)
+                    .textFieldStyle(.roundedBorder)
+                    .controlSize(.small)
+
                 if history.entries.isEmpty {
                     MistEmptyState(
                         systemImage: "clock",
                         title: String(localized: "Nothing yet"),
                         message: String(localized: "Successful or failed USB writes will be logged here.")
                     )
+                } else if filteredHistoryEntries.isEmpty {
+                    MistEmptyState(
+                        systemImage: "line.3.horizontal.decrease.circle",
+                        title: String(localized: "No matches"),
+                        message: String(localized: "Try another filter or search query.")
+                    )
                 } else {
-                    ForEach(history.entries) { entry in
+                    ForEach(filteredHistoryEntries) { entry in
                         historyRow(entry: entry)
                     }
                 }
@@ -380,17 +491,60 @@ struct LibraryView: View {
         }
     }
 
+    private func formatHistoryDuration(_ seconds: Double) -> String {
+        guard seconds.isFinite, seconds >= 0 else { return "—" }
+        if seconds < 60 {
+            return String(format: String(localized: "%.0f s"), seconds)
+        }
+        let m = Int(seconds) / 60
+        let s = Int(seconds) % 60
+        return String(format: String(localized: "%lld min %lld s"), Int64(m), Int64(s))
+    }
+
+    private func historyKindLabel(_ entry: WriteHistoryEntry) -> String {
+        switch entry.resolvedKind {
+        case .windowsUUP:
+            return String(localized: "Windows · UUP")
+        case .windowsExistingISO:
+            return String(localized: "Windows · ISO")
+        case .macOSInstaller:
+            return String(localized: "macOS installer")
+        }
+    }
+
     private func historyRow(entry: WriteHistoryEntry) -> some View {
         HStack(alignment: .top, spacing: 10) {
-            Image(systemName: entry.succeeded ? "checkmark.seal.fill" : "xmark.octagon.fill")
-                .foregroundStyle(entry.succeeded ? Color.green : Color.red)
+            VStack(spacing: 4) {
+                Image(systemName: entry.resolvedKind == .macOSInstaller ? "apple.logo" : "pc")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                Image(systemName: entry.succeeded ? "checkmark.seal.fill" : "xmark.octagon.fill")
+                    .foregroundStyle(entry.succeeded ? Color.green : Color.red)
+            }
+            .frame(width: 22)
             VStack(alignment: .leading, spacing: 3) {
                 Text(entry.buildTitle ?? entry.buildNumber)
                     .font(WistFont.headline(13))
                     .lineLimit(2)
-                Text("\(entry.buildNumber) · \(entry.arch) · \(entry.language) · \(entry.driveMediaName)")
-                    .font(WistFont.caption(10))
-                    .foregroundStyle(.secondary)
+                if entry.resolvedKind == .macOSInstaller {
+                    Text("\(entry.buildNumber) · \(entry.driveMediaName)")
+                        .font(WistFont.caption(10))
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("\(entry.buildNumber) · \(entry.arch) · \(entry.language) · \(entry.driveMediaName)")
+                        .font(WistFont.caption(10))
+                        .foregroundStyle(.secondary)
+                }
+                HStack(spacing: 8) {
+                    Text(historyKindLabel(entry))
+                        .font(WistFont.caption(9))
+                        .foregroundStyle(.tertiary)
+                    if let d = entry.durationSeconds {
+                        Text("\(String(localized: "Duration")): \(formatHistoryDuration(d))")
+                            .font(WistFont.caption(9))
+                            .foregroundStyle(.tertiary)
+                    }
+                }
                 if let date = entry.date {
                     Text(date.formatted(date: .abbreviated, time: .shortened))
                         .font(WistFont.caption(9))
@@ -409,6 +563,14 @@ struct LibraryView: View {
             }
             Spacer()
             HStack(spacing: 6) {
+                Button {
+                    onRequestHistoryRepeat(entry.id)
+                } label: {
+                    Image(systemName: "arrow.clockwise.circle")
+                }
+                .help(String(localized: "Repeat on Home"))
+                .buttonStyle(.borderless)
+
                 if let log = history.loadFullLogText(for: entry), !log.isEmpty {
                     Button {
                         historyLogTitle = String(localized: "Write log")
@@ -462,7 +624,7 @@ struct LibraryView: View {
         MistSectionCard(title: String(localized: "Detected Fluffy drives"), systemImage: "externaldrive.badge.checkmark") {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    Text(String(localized: "Drives previously written by Fluffy Flash. Badges reflect the newest known stable build for each tuple (arch · language · edition)."))
+                    Text(String(localized: "USB drives that contain Fluffy metadata (Windows installer or macOS installer). Upgrade badges apply to Windows tuples (arch · language · edition)."))
                         .font(WistFont.caption(11))
                         .foregroundStyle(.secondary)
                     Spacer()
@@ -474,12 +636,12 @@ struct LibraryView: View {
                     .disabled(upgradeDetector.isChecking)
                 }
 
-                let drives = diskManager.drives.filter { $0.wistSidecarMeta != nil }
+                let drives = diskManager.drives.filter { $0.hasFluffySidecar }
                 if drives.isEmpty {
                     MistEmptyState(
                         systemImage: "externaldrive",
                         title: String(localized: "No Fluffy drives connected"),
-                        message: String(localized: "Attach a USB drive previously formatted by this app to see upgrade offers.")
+                        message: String(localized: "Attach a USB drive written by Fluffy (look for Fluffy metadata on the volume) to see it here.")
                     )
                 } else {
                     ForEach(drives) { drive in
@@ -491,11 +653,12 @@ struct LibraryView: View {
     }
 
     private func drivesRow(drive: RemovableDriveInfo) -> some View {
-        DrivesLibraryRow(
-            drive: drive,
-            offer: upgradeDetector.offers.first { $0.drive.deviceIdentifier == drive.deviceIdentifier },
-            sizeText: Self.byteFormatter.string(fromByteCount: drive.totalSizeBytes)
-        )
+                        DrivesLibraryRow(
+                            drive: drive,
+                            offer: upgradeDetector.offers.first { $0.drive.deviceIdentifier == drive.deviceIdentifier },
+                            macOSOffer: upgradeDetector.macOSOffers.first { $0.drive.deviceIdentifier == drive.deviceIdentifier },
+                            sizeText: Self.byteFormatter.string(fromByteCount: drive.totalSizeBytes)
+                        )
     }
 }
 
@@ -570,6 +733,7 @@ private struct FluffyHistoryLogSheet: View {
 private struct DrivesLibraryRow: View {
     let drive: RemovableDriveInfo
     let offer: DriveUpgradeOffer?
+    let macOSOffer: MacOSDriveUpgradeOffer?
     let sizeText: String
 
     @AppStorage(FluffyUSBIconStyle.appStorageKey) private var iconStyleRaw: String = FluffyUSBIconStyle.defaultStyle.rawValue
@@ -606,6 +770,10 @@ private struct DrivesLibraryRow: View {
                     Text("\(meta.buildNumber) · \(meta.arch) · \(meta.language) · \(meta.editionToken)")
                         .font(WistFont.caption(10))
                         .foregroundStyle(.secondary)
+                } else if let mac = drive.fluffyMacOSSidecarMeta {
+                    Text(mac.summarySubtitle)
+                        .font(WistFont.caption(10))
+                        .foregroundStyle(.secondary)
                 }
                 if let offer, offer.isNewer {
                     Label(
@@ -614,7 +782,14 @@ private struct DrivesLibraryRow: View {
                     )
                     .font(WistFont.caption(10).weight(.medium))
                     .foregroundStyle(FluffyColor.orangeHi)
-                } else if offer != nil {
+                } else if let macOSOffer, macOSOffer.isNewer {
+                    Label(
+                        String(format: String(localized: "Newer installer: %@ (%@)"), macOSOffer.latestInstaller.version, macOSOffer.latestInstaller.build),
+                        systemImage: "arrow.up.circle.fill"
+                    )
+                    .font(WistFont.caption(10).weight(.medium))
+                    .foregroundStyle(FluffyColor.orangeHi)
+                } else if offer != nil || macOSOffer != nil {
                     Label(String(localized: "Up-to-date"), systemImage: "checkmark.seal.fill")
                         .font(WistFont.caption(10))
                         .foregroundStyle(Color.green)
@@ -670,7 +845,7 @@ private struct DrivesLibraryRow: View {
     }
 
     private func applyFinderIcon(styleRawValue: String) {
-        guard drive.wistSidecarMeta != nil else { return }
+        guard drive.hasFluffySidecar else { return }
         guard let mount = drive.mountPoint else { return }
         FluffyDriveIconOverrides.setOverride(deviceIdentifier: drive.deviceIdentifier, styleRawValue: styleRawValue)
         let style = FluffyUSBIconStyle.resolve(rawValue: styleRawValue)

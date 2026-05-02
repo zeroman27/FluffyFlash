@@ -30,6 +30,7 @@ enum HostToolPaths: Sendable {
     static func hasMkIsoTool() -> Bool {
         resolvedExecutableURL(named: "genisoimage") != nil
             || resolvedExecutableURL(named: "mkisofs") != nil
+            || resolvedExecutableURL(named: "xorriso") != nil
     }
 
     static func environmentWithExtendedPATH(

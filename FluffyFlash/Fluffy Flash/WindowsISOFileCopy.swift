@@ -35,21 +35,48 @@ enum WindowsISOFileCopy: Sendable {
     }
 
     /// Recursively copies ISO → USB, skipping install.wim/esd (split later) and boot.catalog.
+    /// Honours `Task.checkCancellation()` between files so the user-facing Stop button
+    /// terminates the copy promptly.
     static func copyTree(
         from isoRoot: URL,
         to usbRoot: URL,
         log: @escaping @Sendable (String) -> Void,
         onProgress: (@Sendable (_ copiedBytes: UInt64, _ totalBytes: UInt64, _ currentRelativePath: String?) -> Void)? = nil
     ) async throws {
-        try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
-            DispatchQueue.global(qos: .userInitiated).async {
-                do {
-                    try Self.syncCopyTree(from: isoRoot, to: usbRoot, log: log, onProgress: onProgress)
-                    cont.resume()
-                } catch {
-                    cont.resume(throwing: error)
+        let cancelFlag = AtomicCancellationFlag()
+        try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
+                DispatchQueue.global(qos: .userInitiated).async {
+                    do {
+                        try Self.syncCopyTree(
+                            from: isoRoot,
+                            to: usbRoot,
+                            log: log,
+                            onProgress: onProgress,
+                            isCancelled: { cancelFlag.value }
+                        )
+                        cont.resume()
+                    } catch {
+                        cont.resume(throwing: error)
+                    }
                 }
             }
+        } onCancel: {
+            cancelFlag.set()
+        }
+    }
+
+    /// Tiny lock-free flag the background copy reads between files.
+    private final class AtomicCancellationFlag: @unchecked Sendable {
+        private let lock = NSLock()
+        private var flag = false
+        var value: Bool {
+            lock.lock(); defer { lock.unlock() }
+            return flag
+        }
+        func set() {
+            lock.lock(); defer { lock.unlock() }
+            flag = true
         }
     }
 
@@ -57,13 +84,18 @@ enum WindowsISOFileCopy: Sendable {
         from isoRoot: URL,
         to usbRoot: URL,
         log: @Sendable (String) -> Void,
-        onProgress: (@Sendable (_ copiedBytes: UInt64, _ totalBytes: UInt64, _ currentRelativePath: String?) -> Void)?
+        onProgress: (@Sendable (_ copiedBytes: UInt64, _ totalBytes: UInt64, _ currentRelativePath: String?) -> Void)?,
+        isCancelled: @Sendable () -> Bool
     ) throws {
         let fm = FileManager.default
         let isoPath = isoRoot.path
         let totalBytes = try totalCopyBytes(isoRoot: isoRoot)
         var copiedBytes: UInt64 = 0
         onProgress?(0, totalBytes, nil)
+
+        func checkCancel() throws {
+            if isCancelled() { throw CancellationError() }
+        }
 
         func relativePath(for url: URL) -> String {
             var rel = String(url.path.dropFirst(isoPath.count))
@@ -103,6 +135,7 @@ enum WindowsISOFileCopy: Sendable {
         }
 
         func walk(_ srcDir: URL, _ dstDir: URL) throws {
+            try checkCancel()
             let entries = try fm.contentsOfDirectory(
                 at: srcDir,
                 includingPropertiesForKeys: [.isDirectoryKey],
@@ -110,6 +143,7 @@ enum WindowsISOFileCopy: Sendable {
             )
 
             for src in entries {
+                try checkCancel()
                 let rel = relativePath(for: src)
                 if shouldSkipRelativePath(rel) {
                     log(String(format: String(localized: "Skipping (split later): %@"), rel))
@@ -140,6 +174,7 @@ enum WindowsISOFileCopy: Sendable {
         )
 
         for src in rootEntries {
+            try checkCancel()
             let name = src.lastPathComponent
             if shouldSkipRootFile(name: name) {
                 log(String(format: String(localized: "Skipping: %@"), name))

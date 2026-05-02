@@ -476,6 +476,13 @@ struct FluffyStepProgressView: View {
 }
 
 private extension USBWriterViewModel.DriveProgress {
+    private static let speedFormatter: ByteCountFormatter = {
+        let f = ByteCountFormatter()
+        f.allowedUnits = [.useMB, .useGB]
+        f.countStyle = .file
+        return f
+    }()
+
     var detailLine: String {
         let base: String
         if let detail, !detail.isEmpty {
@@ -483,10 +490,15 @@ private extension USBWriterViewModel.DriveProgress {
         } else {
             base = step.title
         }
-        if let eta = overallEtaSeconds, let etaS = USBWriterViewModel.formatETA(seconds: eta) {
-            return "\(base) · ETA \(etaS)"
+        var trailing: [String] = []
+        if stepBytesPerSecond > 0 {
+            trailing.append("\(Self.speedFormatter.string(fromByteCount: Int64(stepBytesPerSecond)))/s")
         }
-        return base
+        if let eta = overallEtaSeconds, let etaS = USBWriterViewModel.formatETA(seconds: eta) {
+            trailing.append("ETA \(etaS)")
+        }
+        if trailing.isEmpty { return base }
+        return "\(base) · \(trailing.joined(separator: " · "))"
     }
 }
 

@@ -37,12 +37,23 @@ The following command-line tools are redistributed inside the app bundle under t
   Source: https://pogostick.net/~pnh/ntpasswd/
   (Homebrew build may use: https://github.com/minacle/chntpw)
 
-- mkisofs — (copied from Homebrew cdrtools; license per that project/formula)
-  Homebrew formula page: https://formulae.brew.sh/formula/cdrtools
-  Note: There is historical licensing controversy around cdrtools/mkisofs distribution. Consider switching to genisoimage (cdrkit) or another ISO builder.
+- xorriso — GPL-3.0-or-later
+  Source: https://www.gnu.org/software/xorriso/
+  Note: Replaces the historical `cdrtools/mkisofs` bundle (CDDL/legacy controversy).
+  The app ships thin shell wrappers `genisoimage` and `mkisofs` that simply run
+  `xorriso -as mkisofs "$@"` so existing UUP converter scripts keep working
+  without any patches.
 
 - mist — MIT License
   Source: https://github.com/ninxsoft/mist-cli
+
+(Future) Windows-To-Go research — NOT shipped yet:
+
+- ntfs-3g — GPL-2.0
+  Source: https://github.com/tuxera/ntfs-3g
+  Status: gated behind `WTG_LOCAL`; will only be bundled after a follow-up
+  legal-intake review (see Windows-To-Go-Research.md and THIRD_PARTY.md).
+- macFUSE / FUSE-T — user-installed prerequisite, NOT redistributed.
 
 4) Source code offers for GPL tools
 -----------------------------------

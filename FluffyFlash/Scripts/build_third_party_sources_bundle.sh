@@ -64,17 +64,17 @@ record_tool_version "aria2c"        "$TOOLS_BIN/aria2c"
 record_tool_version "cabextract"    "$TOOLS_BIN/cabextract"
 record_tool_version "wimlib-imagex" "$TOOLS_BIN/wimlib-imagex"
 record_tool_version "chntpw"        "$TOOLS_BIN/chntpw"
-record_tool_version "mkisofs"       "$TOOLS_BIN/mkisofs"
+record_tool_version "xorriso"       "$TOOLS_BIN/xorriso"
 record_tool_version "mist"          "$TOOLS_BIN/mist"
 
 # Capture Homebrew package versions as additional evidence (best-effort).
 if command -v brew &>/dev/null; then
   {
     echo "== brew list --versions =="
-    brew list --versions aria2 cabextract wimlib cdrtools mist-cli minacle/chntpw/chntpw 2>/dev/null || true
+    brew list --versions aria2 cabextract wimlib xorriso mist-cli minacle/chntpw/chntpw 2>/dev/null || true
     echo ""
     echo "== brew info (selected) =="
-    brew info aria2 cabextract wimlib cdrtools mist-cli minacle/chntpw/chntpw 2>/dev/null || true
+    brew info aria2 cabextract wimlib xorriso mist-cli minacle/chntpw/chntpw 2>/dev/null || true
   } >> "$VERSIONS_FILE"
 fi
 
@@ -265,9 +265,15 @@ if command -v brew &>/dev/null; then
   if download_from_brew_formula "aria2" "aria2" "GPL-2.0-or-later"; then BREW_OK=1; fi
   if download_from_brew_formula "cabextract" "cabextract" "GPL-3.0-or-later"; then BREW_OK=1; fi
   if download_from_brew_formula "wimlib" "wimlib" "GPL-3.0-or-later"; then BREW_OK=1; fi
-  if download_from_brew_formula "cdrtools" "cdrtools" "CDDL-1.0"; then BREW_OK=1; fi
+  if download_from_brew_formula "xorriso" "xorriso" "GPL-3.0-or-later"; then BREW_OK=1; fi
   if download_from_brew_formula "mist-cli" "mist-cli" "MIT"; then BREW_OK=1; fi
   if download_from_brew_formula "minacle/chntpw/chntpw" "chntpw" "GPL-2.0"; then BREW_OK=1; fi
+  # Windows-To-Go research (gated by `WINMIST_INCLUDE_NTFS3G_SOURCES=1`).
+  # We never bundle ntfs-3g binaries until the WTG legal review is closed,
+  # but the source bundle has to be ready the moment we flip the gate.
+  if [[ "${WINMIST_INCLUDE_NTFS3G_SOURCES:-0}" == "1" ]]; then
+    if download_from_brew_formula "ntfs-3g-mac" "ntfs-3g" "GPL-2.0"; then BREW_OK=1; fi
+  fi
   fi
 fi
 
@@ -281,10 +287,14 @@ if [[ "$BREW_OK" -eq 0 ]]; then
   append_manifest_entry "wimlib" "1.14.5" "GPL-3.0-or-later" "https://wimlib.net/downloads/wimlib-1.14.5.tar.gz" "wimlib-1.14.5.tar.gz" "" "pinned"
   download "https://github.com/minacle/chntpw/archive/refs/tags/v1.0.3.tar.gz" "$SRC_DIR/chntpw-v1.0.3.tar.gz"
   append_manifest_entry "chntpw" "1.0.3" "GPL-2.0" "https://github.com/minacle/chntpw/archive/refs/tags/v1.0.3.tar.gz" "chntpw-v1.0.3.tar.gz" "" "pinned"
-  download "https://sourceforge.net/projects/cdrtools/files/alpha/cdrtools-3.02a09.tar.gz/download" "$SRC_DIR/cdrtools-3.02a09.tar.gz"
-  append_manifest_entry "cdrtools" "3.02a09" "CDDL-1.0" "https://sourceforge.net/projects/cdrtools/files/alpha/cdrtools-3.02a09.tar.gz/download" "cdrtools-3.02a09.tar.gz" "" "pinned"
+  download "https://www.gnu.org/software/xorriso/xorriso-1.5.6.pl02.tar.gz" "$SRC_DIR/xorriso-1.5.6.pl02.tar.gz"
+  append_manifest_entry "xorriso" "1.5.6.pl02" "GPL-3.0-or-later" "https://www.gnu.org/software/xorriso/xorriso-1.5.6.pl02.tar.gz" "xorriso-1.5.6.pl02.tar.gz" "" "pinned"
   download "https://github.com/ninxsoft/mist-cli/archive/refs/tags/v2.2.tar.gz" "$SRC_DIR/mist-cli-v2.2.tar.gz"
   append_manifest_entry "mist-cli" "2.2" "MIT" "https://github.com/ninxsoft/mist-cli/archive/refs/tags/v2.2.tar.gz" "mist-cli-v2.2.tar.gz" "" "pinned"
+  if [[ "${WINMIST_INCLUDE_NTFS3G_SOURCES:-0}" == "1" ]]; then
+    download "https://github.com/tuxera/ntfs-3g/archive/refs/tags/2022.10.3.tar.gz" "$SRC_DIR/ntfs-3g-2022.10.3.tar.gz"
+    append_manifest_entry "ntfs-3g" "2022.10.3" "GPL-2.0" "https://github.com/tuxera/ntfs-3g/archive/refs/tags/2022.10.3.tar.gz" "ntfs-3g-2022.10.3.tar.gz" "" "pinned"
+  fi
 fi
 
 # Fill sha256 into pinned entries (if any) by matching filenames in source-sha256.txt after the fact.

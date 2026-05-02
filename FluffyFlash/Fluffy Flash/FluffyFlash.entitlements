@@ -2,6 +2,26 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!--
+	  Hardened-runtime exceptions required for our bundled CLI toolchain
+	  (xorriso, aria2c, wimlib-imagex, …) and the dylibs that `dylibbundler`
+	  drops next to them. Without these, notarized release builds crash
+	  immediately when they try to spawn an embedded tool.
+
+	  - allow-dyld-environment-variables: HostToolPaths sets DYLD_LIBRARY_PATH
+	    so subprocess look-ups find /Tools/lib first.
+	  - disable-library-validation: dylibbundler bakes @loader_path/../lib
+	    rpaths into the bundled binaries; without this Apple's library
+	    validator refuses unsigned-by-Apple-team libraries.
+	  - allow-unsigned-executable-memory: required by some bundled tools'
+	    XZ/zstd implementations (best-effort; can be tightened later).
+	-->
+	<key>com.apple.security.cs.allow-dyld-environment-variables</key>
+	<true/>
+	<key>com.apple.security.cs.disable-library-validation</key>
+	<true/>
+	<key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+	<true/>
 </dict>
 </plist>
 

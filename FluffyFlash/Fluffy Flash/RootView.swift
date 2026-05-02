@@ -15,7 +15,7 @@ enum WistArea: String, CaseIterable, Identifiable {
     case home
     case library
     case settings
-#if DEBUG
+#if DEBUG && LAB_LOCAL
     case lab
 #endif
 
@@ -26,7 +26,7 @@ enum WistArea: String, CaseIterable, Identifiable {
         case .home: return "Home"
         case .library: return "Library"
         case .settings: return "Settings"
-#if DEBUG
+#if DEBUG && LAB_LOCAL
         case .lab: return "Lab"
 #endif
         }
@@ -37,7 +37,7 @@ enum WistArea: String, CaseIterable, Identifiable {
         case .home: return "Create & upgrade"
         case .library: return "Caches · history · drives"
         case .settings: return "Preferences"
-#if DEBUG
+#if DEBUG && LAB_LOCAL
         case .lab: return "Experiments"
 #endif
         }
@@ -48,7 +48,7 @@ enum WistArea: String, CaseIterable, Identifiable {
         case .home: return "sparkles"
         case .library: return "books.vertical"
         case .settings: return "gearshape"
-#if DEBUG
+#if DEBUG && LAB_LOCAL
         case .lab: return "testtube.2"
 #endif
         }
@@ -60,7 +60,7 @@ enum WistArea: String, CaseIterable, Identifiable {
         case .home: return "FluffyIconHome"
         case .library: return "FluffyIconLibrary"
         case .settings: return "FluffyIconSettings"
-#if DEBUG
+#if DEBUG && LAB_LOCAL
         case .lab: return "FluffyIconInfo"
 #endif
         }
@@ -78,9 +78,16 @@ struct RootView: View {
     @StateObject private var macOSUSBWriter = MacOSUSBWriter()
     @StateObject private var macOSE2E = MacOSEndToEndPipeline()
 
-    @State private var area: WistArea = .home
+    @SceneStorage("wist.lastArea") private var areaRaw: String = WistArea.home.rawValue
     @State private var selectedUSBDeviceIdsWindows: Set<String> = []
     @State private var selectedUSBDeviceIdsMacOS: Set<String> = []
+    /// Library → History «Repeat»: set together with switching to Home so `HomeView` can apply on appear.
+    @State private var historyRepeatEntryId: UUID?
+
+    private var area: WistArea {
+        get { WistArea(rawValue: areaRaw) ?? .home }
+        nonmutating set { areaRaw = newValue.rawValue }
+    }
 
     @AppStorage("wist.appLanguage") private var appLanguageRaw: String = WistAppLanguage.system.rawValue
     @AppStorage("fluffy.upgradeCheckMinutes") private var upgradeCheckMinutes: Int = 15
@@ -217,7 +224,7 @@ struct RootView: View {
             }
             .padding(.bottom, 12)
 
-            if !upgradeDetector.offers.filter(\.isNewer).isEmpty, area != .home {
+            if actionableUpgradeOfferCount > 0, area != .home {
                 sidebarUpgradePill
                     .padding(.horizontal, 10)
                     .padding(.bottom, 10)
@@ -245,7 +252,7 @@ struct RootView: View {
                     .foregroundStyle(.tertiary)
                     .textCase(.uppercase)
                     .tracking(0.5)
-                Text("Attach a USB drive previously written by Fluffy Flash to see automatic upgrade offers.")
+                Text("Attach a USB drive written by Fluffy Flash (Windows or macOS installer) to see automatic upgrade offers.")
                     .font(WistFont.caption(11))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -268,8 +275,12 @@ struct RootView: View {
             .accessibilityLabel("Fluffy Flash")
     }
 
+    private var actionableUpgradeOfferCount: Int {
+        upgradeDetector.offers.filter(\.isNewer).count + upgradeDetector.macOSOffers.filter(\.isNewer).count
+    }
+
     private var sidebarUpgradePill: some View {
-        let count = upgradeDetector.offers.filter(\.isNewer).count
+        let count = actionableUpgradeOfferCount
         return Button {
             selectArea(.home)
         } label: {
@@ -307,7 +318,7 @@ struct RootView: View {
 
     private func badge(for area: WistArea) -> Int? {
         if area == .home {
-            let n = upgradeDetector.offers.filter(\.isNewer).count
+            let n = actionableUpgradeOfferCount
             return n == 0 ? nil : n
         }
         return nil
@@ -329,7 +340,8 @@ struct RootView: View {
                         e2e: e2ePipeline,
                         upgradeDetector: upgradeDetector,
                         history: writeHistory,
-                        selectedUSBDeviceIds: selectedUSBDeviceIdsBinding
+                        selectedUSBDeviceIds: selectedUSBDeviceIdsBinding,
+                        historyRepeatEntryId: $historyRepeatEntryId
                     )
                 case .library:
                     LibraryView(
@@ -338,11 +350,15 @@ struct RootView: View {
                         downloadModel: downloadISOViewModel,
                         e2e: e2ePipeline,
                         upgradeDetector: upgradeDetector,
-                        history: writeHistory
+                        history: writeHistory,
+                        onRequestHistoryRepeat: { entryId in
+                            areaRaw = WistArea.home.rawValue
+                            historyRepeatEntryId = entryId
+                        }
                     )
                 case .settings:
                     SettingsView(upgradeDetector: upgradeDetector)
-#if DEBUG
+#if DEBUG && LAB_LOCAL
                 case .lab:
                     LabView()
 #endif

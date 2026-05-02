@@ -39,11 +39,11 @@
 		C84181032F8E1D68007F5B09 /* FluffyFlash.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FluffyFlash.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C84181102F8E1D6A007F5B09 /* Fluffy FlashTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Fluffy FlashTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C841811A2F8E1D6A007F5B09 /* Fluffy FlashUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Fluffy FlashUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E8F0A0012FF00000007F5B09 /* com.wist.Wist.PrivilegedHelper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = com.wist.Wist.PrivilegedHelper; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8F0A0012FF00000007F5B09 /* com.fluffyflash.FluffyFlash.PrivilegedHelper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = com.fluffyflash.FluffyFlash.PrivilegedHelper; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8F0A0022FF00000007F5B09 /* PrivilegedHelperMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PrivilegedHelperMain.swift; path = PrivilegedHelper/PrivilegedHelperMain.swift; sourceTree = "<group>"; };
 		E8F0A0032FF00000007F5B09 /* PrivilegedHelperProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PrivilegedHelperProtocol.swift; path = PrivilegedHelper/PrivilegedHelperProtocol.swift; sourceTree = "<group>"; };
 		E8F0A0042FF00000007F5B09 /* PrivilegedHelperInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = PrivilegedHelperInfo.plist; path = PrivilegedHelper/PrivilegedHelperInfo.plist; sourceTree = "<group>"; };
-		E8F0A0052FF00000007F5B09 /* com.wist.Wist.PrivilegedHelper.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = com.wist.Wist.PrivilegedHelper.plist; path = PrivilegedHelper/com.wist.Wist.PrivilegedHelper.plist; sourceTree = "<group>"; };
+		E8F0A0052FF00000007F5B09 /* com.fluffyflash.FluffyFlash.PrivilegedHelper.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = com.fluffyflash.FluffyFlash.PrivilegedHelper.plist; path = PrivilegedHelper/com.fluffyflash.FluffyFlash.PrivilegedHelper.plist; sourceTree = "<group>"; };
 		E8F0A04A2FF00000007F5B09 /* PrivilegedHelper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = PrivilegedHelper.entitlements; path = PrivilegedHelper/PrivilegedHelper.entitlements; sourceTree = "<group>"; };
 		E8F0A04B2FF00000007F5B09 /* FluffyFlash.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = FluffyFlash.entitlements; path = "Fluffy Flash/FluffyFlash.entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -115,7 +115,7 @@
 				C84181032F8E1D68007F5B09 /* FluffyFlash.app */,
 				C84181102F8E1D6A007F5B09 /* Fluffy FlashTests.xctest */,
 				C841811A2F8E1D6A007F5B09 /* Fluffy FlashUITests.xctest */,
-				E8F0A0012FF00000007F5B09 /* com.wist.Wist.PrivilegedHelper */,
+				E8F0A0012FF00000007F5B09 /* com.fluffyflash.FluffyFlash.PrivilegedHelper */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -128,7 +128,7 @@
 				E8F0A0042FF00000007F5B09 /* PrivilegedHelperInfo.plist */,
 				E8F0A04A2FF00000007F5B09 /* PrivilegedHelper.entitlements */,
 				E8F0A04B2FF00000007F5B09 /* FluffyFlash.entitlements */,
-				E8F0A0052FF00000007F5B09 /* com.wist.Wist.PrivilegedHelper.plist */,
+				E8F0A0052FF00000007F5B09 /* com.fluffyflash.FluffyFlash.PrivilegedHelper.plist */,
 			);
 			name = PrivilegedHelper;
 			sourceTree = "<group>";
@@ -220,8 +220,8 @@
 			dependencies = (
 			);
 			name = PrivilegedHelper;
-			productName = com.wist.Wist.PrivilegedHelper;
-			productReference = E8F0A0012FF00000007F5B09 /* com.wist.Wist.PrivilegedHelper */;
+			productName = com.fluffyflash.FluffyFlash.PrivilegedHelper;
+			productReference = E8F0A0012FF00000007F5B09 /* com.fluffyflash.FluffyFlash.PrivilegedHelper */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -232,7 +232,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2630;
-				LastUpgradeCheck = 2630;
+				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					C84181022F8E1D68007F5B09 = {
 						CreatedOnToolsVersion = 26.3;
@@ -345,17 +345,15 @@
 			files = (
 			);
 			inputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/com.wist.Wist.PrivilegedHelper",
-				"$(PROJECT_DIR)/PrivilegedHelper/com.wist.Wist.PrivilegedHelper.plist",
+				"$(BUILT_PRODUCTS_DIR)/com.fluffyflash.FluffyFlash.PrivilegedHelper",
 			);
 			name = "Embed Privileged Helper";
 			outputPaths = (
-				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/Library/LaunchServices/com.wist.Wist.PrivilegedHelper",
-				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/Library/LaunchDaemons/com.wist.Wist.PrivilegedHelper.plist",
+				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/Library/LaunchServices/com.fluffyflash.FluffyFlash.PrivilegedHelper",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\nAPP=\"${TARGET_BUILD_DIR}/${CONTENTS_FOLDER_PATH}\"\nHELPER_SRC=\"${BUILT_PRODUCTS_DIR}/com.wist.Wist.PrivilegedHelper\"\nLAUNCHD_SRC=\"${PROJECT_DIR}/PrivilegedHelper/com.wist.Wist.PrivilegedHelper.plist\"\nmkdir -p \"${APP}/Library/LaunchServices\" \"${APP}/Library/LaunchDaemons\"\n/usr/bin/ditto \"${HELPER_SRC}\" \"${APP}/Library/LaunchServices/com.wist.Wist.PrivilegedHelper\"\n/usr/bin/ditto \"${LAUNCHD_SRC}\" \"${APP}/Library/LaunchDaemons/com.wist.Wist.PrivilegedHelper.plist\"\n";
+			shellScript = "set -e\nAPP=\"${TARGET_BUILD_DIR}/${CONTENTS_FOLDER_PATH}\"\nHELPER_SRC=\"${BUILT_PRODUCTS_DIR}/com.fluffyflash.FluffyFlash.PrivilegedHelper\"\n# For SMJobBless, the launchd plist must be embedded in the helper tool via LAUNCHDPLIST_FILE.\n# Do NOT ship Contents/Library/LaunchDaemons/*.plist inside the app, otherwise macOS treats it as\n# an SMAppService LaunchDaemon item and it conflicts with SMJobBless registration (Launchd error 8).\nrm -rf \"${APP}/Library/LaunchDaemons\" || true\nmkdir -p \"${APP}/Library/LaunchServices\"\n/usr/bin/ditto \"${HELPER_SRC}\" \"${APP}/Library/LaunchServices/com.fluffyflash.FluffyFlash.PrivilegedHelper\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -416,6 +414,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -445,7 +444,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = UGVM5Y6DU8;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -469,7 +470,8 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited) LAB_LOCAL WTG_LOCAL";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -479,6 +481,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -508,7 +511,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = UGVM5Y6DU8;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -525,6 +530,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
@@ -535,11 +541,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Fluffy Flash/FluffyFlash.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ZSNU9GWW94;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
@@ -553,6 +560,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fluffyflash.FluffyFlash;
 				PRODUCT_MODULE_NAME = Wist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -572,12 +580,15 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Fluffy Flash/FluffyFlash.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ZSNU9GWW94;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = UGVM5Y6DU8;
 				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -593,6 +604,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.fluffyflash.FluffyFlash;
 				PRODUCT_MODULE_NAME = Wist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -609,6 +621,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
@@ -629,6 +642,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
@@ -648,6 +662,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fluffyflash.FluffyFlashUITests;
@@ -666,6 +681,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fluffyflash.FluffyFlashUITests;
@@ -686,13 +702,20 @@
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
-				DEVELOPMENT_TEAM = ZSNU9GWW94;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = PrivilegedHelper/PrivilegedHelperInfo.plist;
+				LAUNCHDPLIST_FILE = "$(SRCROOT)/PrivilegedHelper/com.fluffyflash.FluffyFlash.PrivilegedHelper.plist";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				OTHER_CODE_SIGN_FLAGS = "--identifier com.wist.Wist.PrivilegedHelper";
-				PRODUCT_BUNDLE_IDENTIFIER = com.wist.Wist.PrivilegedHelper;
-				PRODUCT_NAME = com.wist.Wist.PrivilegedHelper;
+				OTHER_CODE_SIGN_FLAGS = "--identifier com.fluffyflash.FluffyFlash.PrivilegedHelper";
+				OTHER_LDFLAGS = (
+					"-sectcreate",
+					__TEXT,
+					__launchd_plist,
+					"\"$(SRCROOT)/PrivilegedHelper/com.fluffyflash.FluffyFlash.PrivilegedHelper.plist\"",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.fluffyflash.FluffyFlash.PrivilegedHelper;
+				PRODUCT_NAME = com.fluffyflash.FluffyFlash.PrivilegedHelper;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -701,16 +724,26 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = PrivilegedHelper/PrivilegedHelper.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
-				DEVELOPMENT_TEAM = ZSNU9GWW94;
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = PrivilegedHelper/PrivilegedHelperInfo.plist;
+				LAUNCHDPLIST_FILE = "$(SRCROOT)/PrivilegedHelper/com.fluffyflash.FluffyFlash.PrivilegedHelper.plist";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				OTHER_CODE_SIGN_FLAGS = "--identifier com.wist.Wist.PrivilegedHelper";
-				PRODUCT_BUNDLE_IDENTIFIER = com.wist.Wist.PrivilegedHelper;
-				PRODUCT_NAME = com.wist.Wist.PrivilegedHelper;
+				OTHER_CODE_SIGN_FLAGS = "--identifier com.fluffyflash.FluffyFlash.PrivilegedHelper";
+				OTHER_LDFLAGS = (
+					"-sectcreate",
+					__TEXT,
+					__launchd_plist,
+					"\"$(SRCROOT)/PrivilegedHelper/com.fluffyflash.FluffyFlash.PrivilegedHelper.plist\"",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.fluffyflash.FluffyFlash.PrivilegedHelper;
+				PRODUCT_NAME = com.fluffyflash.FluffyFlash.PrivilegedHelper;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;

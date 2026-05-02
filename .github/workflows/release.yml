@@ -1,0 +1,170 @@
+name: Release artifacts
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      sign_and_notarize:
+        description: "Codesign + notarize (requires secrets)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-14
+    timeout-minutes: 60
+
+    env:
+      DEV_ID_APP_IDENTITY: ${{ secrets.MACOS_DEVELOPER_ID_APPLICATION_NAME }}
+      KEYCHAIN_NAME: build.keychain
+      ARTIFACT_DIR: ${{ github.workspace }}/ReleaseOut
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show macOS / Xcode versions
+        run: |
+          sw_vers
+          xcodebuild -version
+          xcrun --show-sdk-version
+
+      - name: Sanity-check Xcode project schemes
+        working-directory: FluffyFlash
+        run: |
+          xcodebuild -list -project "Fluffy Flash.xcodeproj"
+          xcodebuild -list -project "Fluffy Flash.xcodeproj" | \
+            grep -E "^[[:space:]]+FluffyFlash$" >/dev/null
+
+      - name: Install bundled CLI toolchain (Homebrew)
+        working-directory: FluffyFlash
+        run: |
+          brew --version
+          brew update --quiet || true
+          brew tap minacle/chntpw 2>/dev/null || true
+          brew install aria2 cabextract wimlib mist-cli xorriso || true
+          brew install minacle/chntpw/chntpw || brew install chntpw || true
+          brew install dylibbundler || true
+          # Populate FluffyFlash/Fluffy Flash/Tools/bin via the same script Xcode uses
+          bash Scripts/bundle-mac-cli-tools.sh
+
+      - name: Build Release configuration
+        working-directory: FluffyFlash
+        env:
+          WIST_SKIP_TOOL_BUNDLE: "1"
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project "Fluffy Flash.xcodeproj" \
+            -scheme FluffyFlash \
+            -configuration Release \
+            -destination 'platform=macOS' \
+            -derivedDataPath build \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build | tee build-release.log
+
+      - name: Stage signed app (codesign + notarize, optional)
+        id: sign
+        if: ${{ github.event_name == 'push' || github.event.inputs.sign_and_notarize == 'true' }}
+        working-directory: FluffyFlash/build/Build/Products/Release
+        env:
+          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: |
+          if [[ -z "${MACOS_CERTIFICATE_P12_BASE64:-}" ]]; then
+            echo "::warning::No signing secrets configured; producing an unsigned build."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          KEYCHAIN_PATH="$RUNNER_TEMP/$KEYCHAIN_NAME"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security default-keychain -s "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH" $(security list-keychains -d user | tr -d '"')
+
+          P12="$RUNNER_TEMP/cert.p12"
+          echo "$MACOS_CERTIFICATE_P12_BASE64" | base64 --decode > "$P12"
+          security import "$P12" -k "$KEYCHAIN_PATH" -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security -T /usr/bin/productsign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          IDENTITY="${DEV_ID_APP_IDENTITY:-Developer ID Application}"
+          echo "Using identity: $IDENTITY"
+
+          # Sign every embedded Mach-O before sealing the app bundle.
+          APP=FluffyFlash.app
+          while IFS= read -r -d '' bin; do
+            file_type="$(file -b "$bin" || true)"
+            case "$file_type" in
+              *Mach-O*)
+                /usr/bin/codesign --force --options=runtime --timestamp \
+                  --sign "$IDENTITY" "$bin" || true
+                ;;
+            esac
+          done < <(find "$APP/Contents" -type f -print0)
+
+          /usr/bin/codesign --force --deep --options=runtime --timestamp \
+            --sign "$IDENTITY" "$APP"
+          /usr/bin/codesign --verify --deep --strict --verbose=2 "$APP"
+
+          ZIP_FOR_NOTARIZATION="$RUNNER_TEMP/FluffyFlash-notarize.zip"
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent "$APP" "$ZIP_FOR_NOTARIZATION"
+
+          xcrun notarytool submit "$ZIP_FOR_NOTARIZATION" \
+            --apple-id "$APPLE_ID" \
+            --team-id "$APPLE_TEAM_ID" \
+            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+            --wait
+
+          xcrun stapler staple "$APP"
+          xcrun stapler validate "$APP"
+          echo "signed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Package .app into .zip
+        working-directory: FluffyFlash/build/Build/Products/Release
+        run: |
+          mkdir -p "$ARTIFACT_DIR"
+          NAME="FluffyFlash-${GITHUB_REF_NAME:-dev}"
+          ditto -c -k --sequesterRsrc --keepParent FluffyFlash.app "$ARTIFACT_DIR/${NAME}.zip"
+          shasum -a 256 "$ARTIFACT_DIR/${NAME}.zip" | tee "$ARTIFACT_DIR/${NAME}.zip.sha256"
+
+      - name: Build third-party source bundle (GPL compliance)
+        working-directory: FluffyFlash
+        run: |
+          bash Scripts/build_third_party_sources_bundle.sh
+          cp -f ReleaseArtifacts/third-party/THIRD_PARTY_NOTICES.txt "$ARTIFACT_DIR/" || true
+          cp -f ReleaseArtifacts/third-party/third-party-sources.tar.gz "$ARTIFACT_DIR/" || true
+          cp -f ReleaseArtifacts/third-party/tool-versions.txt "$ARTIFACT_DIR/" || true
+          cp -f ReleaseArtifacts/third-party/manifest.json "$ARTIFACT_DIR/third-party-manifest.json" || true
+
+      - name: Upload artifacts (manual run)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: FluffyFlash-release
+          path: |
+            ${{ env.ARTIFACT_DIR }}/*
+
+      - name: Attach to GitHub Release (tag push)
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ env.ARTIFACT_DIR }}/*
+          generate_release_notes: true

@@ -43,3 +43,13 @@ If you prefer editing files instead of the UI, see `FluffyFlash/Fluffy Flash.xco
 
 Bundle identifiers and Teams are often **personal**. After you configure signing locally, `project.pbxproj` may gain a `DEVELOPMENT_TEAM` value. If you publish the repo publicly, keep neutral placeholders and document the setup steps (this file), or use a local non-committed override (e.g. an `.xcconfig` kept in `.gitignore`).
 
+## 6) Privileged helper (`SMJobBless`)
+
+The host app merges **`App-Info.plist`** into the bundle; it must contain **`SMPrivilegedExecutables`** — a **designated requirement** string that the embedded helper binary must satisfy. The helper’s **`PrivilegedHelperInfo.plist`** lists **`SMAuthorizedClients`** — requirements that the **host app** must satisfy.
+
+Do **not** hardcode `certificate leaf[subject.CN] = "Apple Development: …"` — that breaks as soon as Xcode uses another Development certificate. Use **Team ID** instead:
+
+- `certificate leaf[subject.OU] = "YOUR_TEAM_ID"` (same value as `DEVELOPMENT_TEAM` in the project).
+
+If **`SMJobBless` fails** or **`/Library/PrivilegedHelperTools/com.fluffyflash.FluffyFlash.PrivilegedHelper` never appears**, re-check that both plist requirement strings use your current Team ID and rebuild *both* the app and the helper target.
+

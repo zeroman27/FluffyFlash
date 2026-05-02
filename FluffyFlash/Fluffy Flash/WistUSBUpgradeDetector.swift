@@ -2,9 +2,9 @@
 //  WistUSBUpgradeDetector.swift
 //  Fluffy Flash
 //
-//  Watches Fluffy-formatted USB drives (sidecar JSON) and polls UUPDump for newer
-//  builds that match (arch, language, edition). Published `offers` drive the Home
-//  upgrade hero and sidebar pill.
+//  Watches Fluffy-formatted USB drives (sidecar JSON): UUPDump for Windows upgrades,
+//  Mist standard installer catalog for macOS upgrades. Published offers drive Home +
+//  sidebar.
 //
 
 import Combine
@@ -35,6 +35,8 @@ private struct LatestCacheEntry: Codable {
 final class WistUSBUpgradeDetector: ObservableObject {
 
     @Published private(set) var offers: [DriveUpgradeOffer] = []
+    /// Installer-only USB sticks with `FluffyFlash.macos.meta.json` (standard catalog, stable-only probe).
+    @Published private(set) var macOSOffers: [MacOSDriveUpgradeOffer] = []
     @Published private(set) var isChecking: Bool = false
     @Published private(set) var lastCheckDate: Date?
 
@@ -45,14 +47,20 @@ final class WistUSBUpgradeDetector: ObservableObject {
 
     private let api = UUPDumpAPI()
     private let cacheDefaultsKey = "fluffy.upgradeDetector.latestCache.v1"
+    private let macInstallerCacheKey = "fluffy.upgradeDetector.macInstallerListCache.v1"
     private var latestCache: [String: LatestCacheEntry] = [:]
     private var inflightKeys: Set<String> = []
+    /// Cached `mist list installer` rows (standard catalog, no betas) for macOS upgrade detection.
+    private var macInstallerCatalog: [MistCLITool.InstallerListItem] = []
+    private var macInstallerCatalogFetchedAt: TimeInterval?
+    private var macInstallerRefreshInflight = false
 
     private weak var diskManager: DiskManager?
     private var cancellables: Set<AnyCancellable> = []
 
     init() {
         loadCache()
+        loadMacInstallerDiskCache()
     }
 
     /// Wires the detector to a disk manager. Call once from the view `.task` so
@@ -65,6 +73,7 @@ final class WistUSBUpgradeDetector: ObservableObject {
             .removeDuplicates { a, b in
                 a.map(\.deviceIdentifier) == b.map(\.deviceIdentifier)
                     && a.map(\.wistSidecarMeta) == b.map(\.wistSidecarMeta)
+                    && a.map(\.fluffyMacOSSidecarMeta) == b.map(\.fluffyMacOSSidecarMeta)
             }
             .sink { [weak self] _ in
                 Task { [weak self] in await self?.recomputeOffers() }
@@ -78,6 +87,9 @@ final class WistUSBUpgradeDetector: ObservableObject {
         Task {
             latestCache.removeAll()
             saveCache()
+            macInstallerCatalog.removeAll()
+            macInstallerCatalogFetchedAt = nil
+            UserDefaults.standard.removeObject(forKey: macInstallerCacheKey)
             await recomputeOffers()
         }
     }
@@ -88,8 +100,14 @@ final class WistUSBUpgradeDetector: ObservableObject {
             guard let m = d.wistSidecarMeta else { return nil }
             return (d, m)
         }
-        guard !drivesWithMeta.isEmpty else {
+        let drivesWithMacMeta = manager.drives.compactMap { d -> (RemovableDriveInfo, FluffyMacOSUSBMetadata)? in
+            guard let m = d.fluffyMacOSSidecarMeta else { return nil }
+            return (d, m)
+        }
+
+        guard !drivesWithMeta.isEmpty || !drivesWithMacMeta.isEmpty else {
             offers = []
+            macOSOffers = []
             return
         }
         isChecking = true
@@ -128,6 +146,83 @@ final class WistUSBUpgradeDetector: ObservableObject {
             )
         }
         offers = result
+
+        await refreshMacInstallerCatalogIfStale()
+        var macRows: [MacOSDriveUpgradeOffer] = []
+        for (drive, meta) in drivesWithMacMeta {
+            guard let best = MacOSInstallerVersionRank.bestMatchingInstaller(list: macInstallerCatalog, meta: meta) else { continue }
+            let newer = MacOSInstallerVersionRank.isLatestStrictlyNewer(latest: best, current: meta)
+            macRows.append(
+                MacOSDriveUpgradeOffer(
+                    drive: drive,
+                    currentMeta: meta,
+                    latestInstaller: best,
+                    isNewer: newer
+                )
+            )
+        }
+        macOSOffers = macRows
+    }
+
+    private func macCatalogNeedsRefresh() -> Bool {
+        guard let t = macInstallerCatalogFetchedAt else { return true }
+        return Date().timeIntervalSince1970 - t > cacheTTLSeconds
+    }
+
+    private func refreshMacInstallerCatalogIfStale() async {
+        guard isNetworkProbingEnabled else { return }
+        guard macCatalogNeedsRefresh() || macInstallerCatalog.isEmpty else { return }
+        guard !macInstallerRefreshInflight else { return }
+        macInstallerRefreshInflight = true
+        defer { macInstallerRefreshInflight = false }
+
+        do {
+            try FileManager.default.createDirectory(at: MacOSCache.rootDirectory, withIntermediateDirectories: true)
+            let exportURL = MacOSCache.rootDirectory.appendingPathComponent("mist-list-upgrade-detector.json")
+            let list = try await MistCLITool.listInstallers(
+                exportURL: exportURL,
+                includeBetas: false,
+                catalog: .standard
+            )
+            macInstallerCatalog = list
+            macInstallerCatalogFetchedAt = Date().timeIntervalSince1970
+            saveMacInstallerDiskCache()
+        } catch {
+            // Offline: keep prior `macInstallerCatalog` / disk cache if present.
+        }
+    }
+
+    private func loadMacInstallerDiskCache() {
+        guard let data = UserDefaults.standard.data(forKey: macInstallerCacheKey),
+              let decoded = try? JSONDecoder().decode(MacInstallerDiskCache.self, from: data)
+        else {
+            return
+        }
+        macInstallerCatalogFetchedAt = decoded.fetchedAtEpoch
+        macInstallerCatalog = decoded.rows.map {
+            MistCLITool.InstallerListItem(
+                name: $0.name,
+                version: $0.version,
+                build: $0.build,
+                sizeBytes: $0.sizeBytes,
+                releaseDateISO8601: $0.releaseDateISO8601
+            )
+        }
+    }
+
+    private func saveMacInstallerDiskCache() {
+        let rows = macInstallerCatalog.map { item in
+            MacInstallerDiskCache.Row(
+                name: item.name,
+                version: item.version,
+                build: item.build,
+                sizeBytes: item.sizeBytes,
+                releaseDateISO8601: item.releaseDateISO8601
+            )
+        }
+        let payload = MacInstallerDiskCache(fetchedAtEpoch: macInstallerCatalogFetchedAt ?? Date().timeIntervalSince1970, rows: rows)
+        guard let data = try? JSONEncoder().encode(payload) else { return }
+        UserDefaults.standard.set(data, forKey: macInstallerCacheKey)
     }
 
     private func cacheKey(arch: String, language: String, edition: String) -> String {
@@ -214,6 +309,19 @@ final class WistUSBUpgradeDetector: ObservableObject {
             if a < b { return false }
         }
         return false
+    }
+}
+
+private struct MacInstallerDiskCache: Codable {
+    var fetchedAtEpoch: TimeInterval
+    var rows: [Row]
+
+    struct Row: Codable {
+        var name: String
+        var version: String
+        var build: String
+        var sizeBytes: Int64?
+        var releaseDateISO8601: String?
     }
 }
 
