@@ -1,0 +1,57 @@
+name: Баг
+description: Сообщить о проблеме в Fluffy Flash
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Описание
+      description: Что происходит и что ожидалось?
+      placeholder: Коротко и по делу
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Шаги воспроизведения
+      description: Пошагово, чтобы мы могли воспроизвести.
+      placeholder: |
+        1. …
+        2. …
+        3. …
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Версия приложения
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: Версия macOS
+      placeholder: "macOS 26.3"
+    validations:
+      required: true
+  - type: dropdown
+    id: arch
+    attributes:
+      label: Архитектура Mac
+      options:
+        - Apple Silicon (arm64)
+        - Intel (x86_64)
+        - Не знаю
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Логи / ошибки
+      description: Вставь логи (обрежь персональные данные).
+      render: text
+    validations:
+      required: false
+

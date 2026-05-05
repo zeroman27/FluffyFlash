@@ -1,0 +1,9 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Вопросы по использованию
+    url: https://github.com/zeroman27/FluffyFlash/discussions
+    about: Используй Discussions для вопросов, идей и помощи.
+  - name: Security
+    url: https://github.com/zeroman27/FluffyFlash/security/policy
+    about: Для уязвимостей см. SECURITY.md / security policy.
+

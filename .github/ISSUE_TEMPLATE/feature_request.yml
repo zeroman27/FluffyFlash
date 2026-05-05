@@ -1,0 +1,34 @@
+name: Идея / фича
+description: Предложить улучшение Fluffy Flash
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Какая проблема / боль?
+      placeholder: Сейчас неудобно потому что…
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Предлагаемое решение
+      placeholder: Я хочу, чтобы…
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Альтернативы
+      placeholder: Рассматривал(а) ещё…
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Контекст / скриншоты
+      placeholder: Ссылки, картинки, детали
+    validations:
+      required: false
+
