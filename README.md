@@ -4,82 +4,84 @@
 [![License](https://img.shields.io/github/license/zeroman27/FluffyFlash)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-macOS-blue)](#)
 
-**Fluffy Flash** — macOS‑приложение (SwiftUI), которое помогает:
+**Languages:** **English** · [Русский](README.ru.md)
 
-- скачать исходные файлы сборок Windows через [UUPDump](https://uupdump.net)
-- собрать **ISO** и/или записать **загрузочную USB‑флешку установщика Windows** на Mac
-- (дополнительно) работать с загрузками macOS‑инсталляторов и IPSW через `mist` в соответствующем режиме приложения
+**Fluffy Flash** is a macOS app (SwiftUI) that helps you:
 
-Ключевая идея: в релизных сборках **не требовать от пользователей Homebrew** — нужные CLI‑инструменты могут быть упакованы внутрь `.app` (и их лицензии/обязательства ведутся отдельно).
+- download Windows build sources via [UUPDump](https://uupdump.net)
+- build a Windows **ISO** and/or write a **bootable Windows installer USB** on a Mac
+- (optional) work with macOS installers and IPSW downloads via `mist` in the corresponding app mode
+
+The key idea: in release builds, users typically **don’t need Homebrew** — the required CLI toolchain can be bundled inside the `.app` (with proper third‑party attribution and notices).
 
 <p align="center">
-  <img src="docs/images/screenshot-home-windows.png" alt="Fluffy Flash — режим Windows (главный экран)" width="900" />
+  <img src="docs/images/screenshot-home-windows.png" alt="Fluffy Flash — Windows mode (home screen)" width="900" />
 </p>
 
-## Возможности
+## Features
 
-- **UUP → ISO**: запуск официального `convert.sh` (UUP converter) с контролем прогресса  
-- **ISO → USB**: запись установочной флешки (FAT32‑разметка + работа с `install.wim`)  
-- **Скачивание зависимостей “под ключ”**: релизный `.app` может включать `aria2c`, `cabextract`, `wimlib-imagex`, `xorriso` (или совместимый `mkisofs`/`genisoimage`), `chntpw` и др.  
-- **Privileged helper**: для операций, где macOS требует повышенные права (диски/разделы)  
-- **Комплаенс third‑party**: учёт bundled‑компонентов в [`FluffyFlash/THIRD_PARTY.md`](FluffyFlash/THIRD_PARTY.md) и notices в [`FluffyFlash/THIRD_PARTY_NOTICES.txt`](FluffyFlash/THIRD_PARTY_NOTICES.txt)
+- **UUP → ISO**: runs the official `convert.sh` (UUP converter) with progress streaming  
+- **ISO → USB**: creates a bootable installer USB (FAT32 layout + `install.wim` handling)  
+- **Bundled toolchain (release builds)**: the `.app` may include `aria2c`, `cabextract`, `wimlib-imagex`, `xorriso` (or compatible `mkisofs`/`genisoimage`), `chntpw`, etc.  
+- **Privileged helper**: for operations where macOS requires elevated privileges (disks/partitions)  
+- **Third‑party compliance**: inventory and notices live in [`FluffyFlash/THIRD_PARTY.md`](FluffyFlash/THIRD_PARTY.md) and [`FluffyFlash/THIRD_PARTY_NOTICES.txt`](FluffyFlash/THIRD_PARTY_NOTICES.txt)
 
-## Системные требования
+## Requirements
 
-- **macOS**: зависит от текущего `MACOSX_DEPLOYMENT_TARGET` в Xcode‑проекте (см. `Fluffy Flash.xcodeproj`).  
-- **Архитектура**:
-  - текущий релиз может быть ориентирован на Apple Silicon
-  - **поддержка Intel планируется в следующей версии** (важно: для Intel нужно упаковывать CLI‑инструменты соответствующей архитектуры)
+- **macOS**: depends on the `MACOSX_DEPLOYMENT_TARGET` set in the Xcode project (`Fluffy Flash.xcodeproj`).  
+- **CPU architecture**:
+  - current release may be Apple Silicon focused
+  - **Intel support is planned for a future release** (it requires shipping an x86_64‑compatible bundled toolchain)
 
-## Скачать
+## Download
 
-Стабильные сборки публикуются в **GitHub Releases**: https://github.com/zeroman27/FluffyFlash/releases
+Stable builds are published on **GitHub Releases**: https://github.com/zeroman27/FluffyFlash/releases
 
-## Скриншоты
+## Screenshots
 
-Файлы лежат в `docs/images/` (рекомендации по экспорту/неймингу: [`docs/images/README.md`](docs/images/README.md)).
+Images live under `docs/images/` (export/naming tips: [`docs/images/README.md`](docs/images/README.md)).
 
 <p>
-  <img src="docs/images/screenshot-home-winbuild.png" alt="Windows: сборка ISO из UUP" width="420" />
-  <img src="docs/images/screenshot-settings.png" alt="Настройки" width="420" />
+  <img src="docs/images/screenshot-home-winbuild.png" alt="Windows: building an ISO from UUP" width="420" />
+  <img src="docs/images/screenshot-settings.png" alt="Settings" width="420" />
 </p>
 
 <p>
-  <img src="docs/images/screenshot-home-macos.png" alt="macOS: режим загрузок" width="420" />
-  <img src="docs/images/screenshot-home-macinstaller.png" alt="macOS: выбор инсталлятора" width="420" />
+  <img src="docs/images/screenshot-home-macos.png" alt="macOS: downloads mode" width="420" />
+  <img src="docs/images/screenshot-home-macinstaller.png" alt="macOS: installer selection" width="420" />
 </p>
 
-## Сборка из исходников
+## Build from source
 
-Подробно: **[`FluffyFlash/README.md`](FluffyFlash/README.md)**.
+See **[`FluffyFlash/README.md`](FluffyFlash/README.md)**.
 
-Коротко:
-- проект Xcode: `FluffyFlash/Fluffy Flash.xcodeproj`
-- схема: `FluffyFlash`
-- чтобы ускорить итерации и не скачивать bundled tools на каждой сборке, можно использовать `WIST_SKIP_TOOL_BUNDLE=1`
+Quick notes:
+- Xcode project: `FluffyFlash/Fluffy Flash.xcodeproj`
+- scheme: `FluffyFlash`
+- to iterate faster and avoid re-downloading bundled tools on each build, you can use `WIST_SKIP_TOOL_BUNDLE=1`
 
-Автоматизация релизов/подпись/нотаризация: **[`docs/RELEASING.md`](docs/RELEASING.md)** и **[`FluffyFlash/docs/Signing.md`](FluffyFlash/docs/Signing.md)**.
+Release automation / signing / notarization: **[`docs/RELEASING.md`](docs/RELEASING.md)** and **[`FluffyFlash/docs/Signing.md`](FluffyFlash/docs/Signing.md)**.
 
 ## FAQ / Troubleshooting
 
-См. **[`docs/FAQ.md`](docs/FAQ.md)**.
+See **[`docs/FAQ.md`](docs/FAQ.md)**.
 
-## Структура репозитория
+## Repository layout
 
-- **`FluffyFlash/`**: Xcode‑проект, исходники приложения, скрипты, third‑party inventory  
-- **`docs/`**: заметки для мейнтейнеров (релизы, процессы), ассеты для README  
-- **`ObsidianVault/`**: внутренняя база знаний/планирование (не требуется для сборки приложения)
+- **`FluffyFlash/`**: Xcode project, app sources, scripts, third‑party inventory  
+- **`docs/`**: maintainer docs and README assets  
+- **`ObsidianVault/`**: internal notes/planning (not required to build the app)
 
-## Как помочь проекту
+## Contributing
 
-См. **[`CONTRIBUTING.md`](CONTRIBUTING.md)**.
+See **[`CONTRIBUTING.md`](CONTRIBUTING.md)**.
 
-## Лицензия
+## License
 
-Исходники: **Apache License 2.0** — см. [`LICENSE`](LICENSE).
+Source code: **Apache License 2.0** — see [`LICENSE`](LICENSE).
 
-Third‑party бинарники и их обязательства: [`FluffyFlash/THIRD_PARTY.md`](FluffyFlash/THIRD_PARTY.md) и [`FluffyFlash/THIRD_PARTY_NOTICES.txt`](FluffyFlash/THIRD_PARTY_NOTICES.txt).
+Third‑party bundled components and obligations: [`FluffyFlash/THIRD_PARTY.md`](FluffyFlash/THIRD_PARTY.md) and [`FluffyFlash/THIRD_PARTY_NOTICES.txt`](FluffyFlash/THIRD_PARTY_NOTICES.txt).
 
-## Безопасность
+## Security
 
-Приложение работает с дисками и сетевыми загрузками; sandbox намеренно ограничен для USB‑workflow. Для ответственного репорта уязвимостей: **[`SECURITY.md`](SECURITY.md)**.
+The app performs disk operations and network downloads by design; sandboxing is intentionally limited for USB workflows. For responsible disclosure: **[`SECURITY.md`](SECURITY.md)**.
