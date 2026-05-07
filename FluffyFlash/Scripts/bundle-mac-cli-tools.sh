@@ -78,6 +78,22 @@ dedupe_lc_rpath() {
   done
 }
 
+adhoc_codesign() {
+  # Adhoc-sign every bundled CLI binary so Gatekeeper on a fresh Mac
+  # (no Homebrew, distributed via DMG/zip) does not kill them with SIGKILL.
+  # Without this, Apple Silicon refuses to launch unsigned binaries even from
+  # a notarized .app context.
+  local bin_path="$1"
+  if [[ ! -f "$bin_path" ]]; then
+    return 0
+  fi
+  if ! command -v codesign &>/dev/null; then
+    return 0
+  fi
+  echo "  codesign (adhoc) $(basename "$bin_path")"
+  codesign --force --preserve-metadata=entitlements,requirements,flags,runtime --sign - "$bin_path" >/dev/null 2>&1 || true
+}
+
 copy_one() {
   local name="$1"
   local src="$BREW_PREFIX/bin/$name"
@@ -92,10 +108,7 @@ copy_one() {
   # dylibbundler tends to rewrite/remove those rpaths and can break loading (SIGKILL) even
   # when Homebrew-linked dependencies are otherwise system frameworks.
   if [[ "$name" == "mist" ]]; then
-    if command -v codesign &>/dev/null; then
-      echo "  codesign (adhoc) mist"
-      codesign --force --deep --preserve-metadata=entitlements,requirements,flags,runtime --sign - "$DEST_BIN/$name" >/dev/null 2>&1 || true
-    fi
+    adhoc_codesign "$DEST_BIN/$name"
     return 0
   fi
   if command -v dylibbundler &>/dev/null; then
@@ -104,6 +117,7 @@ copy_one() {
     # Normalize rpaths after bundling (prevents dyld duplicate LC_RPATH crashes).
     dedupe_lc_rpath "$DEST_BIN/$name" "@loader_path/../lib/"
   fi
+  adhoc_codesign "$DEST_BIN/$name"
 }
 
 for t in aria2c cabextract wimlib-imagex chntpw xorriso mist; do
@@ -123,7 +137,36 @@ write_xorriso_wrapper() {
 # its `-as mkisofs` compatibility mode.
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
-exec "$HERE/xorriso" -as mkisofs "$@"
+# The upstream UUP converter uses:
+#   --udf -iso-level 3 --hide "*" ...
+# With genisoimage/cdrkit this yields a UDF filesystem while hiding all files
+# from the ISO9660 tree. With our bundled xorriso 1.5.8.pl01:
+# - `--udf` / `-udf` are rejected in mkisofs emulation mode
+# - if we keep `--hide "*"`, the ISO9660 tree becomes empty and macOS mounts
+#   a volume with no visible files (writer then can't find sources/install.*).
+# To keep the upstream script untouched, we drop `--udf`/`-udf` and also drop
+# `--hide` (and its pattern argument), so the ISO9660 tree remains visible.
+args=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --udf|-udf)
+      shift
+      ;;
+    --hide)
+      shift
+      # drop the pattern (e.g. "*")
+      [[ $# -gt 0 ]] && shift
+      ;;
+    --hide=*)
+      shift
+      ;;
+    *)
+      args+=("$1")
+      shift
+      ;;
+  esac
+done
+exec "$HERE/xorriso" -as mkisofs "${args[@]}"
 WRAPPER
   chmod +x "$wrapper_path"
 }
@@ -132,6 +175,13 @@ WRAPPER
 # HostToolPaths, BundledToolLocator) finds a compatible binary.
 write_xorriso_wrapper "$DEST_BIN/genisoimage"
 write_xorriso_wrapper "$DEST_BIN/mkisofs"
+
+# Adhoc-sign bundled dylibs so dyld accepts them on freshly-quarantined .apps.
+if [[ -d "$DEST_LIB" ]] && command -v codesign &>/dev/null; then
+  while IFS= read -r -d '' dylib; do
+    adhoc_codesign "$dylib"
+  done < <(find "$DEST_LIB" -type f -name '*.dylib' -print0)
+fi
 
 fail=0
 for t in aria2c cabextract wimlib-imagex chntpw xorriso genisoimage mkisofs mist; do

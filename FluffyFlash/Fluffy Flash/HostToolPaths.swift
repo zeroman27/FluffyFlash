@@ -46,15 +46,7 @@ enum HostToolPaths: Sendable {
         var env = Dictionary(uniqueKeysWithValues: ProcessInfo.processInfo.environment.map { ($0.key, $0.value) })
         base?.forEach { env[$0.key] = $0.value }
 
-        var pathParts: [String] = []
-        if let bundled = BundledToolLocator.bundledToolsBinDirectory()?.path {
-            pathParts.append(bundled)
-        }
-        pathParts.append(contentsOf: extendedPATH.split(separator: ":").map(String.init))
-        if let existing = env["PATH"], !existing.isEmpty {
-            pathParts.append(existing)
-        }
-        env["PATH"] = pathParts.joined(separator: ":")
+        env["PATH"] = subprocessPATH(includingProcessPATH: env["PATH"])
 
         if let lib = BundledToolLocator.bundledToolsLibDirectory()?.path,
            FileManager.default.fileExists(atPath: lib) {
@@ -62,5 +54,33 @@ enum HostToolPaths: Sendable {
             env["DYLD_FALLBACK_LIBRARY_PATH"] = lib
         }
         return env
+    }
+
+    /// Computes the exact `PATH` value that subprocesses (e.g. `convert.sh`) will
+    /// see, so diagnostics and the System Status page can display it verbatim.
+    static func subprocessPATHForDiagnostics() -> String {
+        subprocessPATH(includingProcessPATH: ProcessInfo.processInfo.environment["PATH"])
+    }
+
+    private static func subprocessPATH(includingProcessPATH existing: String?) -> String {
+        composeSubprocessPATH(
+            bundledBin: BundledToolLocator.bundledToolsBinDirectory(),
+            processPATH: existing
+        )
+    }
+
+    /// Pure helper used by both production code and tests. Always prepends the
+    /// bundled `Tools/bin` directory so subprocesses find embedded CLI tools
+    /// even when the host machine has no Homebrew.
+    static func composeSubprocessPATH(bundledBin: URL?, processPATH: String?) -> String {
+        var pathParts: [String] = []
+        if let bundled = bundledBin?.path {
+            pathParts.append(bundled)
+        }
+        pathParts.append(contentsOf: extendedPATH.split(separator: ":").map(String.init))
+        if let processPATH, !processPATH.isEmpty {
+            pathParts.append(processPATH)
+        }
+        return pathParts.joined(separator: ":")
     }
 }

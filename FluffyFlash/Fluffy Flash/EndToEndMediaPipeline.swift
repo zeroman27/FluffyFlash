@@ -400,8 +400,37 @@ final class EndToEndMediaPipeline: ObservableObject {
         if let e = download.convertLastError, !e.isEmpty {
             chunks.append("\n--- download.convertLastError ---\n\(e)")
         }
+        let convertTail = download.convertLogLines.suffix(50)
+        if !convertTail.isEmpty {
+            chunks.append("\n--- convert.sh log (tail) ---\n\(convertTail.joined(separator: "\n"))")
+        }
         chunks.append("\n--- pipeline.error ---\n\(extra)")
+        chunks.append("\n--- environment ---\n\(Self.environmentDiagnosticsBlock())")
         chunks.append("\n--- usbWriter.log ---\n\(usb.fullLogText)")
         return chunks.joined(separator: "\n")
+    }
+
+    /// Snapshot of the bundled-tool PATH and toolchain detection so the user-copied
+    /// error log makes the root cause obvious (most common: tools not in subprocess
+    /// `PATH` on a Mac without Homebrew).
+    private static func environmentDiagnosticsBlock() -> String {
+        var lines: [String] = []
+        let appShortVersion = (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String) ?? "?"
+        let osv = ProcessInfo.processInfo.operatingSystemVersion
+        lines.append("app: Fluffy Flash \(appShortVersion)")
+        lines.append("macOS: \(osv.majorVersion).\(osv.minorVersion).\(osv.patchVersion)")
+        #if arch(arm64)
+        lines.append("arch: arm64")
+        #elseif arch(x86_64)
+        lines.append("arch: x86_64")
+        #else
+        lines.append("arch: unknown")
+        #endif
+        lines.append("bundle: \(Bundle.main.bundleURL.path)")
+        let bundledBin = BundledToolLocator.bundledToolsBinDirectory()?.path ?? "<not found>"
+        lines.append("bundled Tools/bin: \(bundledBin)")
+        lines.append("hasEmbeddedUUPToolchain: \(BundledToolLocator.hasEmbeddedUUPToolchain)")
+        lines.append("subprocess PATH: \(HostToolPaths.subprocessPATHForDiagnostics())")
+        return lines.joined(separator: "\n")
     }
 }

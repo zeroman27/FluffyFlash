@@ -2434,6 +2434,7 @@ private struct FluffyFailureLogSheet: View {
     let onCopy: () -> Void
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openSettings) private var openSettings
 
     var body: some View {
         FluffySheetChrome {
@@ -2473,13 +2474,22 @@ private struct FluffyFailureLogSheet: View {
 
                 Divider().opacity(0.35)
 
-                HStack {
+                HStack(spacing: 10) {
                     Button {
                         onCopy()
                     } label: {
                         Label(String(localized: "Copy error"), systemImage: "doc.on.doc")
                     }
                     .buttonStyle(.borderedProminent)
+
+                    Button {
+                        openSettings()
+                    } label: {
+                        Label(String(localized: "Run diagnostics…"), systemImage: "stethoscope")
+                    }
+                    .buttonStyle(.bordered)
+                    .help(String(localized: "Opens Settings → System status. Use it to verify bundled CLI tools, permissions, environment, and storage."))
+
                     Spacer()
                 }
                 .padding(.horizontal, 18)

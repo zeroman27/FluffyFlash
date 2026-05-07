@@ -1,0 +1,30 @@
+# Obsidian chat context memory (Wist)
+#
+# Goal: keep long-running app context across separate chats by writing concise
+# session notes into the repo-backed Obsidian vault.
+#
+# Scope: This rule applies to this repository only.
+#
+# When to write
+# - After any non-trivial change set (features, architecture, build scripts, diagnostics, tests).
+# - After receiving important runtime evidence from the user (logs, screenshots, reproduction steps).
+# - Prefer writing once per “milestone” / problem solved, not after every trivial message.
+#
+# Where to write
+# - Always update (at least) the current session note under:
+#   `ObsidianVault/10-Project-Wist/Sessions/YYYY-MM-DD — <short-title>.md`
+# - If the work changes user-visible behavior or introduces a new subsystem, also update:
+#   `ObsidianVault/10-Project-Wist/Architecture.md` and/or `Roadmap.md` and/or `Backlog.md`.
+#
+# What to write (keep it short)
+# - 5–15 bullets max:
+#   - what changed (file/module names)
+#   - why (root cause / user story)
+#   - how to verify (commands / UI path)
+#   - any known follow-ups / risks
+#
+# Constraints
+# - Do NOT paste large logs verbatim; summarize and link to where they were obtained.
+# - Do NOT store secrets (passwords, tokens, API keys) in Obsidian or code.
+# - Do NOT duplicate full code; keep high-level notes + file paths.
+

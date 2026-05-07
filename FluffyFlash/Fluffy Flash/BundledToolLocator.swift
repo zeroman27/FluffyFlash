@@ -21,23 +21,59 @@ enum BundledToolError: LocalizedError {
 
 enum BundledToolLocator: Sendable {
 
-    /// `…/Contents/Resources/Tools/bin` when tools are embedded in the app.
+    /// Marker executables used to detect a "flat" bundle layout: when Xcode's
+    /// `PBXFileSystemSynchronizedRootGroup` flattens `Fluffy Flash/Tools/bin/*`
+    /// directly into `Contents/Resources/`, the nested directory does not exist
+    /// but the executables are still present alongside other resources.
+    private static let flatLayoutMarkerExecutables: [String] = [
+        "aria2c", "wimlib-imagex", "cabextract", "chntpw", "xorriso",
+    ]
+
+    /// Directory containing bundled CLI executables. Returns the nested
+    /// `…/Contents/Resources/Tools/bin` when available, or falls back to
+    /// `…/Contents/Resources` when Xcode's synchronized group flattened the
+    /// `Tools/bin/` files into the resources root (current Xcode 26 behaviour).
     static func bundledToolsBinDirectory() -> URL? {
+        detectBundledBinDirectory(
+            resourceURL: Bundle.main.resourceURL,
+            bundleURL: Bundle.main.bundleURL
+        )
+    }
+
+    /// Testable variant of `bundledToolsBinDirectory()`. Resolves the bundled
+    /// `Tools/bin` directory using the same precedence rules as the
+    /// production code, but against any caller-supplied bundle layout.
+    static func detectBundledBinDirectory(resourceURL: URL?, bundleURL: URL?) -> URL? {
         let fm = FileManager.default
-        let bundle = Bundle.main
-        let candidates: [URL?] = [
-            bundle.url(forResource: "bin", withExtension: nil, subdirectory: "Tools"),
-            bundle.resourceURL?.appendingPathComponent("Tools/bin"),
-            bundle.bundleURL.appendingPathComponent("Contents/Resources/Tools/bin"),
+        let nestedCandidates: [URL?] = [
+            resourceURL?.appendingPathComponent("Tools/bin"),
+            bundleURL?.appendingPathComponent("Contents/Resources/Tools/bin"),
         ]
-        for u in candidates {
+        for u in nestedCandidates {
             guard let u, fm.fileExists(atPath: u.path) else { continue }
             var isDir: ObjCBool = false
             if fm.fileExists(atPath: u.path, isDirectory: &isDir), isDir.boolValue {
                 return u
             }
         }
+        if let resources = resourceURL,
+           hasAnyMarkerExecutable(in: resources) {
+            return resources
+        }
         return nil
+    }
+
+    /// True when at least one of the marker CLI binaries is executable
+    /// directly under `dir` (used to detect the flat resources layout).
+    static func hasAnyMarkerExecutable(in dir: URL) -> Bool {
+        let fm = FileManager.default
+        for name in flatLayoutMarkerExecutables {
+            let candidate = dir.appendingPathComponent(name)
+            if fm.isExecutableFile(atPath: candidate.path) {
+                return true
+            }
+        }
+        return false
     }
 
     static func bundledToolsLibDirectory() -> URL? {

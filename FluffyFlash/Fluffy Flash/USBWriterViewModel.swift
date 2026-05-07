@@ -207,11 +207,7 @@ final class USBWriterViewModel: ObservableObject {
                 ownsISOMount = true
             }
 
-            let installWim = isoMount.appendingPathComponent("sources/install.wim")
-            let installEsd = isoMount.appendingPathComponent("sources/install.esd")
-            let hasWim = FileManager.default.fileExists(atPath: installWim.path)
-            let hasEsd = FileManager.default.fileExists(atPath: installEsd.path)
-            guard hasWim || hasEsd else {
+            guard let installImage = locateInstallImage(isoMount: isoMount) else {
                 if ownsISOMount {
                     try? await HdiutilAttach.detach(mountPoint: isoMount) { [weak self] line in
                         Task { @MainActor in self?.log(line) }
@@ -219,8 +215,6 @@ final class USBWriterViewModel: ObservableObject {
                 }
                 throw USBWriterError.installImageMissing
             }
-
-            let installImage = hasWim ? installWim : installEsd
 
             log(String(localized: "[3b/7] Checking file sizes (FAT32 ≤ ~4 GiB per file)…"))
             let oversize = try ISOFat32Precheck.oversizeFiles(isoRoot: isoMount)
@@ -352,6 +346,41 @@ final class USBWriterViewModel: ObservableObject {
             log(String(format: String(localized: "Error: %@"), message))
             return message
         }
+    }
+
+    /// Finds `sources/install.wim` or `sources/install.esd` in a way that is robust
+    /// to ISO9660 case variations (e.g. `SOURCES/INSTALL.WIM`). Returns the
+    /// first match (prefers WIM over ESD when both exist).
+    private func locateInstallImage(isoMount: URL) -> URL? {
+        let fm = FileManager.default
+        // Fast path: common lowercase layout.
+        let wimLower = isoMount.appendingPathComponent("sources/install.wim")
+        if fm.fileExists(atPath: wimLower.path) { return wimLower }
+        let esdLower = isoMount.appendingPathComponent("sources/install.esd")
+        if fm.fileExists(atPath: esdLower.path) { return esdLower }
+
+        // Case-insensitive fallback: find the Sources directory.
+        guard let top = try? fm.contentsOfDirectory(at: isoMount, includingPropertiesForKeys: [.isDirectoryKey], options: [.skipsHiddenFiles]) else {
+            return nil
+        }
+        guard let sourcesDir = top.first(where: { url in
+            let name = url.lastPathComponent
+            let isDir = (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) ?? false
+            return isDir && name.compare("sources", options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame
+        }) else {
+            return nil
+        }
+
+        guard let sourcesChildren = try? fm.contentsOfDirectory(at: sourcesDir, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles]) else {
+            return nil
+        }
+        if let wim = sourcesChildren.first(where: { $0.lastPathComponent.compare("install.wim", options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
+            return wim
+        }
+        if let esd = sourcesChildren.first(where: { $0.lastPathComponent.compare("install.esd", options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
+            return esd
+        }
+        return nil
     }
 
     private func setDriveStep(_ deviceId: String, _ step: DriveStep, stepProgress: Double, detail: String?) {

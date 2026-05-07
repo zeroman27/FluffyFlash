@@ -30,8 +30,43 @@ extension ProcessRunnerError: LocalizedError {
     }
 }
 
+/// Thread-safe ring buffer for accumulating bounded stdout/stderr tails during
+/// streaming. Used to recover the *real* error text on subprocess failure: the
+/// previous implementation only captured what was left in the pipe **after**
+/// the readability handler had been removed, which on fast-failing processes
+/// (e.g. `convert.sh` calling `which aria2c` and exiting immediately) yielded
+/// an empty hint.
+private final class StreamTailAccumulator: @unchecked Sendable {
+    private let lock = NSLock()
+    private var buffer = Data()
+    private let maxBytes: Int
+
+    init(maxBytes: Int) {
+        self.maxBytes = max(1024, maxBytes)
+    }
+
+    func append(_ data: Data) {
+        lock.lock()
+        defer { lock.unlock() }
+        buffer.append(data)
+        if buffer.count > maxBytes {
+            let drop = buffer.count - maxBytes
+            buffer.removeFirst(drop)
+        }
+    }
+
+    func text() -> String {
+        lock.lock()
+        defer { lock.unlock() }
+        return String(data: buffer, encoding: .utf8) ?? ""
+    }
+}
+
 /// Runs a subprocess and waits asynchronously. Use for `wimlib-imagex`, shell scripts, etc.
 enum ProcessRunner: Sendable {
+
+    /// Maximum bytes retained per stream for failure diagnostics.
+    private static let tailBufferBytes = 32 * 1024
 
     /// Runs `executableURL` with `arguments`, optional working directory and extra `environment` keys (merged with `ProcessInfo.processInfo.environment`).
     nonisolated static func run(
@@ -72,14 +107,23 @@ enum ProcessRunner: Sendable {
         process.standardOutput = outPipe
         process.standardError = errPipe
 
-        if let onStdoutLine {
-            outPipe.fileHandleForReading.readabilityHandler = { handle in
-                Self.emitLines(from: handle.availableData, to: onStdoutLine)
+        let stdoutTail = StreamTailAccumulator(maxBytes: tailBufferBytes)
+        let stderrTail = StreamTailAccumulator(maxBytes: tailBufferBytes)
+
+        outPipe.fileHandleForReading.readabilityHandler = { handle in
+            let data = handle.availableData
+            guard !data.isEmpty else { return }
+            stdoutTail.append(data)
+            if let onStdoutLine {
+                Self.emitLines(from: data, to: onStdoutLine)
             }
         }
-        if let onStderrLine {
-            errPipe.fileHandleForReading.readabilityHandler = { handle in
-                Self.emitLines(from: handle.availableData, to: onStderrLine)
+        errPipe.fileHandleForReading.readabilityHandler = { handle in
+            let data = handle.availableData
+            guard !data.isEmpty else { return }
+            stderrTail.append(data)
+            if let onStderrLine {
+                Self.emitLines(from: data, to: onStderrLine)
             }
         }
 
@@ -90,19 +134,25 @@ enum ProcessRunner: Sendable {
                     errPipe.fileHandleForReading.readabilityHandler = nil
                     let restOut = outPipe.fileHandleForReading.readDataToEndOfFile()
                     let restErr = errPipe.fileHandleForReading.readDataToEndOfFile()
-                    if let onStdoutLine, !restOut.isEmpty {
-                        Self.emitLines(from: restOut, to: onStdoutLine)
+                    if !restOut.isEmpty {
+                        stdoutTail.append(restOut)
+                        if let onStdoutLine {
+                            Self.emitLines(from: restOut, to: onStdoutLine)
+                        }
                     }
-                    if let onStderrLine, !restErr.isEmpty {
-                        Self.emitLines(from: restErr, to: onStderrLine)
+                    if !restErr.isEmpty {
+                        stderrTail.append(restErr)
+                        if let onStderrLine {
+                            Self.emitLines(from: restErr, to: onStderrLine)
+                        }
                     }
-                    let errText = String(data: restErr, encoding: .utf8) ?? ""
                     if proc.terminationReason == .exit, proc.terminationStatus == 0 {
                         continuation.resume()
                     } else if proc.terminationReason == .uncaughtSignal, proc.terminationStatus == SIGTERM {
                         continuation.resume(throwing: CancellationError())
                     } else {
-                        let outText = String(data: restOut, encoding: .utf8) ?? ""
+                        let errText = stderrTail.text()
+                        let outText = stdoutTail.text()
                         let diag: String = {
                             let e = errText.trimmingCharacters(in: .whitespacesAndNewlines)
                             let o = outText.trimmingCharacters(in: .whitespacesAndNewlines)

@@ -344,15 +344,30 @@ final class PrivilegedHelper: NSObject, PrivilegedHelperProtocol {
             emit("diskutil enableOwnership …")
             runTool("/usr/sbin/diskutil", ["enableOwnership", volumeMountPath])
 
+            // Best-effort diagnostics: mount flags + perms. This is critical when createinstallmedia
+            // fails with EPERM even as root (often due to mount options / policy).
+            emit("mount …")
+            runTool("/sbin/mount", [])
+            emit("ls -ldOe@ …")
+            runTool("/bin/ls", ["-ldOe@", volumeMountPath])
+            emit("diskutil info …")
+            runTool("/usr/sbin/diskutil", ["info", volumeMountPath])
+
             // Write probe.
             let probeURL = URL(fileURLWithPath: volumeMountPath).appendingPathComponent(".fluffy_write_probe")
             do {
-                try "probe".data(using: .utf8)?.write(to: probeURL, options: [.atomic])
+                // Avoid `.atomic` here: it creates a temp file first (mktemp), which can mask
+                // the true reason of EPERM. We want the direct create/write error.
+                try "probe".data(using: .utf8)?.write(to: probeURL, options: [])
                 try? FileManager.default.removeItem(at: probeURL)
                 emit("writeProbe=ok")
             } catch {
                 emit("writeProbe=failed: \(error.localizedDescription)")
                 let ns = error as NSError
+                emit("writeProbe NSError domain=\(ns.domain) code=\(ns.code)")
+                if !ns.userInfo.isEmpty {
+                    emit("writeProbe userInfo=\(ns.userInfo)")
+                }
                 if ns.domain == NSPOSIXErrorDomain, ns.code == 1 ||
                     (ns.userInfo[NSUnderlyingErrorKey] as? NSError).map({ $0.domain == NSPOSIXErrorDomain && $0.code == 1 }) == true {
                     emit("❗️Permission denied writing to the USB volume (EPERM). Enable Removable Volumes for Fluffy Flash in System Settings → Privacy & Security → Files and Folders.")

@@ -13,8 +13,10 @@ struct SettingsView: View {
     @ObservedObject var upgradeDetector: WistUSBUpgradeDetector
 
     @StateObject private var permissionsService = PermissionsService()
+    @StateObject private var systemDoctor = FluffySystemDoctor()
     @Environment(\.scenePhase) private var scenePhase
     @State private var showPermissionsDetails = false
+    @State private var systemStatusCopied = false
 
     @AppStorage("wist.appLanguage") private var appLanguageRaw: String = WistAppLanguage.system.rawValue
     @AppStorage("fluffy.maxConcurrentWrites") private var maxConcurrentWrites: Int = 3
@@ -59,6 +61,7 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: WistTheme.gutter) {
                         appearanceCard
                         privacyPermissionsCard
+                        systemStatusCard
                         languageCard
                         writeBehaviourCard
                         isoFolderCard
@@ -478,6 +481,186 @@ struct SettingsView: View {
         case .unknown: return .secondary
         }
     }
+
+    // MARK: - System status
+
+    private var systemStatusCard: some View {
+        MistSectionCard(title: String(localized: "System status"), systemImage: "stethoscope") {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(String(localized: "Verify bundled CLI tools, permissions, environment, and storage. Useful when ISO build fails on a different Mac."))
+                    .font(WistFont.caption(11))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                HStack(spacing: 10) {
+                    Button {
+                        Task { await systemDoctor.runDiagnostics() }
+                    } label: {
+                        if systemDoctor.isRunning {
+                            HStack(spacing: 6) {
+                                ProgressView().controlSize(.small)
+                                Text(String(localized: "Running…"))
+                            }
+                        } else if systemDoctor.report == nil {
+                            Label(String(localized: "Run diagnostics"), systemImage: "play.circle")
+                        } else {
+                            Label(String(localized: "Re-run all"), systemImage: "arrow.clockwise")
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(systemDoctor.isRunning)
+
+                    Button {
+                        copySystemStatusReport()
+                    } label: {
+                        Label(systemStatusCopied ? String(localized: "Copied") : String(localized: "Copy report"), systemImage: "doc.on.doc")
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(systemDoctor.report == nil)
+
+                    Button {
+                        NSWorkspace.shared.activateFileViewerSelecting([Bundle.main.bundleURL])
+                    } label: {
+                        Label(String(localized: "Reveal app bundle"), systemImage: "magnifyingglass")
+                    }
+                    .buttonStyle(.bordered)
+
+                    Spacer()
+                }
+
+                if let report = systemDoctor.report {
+                    Divider().opacity(0.4)
+                    VStack(alignment: .leading, spacing: 14) {
+                        ForEach(report.sections) { section in
+                            systemStatusSectionView(section)
+                        }
+                        Text(String(format: String(localized: "Last run: %@"), Self.systemStatusTimeFormatter.string(from: report.generatedAt)))
+                            .font(WistFont.caption(10))
+                            .foregroundStyle(.tertiary)
+                    }
+                } else if !systemDoctor.isRunning {
+                    Text(String(localized: "Tap “Run diagnostics” to start. Nothing runs in the background."))
+                        .font(WistFont.caption(11))
+                        .foregroundStyle(.tertiary)
+                        .padding(.vertical, 4)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func systemStatusSectionView(_ section: SystemStatusSection) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 8) {
+                Image(systemName: section.symbol)
+                    .foregroundStyle(systemStatusColor(section.rollupStatus))
+                    .frame(width: 18, alignment: .center)
+                Text(section.title)
+                    .font(WistFont.headline(12))
+                Spacer(minLength: 8)
+                Text(systemStatusBadge(for: section.rollupStatus))
+                    .font(WistFont.caption(10).monospacedDigit())
+                    .foregroundStyle(systemStatusColor(section.rollupStatus))
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                ForEach(section.items) { item in
+                    systemStatusRow(item)
+                }
+            }
+            .padding(.leading, 26)
+        }
+    }
+
+    @ViewBuilder
+    private func systemStatusRow(_ item: SystemCheckItem) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: systemStatusIcon(item.status))
+                .foregroundStyle(systemStatusColor(item.status))
+                .frame(width: 18, alignment: .center)
+                .padding(.top, 1)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.title)
+                    .font(WistFont.body(12))
+                if let detail = item.detail, !detail.isEmpty {
+                    Text(detail)
+                        .font(.system(.caption2, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                        .textSelection(.enabled)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                if let summary = systemStatusSummary(item.status) {
+                    Text(summary)
+                        .font(WistFont.caption(10))
+                        .foregroundStyle(systemStatusColor(item.status))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            Spacer(minLength: 6)
+            if let action = item.fixAction, let label = item.fixLabel {
+                Button {
+                    Task { await systemDoctor.performFix(action) }
+                } label: {
+                    Text(label)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+            }
+        }
+        .padding(.vertical, 2)
+    }
+
+    private func copySystemStatusReport() {
+        guard let report = systemDoctor.report else { return }
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(report.plainTextReport(), forType: .string)
+        systemStatusCopied = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
+            systemStatusCopied = false
+        }
+    }
+
+    private func systemStatusIcon(_ st: SystemCheckStatus) -> String {
+        switch st {
+        case .ok: return "checkmark.circle.fill"
+        case .warning: return "exclamationmark.triangle.fill"
+        case .failed: return "xmark.octagon.fill"
+        case .info: return "info.circle"
+        }
+    }
+
+    private func systemStatusColor(_ st: SystemCheckStatus) -> Color {
+        switch st {
+        case .ok: return .green
+        case .warning: return .orange
+        case .failed: return .red
+        case .info: return .secondary
+        }
+    }
+
+    private func systemStatusBadge(for st: SystemCheckStatus) -> String {
+        switch st {
+        case .ok: return String(localized: "OK")
+        case .warning: return String(localized: "Warnings")
+        case .failed: return String(localized: "Issues")
+        case .info: return String(localized: "Info")
+        }
+    }
+
+    private func systemStatusSummary(_ st: SystemCheckStatus) -> String? {
+        switch st {
+        case .ok: return nil
+        case .info: return nil
+        case .warning(let msg): return msg
+        case .failed(let msg): return msg
+        }
+    }
+
+    private static let systemStatusTimeFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateStyle = .short
+        f.timeStyle = .medium
+        return f
+    }()
 
     private var expertModeCard: some View {
         MistSectionCard(title: String(localized: "Expert mode"), systemImage: "gearshape.2") {
