@@ -45,6 +45,70 @@ The value baked into `App-Info.plist` should be updated if your published tree d
 
 See Sparkle’s own documentation for delta updates and advanced options.
 
+## Release checklist (first update users can install)
+
+Do these **in order** so Sparkle never downloads a 404 or an unsigned file.
+
+1. **Bump versions in Xcode** (example patch release):
+   - `MARKETING_VERSION` (e.g. `0.1.2`) — `CFBundleShortVersionString`
+   - `CURRENT_PROJECT_VERSION` (integer build, e.g. `3`) — `CFBundleVersion`  
+   Both must be **newer** than what users already have, or Sparkle will not offer the update.
+
+2. **Archive** the **FluffyFlash** scheme (**Product → Archive**), **Distribute** the resulting `.app` (Release), then **notarize** and staple (same flow you use for DMG; locally see `Scripts/codesign_and_notarize.sh` if you sign outside Xcode).
+
+3. **Create the update ZIP** (Sparkle expects a zip that contains the `.app` at the top level):
+
+   ```bash
+   cd /path/to/folder/containing/FluffyFlash.app
+   ditto -c -k --sequesterRsrc --keepParent FluffyFlash.app FluffyFlash-0.1.2.zip
+   ```
+
+   Use a **stable file name** per release; the appcast `url` must point exactly to this file.
+
+4. **Create a GitHub Release** (tag `v0.1.2` or your convention) and **upload the ZIP** as a release asset **before** you point the appcast at it. Copy the **browser download URL** for the asset (or the `releases/download/...` URL).
+
+5. **Sign the ZIP** with the **same** EdDSA private key that matches `SUPublicEDKey` in the app users already run:
+
+   ```bash
+   /path/to/Sparkle-2.9.1/bin/sign_update FluffyFlash-0.1.2.zip
+   ```
+
+   If the key is only in Keychain, omit `--ed-key-file`. Otherwise:
+
+   ```bash
+   ./bin/sign_update FluffyFlash-0.1.2.zip --ed-key-file /path/to/exported.key
+   ```
+
+   The tool prints **`sparkle:edSignature`** and **`length`** — copy them into the appcast.
+
+6. **Append one `<item>`** to `FluffyFlash/appcast.xml` (newest items are usually **first** in the channel). Replace placeholders:
+
+   ```xml
+   <item>
+     <title>Fluffy Flash 0.1.2</title>
+     <link>https://github.com/zeroman27/FluffyFlash/releases</link>
+     <sparkle:version>3</sparkle:version>
+     <sparkle:shortVersionString>0.1.2</sparkle:shortVersionString>
+     <pubDate>Wed, 14 May 2026 12:00:00 +0000</pubDate>
+     <enclosure
+       url="https://github.com/zeroman27/FluffyFlash/releases/download/v0.1.2/FluffyFlash-0.1.2.zip"
+       sparkle:edSignature="PASTE_FROM_sign_update"
+       length="PASTE_LENGTH_FROM_sign_update"
+       type="application/octet-stream"
+     />
+   </item>
+   ```
+
+   `sparkle:version` = **`CFBundleVersion`** (integer string). `sparkle:shortVersionString` = **`CFBundleShortVersionString`**.
+
+7. **Commit and push** `appcast.xml` only **after** the ZIP is downloadable at `url`.
+
+8. **Smoke-test**: install the **previous** build on a VM or second Mac, run **Check for Updates…**, confirm Sparkle offers **0.1.2** and installs.
+
+## Optional automation
+
+Sparkle ships **`generate_appcast`** for maintaining the RSS file from a folder of update archives; you can adopt it later. Until then, one manual `<item>` per release is enough.
+
 ## Helper tool
 
 Sparkle updates the **main application**. The **privileged helper** must still be upgraded with your existing logic (version / hash checks and reinstall) after the new `.app` is in place.
