@@ -955,9 +955,6 @@
     "Insider" : {
 
     },
-    "Install helper…" : {
-
-    },
     "Installed" : {
 
     },
@@ -1277,6 +1274,9 @@
 
     },
     "Original" : {
+
+    },
+    "Outdated" : {
 
     },
     "Panda" : {
@@ -1912,6 +1912,27 @@
 
     },
     "Your macOS USB is ready." : {
+
+    },
+    "Check for updates…" : {
+
+    },
+    "Check for Updates…" : {
+
+    },
+    "Download updates published to the Sparkle appcast." : {
+
+    },
+    "Add SUPublicEDKey to the app Info.plist (see docs/Sparkle.md)." : {
+
+    },
+    "Fluffy Flash updates" : {
+
+    },
+    "Install new versions of this app using Sparkle (signed downloads from our appcast)." : {
+
+    },
+    "In-app updates are not fully configured (missing SUPublicEDKey). See docs/Sparkle.md." : {
 
     },
     "Your USB drive is ready." : {

@@ -47,6 +47,7 @@ enum PermissionItem: String, CaseIterable, Identifiable, Hashable, Sendable {
 
 enum PermissionStatus: String, Equatable, Sendable {
     case granted
+    case outdated
     case denied
     case notDetermined
     case unknown
@@ -91,6 +92,13 @@ final class PermissionsService: ObservableObject {
     private func refreshPrivilegedHelper() async -> PermissionStatus {
         guard PrivilegedHelperClient.isInstalled() else { return .denied }
 
+        // Helper is present; detect if the installed copy differs from what this app build ships.
+        // This is important because SMJobBless does not automatically upgrade an existing helper
+        // unless we explicitly attempt a reinstall.
+        if await PrivilegedHelperClientHelperOutdatedProbe.isOutdated() {
+            return .outdated
+        }
+
         // Right after SMJobBless, launchd may not accept XPC yet — retry instead of one flaky ping.
         for attempt in 0 ..< 8 {
             if attempt > 0 {
@@ -103,6 +111,26 @@ final class PermissionsService: ObservableObject {
 
         // Binaries and launchd plist are present — treat as OK even if XPC stayed flaky (rare).
         return PrivilegedHelperClient.isInstalled() ? .granted : .denied
+    }
+
+    /// Small helper to keep the hashing probe scoped to PermissionsService without
+    /// making PrivilegedHelperClient's internal comparison public API.
+    private enum PrivilegedHelperClientHelperOutdatedProbe {
+        static func isOutdated() async -> Bool {
+            // We use the same logic as `prepareSession()`: compare embedded vs installed by hash.
+            // If hashing fails, assume not outdated to avoid spurious prompts.
+            let embedded = PrivilegedHelperClient.embeddedHelperURL
+            let installed = PrivilegedHelperClient.installedHelperURL
+            guard FileManager.default.fileExists(atPath: embedded.path),
+                  FileManager.default.fileExists(atPath: installed.path) else {
+                return false
+            }
+            async let embeddedHash = SHA256Hasher.hashFileBestEffort(at: embedded)
+            async let installedHash = SHA256Hasher.hashFileBestEffort(at: installed)
+            let (e, i) = await (embeddedHash, installedHash)
+            guard let e, let i else { return false }
+            return e != i
+        }
     }
 
     /// Lightweight XPC round-trip. Uses a generous timeout so the first connection after install can complete.

@@ -16,6 +16,7 @@ Repository license: **Apache License 2.0** (see `LICENSE`).
 | `chntpw` (bundled tool) | `.../Tools/bin/chntpw` | GPL‑2.0 (project also includes LGPL parts) | Registry edits used by UUP converter | Provide license text + **corresponding source** for the exact version shipped. |
 | `xorriso` (bundled tool) | `.../Tools/bin/xorriso` + thin wrappers `.../Tools/bin/genisoimage` and `.../Tools/bin/mkisofs` (each `exec xorriso -as mkisofs "$@"`) | GPL‑3.0‑or‑later | ISO image creation used by UUP converter (replaces the historical `cdrtools/mkisofs` bundle). | Provide license text + **corresponding source** for the exact `xorriso` version shipped (release tarball + sha256 in `third-party-sources.tar.gz`). Wrappers are repository code, no extra obligations. |
 | `mist` (bundled tool) | `.../Tools/bin/mist` | MIT | macOS installers/firmware download | Include MIT license text + attribution. |
+| Sparkle (update framework) | Linked into `FluffyFlash.app` via SPM (`Sparkle.framework`); resolved revision in `Fluffy Flash.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved` | MIT | In-app update checks, signed downloads, install & relaunch | Include MIT license text + attribution in `THIRD_PARTY_NOTICES.txt`; ship matching upstream source tarball for the pinned revision in release source bundles when required; see `docs/Sparkle.md`. |
 | `ntfs-3g` (Windows-To-Go research only) | NOT yet bundled in shipping `.app`. Will be staged at `.../Tools/bin/ntfs-3g` and `.../Tools/bin/mkntfs` once the WTG track ships. Currently behind the `WTG_LOCAL` Swift compilation condition. | GPL‑2.0 | NTFS partition write support on macOS for Windows-To-Go (`mkntfs` + FUSE mount). Replaces no existing component. | Process boundary: invoked as a subprocess by Swift code (no linking). Will require: corresponding source tarball, license text in `THIRD_PARTY_NOTICES.txt`, evidence in `tool-versions.txt`. App will refuse to bundle/ship until that is in place. |
 | FUSE-T / macFUSE (user prerequisite) | NOT bundled. App detects the runtime and asks the user to install. | LGPL/MPL (FUSE-T) / BSD-2 + macFUSE EULA (macFUSE) | Required by `ntfs-3g` to mount NTFS volumes. Shipping a kernel/system extension from a third party is not realistic for our distribution channel. | None for us — pointer in UI to user-driven install only. Documented in `Windows-To-Go-Research.md`. |
 
@@ -73,6 +74,14 @@ The macOS mode uses the `mist` command from **mist-cli** (Nindi Gill) to list an
 Source: [https://github.com/ninxsoft/mist-cli](https://github.com/ninxsoft/mist-cli)
 
 License: **MIT License** (see upstream `LICENSE`).
+
+## Sparkle (MIT License)
+
+**Sparkle** is linked into the macOS application via **Swift Package Manager** to provide in-app update checks, EdDSA-verified downloads, and safe install/relaunch flows.
+
+- Source: [https://github.com/sparkle-project/Sparkle](https://github.com/sparkle-project/Sparkle)
+- License: **MIT License** (see upstream `LICENSE` in the package checkout / release tarball).
+- Operational notes (keys, appcast, `sign_update`): [`docs/Sparkle.md`](docs/Sparkle.md).
 
 ## wimlib (runtime dependency)
 

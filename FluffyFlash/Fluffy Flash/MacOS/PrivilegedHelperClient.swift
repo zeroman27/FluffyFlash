@@ -248,16 +248,28 @@ enum PrivilegedHelperClient {
     static func prepareSession() async throws {
         if installLatch.wasBlessedThisSession() { return }
         if isInstalled() {
-            installLatch.markBlessed()
+            // If the helper is installed but does not match the embedded helper shipped with
+            // this app build, proactively reinstall so users never have to manually delete it.
+            // This avoids confusing cases where a new app version keeps using an older helper
+            // until the user performs an explicit reinstall.
+            if await embeddedHelperMatchesInstalled() {
+                installLatch.markBlessed()
+                return
+            }
+            try await MainActor.run {
+                try install(forceReinstall: true)
+            }
             return
         }
         try await MainActor.run {
-            try installIfNeeded()
+            try install(forceReinstall: false)
         }
     }
 
-    static func installIfNeeded() throws {
-        if isInstalled() {
+    /// Installs (or reinstalls) the privileged helper via SMJobBless.
+    /// - Parameter forceReinstall: when true, performs SMJobBless even if `isInstalled()` is true.
+    static func install(forceReinstall: Bool) throws {
+        if !forceReinstall, isInstalled() {
             installLatch.markBlessed()
             return
         }
@@ -324,6 +336,26 @@ enum PrivilegedHelperClient {
             parts.append("CFError: <nil>")
         }
         throw PrivilegedHelperClientError.blessFailed(parts.joined(separator: "\n"))
+    }
+
+    /// Compares the embedded helper tool shipped inside the app bundle against the
+    /// installed helper in `/Library/PrivilegedHelperTools/` by SHA-256.
+    /// Returns `true` on match or when hashing is unavailable (best-effort).
+    private static func embeddedHelperMatchesInstalled() async -> Bool {
+        let embedded = embeddedHelperURL
+        let installed = installedHelperURL
+        guard FileManager.default.fileExists(atPath: embedded.path),
+              FileManager.default.fileExists(atPath: installed.path) else {
+            return false
+        }
+        async let embeddedHash = SHA256Hasher.hashFileBestEffort(at: embedded)
+        async let installedHash = SHA256Hasher.hashFileBestEffort(at: installed)
+        let (e, i) = await (embeddedHash, installedHash)
+        guard let e, let i else {
+            // Hashing failed (e.g. permissions) — do not prompt the user unnecessarily.
+            return true
+        }
+        return e == i
     }
 
     static func connection() -> NSXPCConnection {

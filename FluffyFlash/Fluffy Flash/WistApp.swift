@@ -21,6 +21,19 @@ struct WistApp: App {
                 }
         }
         .defaultSize(width: 980, height: 640)
+        .commands {
+            CommandGroup(after: .appInfo) {
+                Button(String(localized: "Check for Updates…")) {
+                    FluffySparkleController.shared.checkForUpdates()
+                }
+                .disabled(!FluffySparkleController.isConfigured)
+                .help(
+                    FluffySparkleController.isConfigured
+                        ? String(localized: "Download updates published to the Sparkle appcast.")
+                        : String(localized: "Add SUPublicEDKey to the app Info.plist (see docs/Sparkle.md).")
+                )
+            }
+        }
     }
 }
 
@@ -39,6 +52,10 @@ final class WistOpenISOBridge: ObservableObject {
 /// Forwards `application(_:open:)` events into a NotificationCenter signal so
 /// SwiftUI views can react without coupling to AppKit.
 final class WistAppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        FluffySparkleController.shared.prepareIfNeeded()
+    }
+
     func application(_ application: NSApplication, open urls: [URL]) {
         for url in urls where url.pathExtension.lowercased() == "iso" {
             NotificationCenter.default.post(name: .wistOpenISO, object: url)

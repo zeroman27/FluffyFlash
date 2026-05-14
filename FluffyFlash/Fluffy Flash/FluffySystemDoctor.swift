@@ -315,6 +315,8 @@ final class FluffySystemDoctor: ObservableObject {
             switch st {
             case .granted:
                 mapped = .ok
+            case .outdated:
+                mapped = .warning(String(localized: "Outdated"))
             case .denied:
                 mapped = .failed(String(localized: "Not granted"))
             case .notDetermined:
@@ -330,7 +332,7 @@ final class FluffySystemDoctor: ObservableObject {
                     status: mapped,
                     fixAction: .grantPermission(permission),
                     fixLabel: permission == .privilegedHelper
-                        ? String(localized: "Install helper…")
+                        ? String(localized: st == .outdated ? "Update helper…" : "Install helper…")
                         : String(localized: "Open")
                 )
             )

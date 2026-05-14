@@ -23,6 +23,8 @@ brew install wimlib
 
 Open `Wist.xcodeproj`, select the **Wist** scheme, then Run.
 
+In-app updates use **Sparkle** (see [`docs/Sparkle.md`](docs/Sparkle.md) for keys, appcast, and release signing).
+
 ### Signing and Bundle Identifier
 
 To set up signing for **your Apple ID / team** and configure your **Bundle ID** (including test target identifiers), follow [docs/Signing.md](docs/Signing.md). The Bundle ID is not hardcoded in code — it’s configured in Xcode.

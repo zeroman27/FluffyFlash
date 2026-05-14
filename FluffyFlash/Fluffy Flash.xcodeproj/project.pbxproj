@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		E8F0A0202FF00000007F5B09 /* PrivilegedHelperMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F0A0022FF00000007F5B09 /* PrivilegedHelperMain.swift */; };
 		E8F0A0212FF00000007F5B09 /* PrivilegedHelperProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F0A0032FF00000007F5B09 /* PrivilegedHelperProtocol.swift */; };
+		E8F0A0622FF00000007F5B09 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = E8F0A0612FF00000007F5B09 /* Sparkle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8F0A0622FF00000007F5B09 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,6 +159,7 @@
 			);
 			name = FluffyFlash;
 			packageProductDependencies = (
+				E8F0A0612FF00000007F5B09 /* Sparkle */,
 			);
 			productName = FluffyFlash;
 			productReference = C84181032F8E1D68007F5B09 /* FluffyFlash.app */;
@@ -262,6 +265,9 @@
 			);
 			mainGroup = C84180FA2F8E1D68007F5B09;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E8F0A0602FF00000007F5B09 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C84181042F8E1D68007F5B09 /* Products */;
 			projectDirPath = "";
@@ -807,6 +813,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E8F0A0602FF00000007F5B09 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E8F0A0612FF00000007F5B09 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E8F0A0602FF00000007F5B09 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C84180FB2F8E1D68007F5B09 /* Project object */;
 }

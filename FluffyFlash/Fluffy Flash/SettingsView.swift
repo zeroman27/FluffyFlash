@@ -67,6 +67,7 @@ struct SettingsView: View {
                         isoFolderCard
                         concurrencyCard
                         upgradeCard
+                        appUpdatesCard
                         expertModeCard
                         cacheCard
                     }
@@ -359,6 +360,30 @@ struct SettingsView: View {
         }
     }
 
+    private var appUpdatesCard: some View {
+        MistSectionCard(title: String(localized: "Fluffy Flash updates"), systemImage: "arrow.down.circle.dotted") {
+            VStack(alignment: .leading, spacing: 10) {
+                Text(String(localized: "Install new versions of this app using Sparkle (signed downloads from our appcast)."))
+                    .font(WistFont.caption(11))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                if FluffySparkleController.isConfigured {
+                    Button {
+                        FluffySparkleController.shared.checkForUpdates()
+                    } label: {
+                        Label(String(localized: "Check for updates…"), systemImage: "arrow.clockwise.circle")
+                    }
+                } else {
+                    Text(String(localized: "In-app updates are not fully configured (missing SUPublicEDKey). See docs/Sparkle.md."))
+                        .font(WistFont.caption(11))
+                        .foregroundStyle(.tertiary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+    }
+
     private var upgradeCard: some View {
         MistSectionCard(title: String(localized: "Upgrade detection"), systemImage: "arrow.up.circle") {
             VStack(alignment: .leading, spacing: 10) {
@@ -451,12 +476,21 @@ struct SettingsView: View {
                     .font(WistFont.caption(10))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
+                if item == .privilegedHelper, st == .outdated {
+                    Text(String(localized: "Outdated"))
+                        .font(WistFont.caption(10).weight(.medium))
+                        .foregroundStyle(.orange)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
             Spacer(minLength: 8)
             Button {
                 Task { await permissionsService.grantFlow(for: item) }
             } label: {
-                Text(item == .privilegedHelper ? String(localized: "Install helper…") : String(localized: "Open"))
+                Text(item == .privilegedHelper
+                    ? String(localized: st == .outdated ? "Update helper…" : "Install helper…")
+                    : String(localized: "Open")
+                )
             }
             .buttonStyle(.bordered)
             .controlSize(.small)
@@ -467,6 +501,7 @@ struct SettingsView: View {
     private func settingsStatusIcon(_ st: PermissionStatus) -> String {
         switch st {
         case .granted: return "checkmark.circle.fill"
+        case .outdated: return "exclamationmark.triangle.fill"
         case .denied: return "exclamationmark.triangle.fill"
         case .notDetermined: return "questionmark.circle.fill"
         case .unknown: return "ellipsis.circle.fill"
@@ -476,6 +511,7 @@ struct SettingsView: View {
     private func settingsStatusColor(_ st: PermissionStatus) -> Color {
         switch st {
         case .granted: return .green
+        case .outdated: return .orange
         case .denied: return .orange
         case .notDetermined: return .secondary
         case .unknown: return .secondary

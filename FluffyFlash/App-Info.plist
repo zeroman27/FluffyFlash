@@ -7,6 +7,10 @@
 		<key>com.fluffyflash.FluffyFlash.PrivilegedHelper</key>
 		<string>identifier "com.fluffyflash.FluffyFlash.PrivilegedHelper" and anchor apple generic and certificate leaf[subject.OU] = "UGVM5Y6DU8"</string>
 	</dict>
+	<key>SUFeedURL</key>
+	<string>https://raw.githubusercontent.com/zeroman27/FluffyFlash/main/FluffyFlash/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>VslqfJ67nhpEhWkvYT9SVnywHHWcWmWdGz6p8/ePUew=</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

@@ -47,6 +47,10 @@ The following command-line tools are redistributed inside the app bundle under t
 - mist — MIT License
   Source: https://github.com/ninxsoft/mist-cli
 
+- Sparkle — MIT License
+  Source: https://github.com/sparkle-project/Sparkle
+  Usage: in-app software updates (Swift Package Manager; `Sparkle.framework` in the app bundle).
+
 (Future) Windows-To-Go research — NOT shipped yet:
 
 - ntfs-3g — GPL-2.0

@@ -85,7 +85,12 @@ struct WelcomePermissionsSheet: View {
 
     private func welcomeRow(item: PermissionItem) -> some View {
         let st = permissions.statuses[item] ?? .unknown
-        return MistSectionCard(title: item.title, systemImage: statusIcon(st)) {
+        return MistSectionCard(
+            title: item.title,
+            systemImage: statusIcon(st),
+            iconTint: st == .granted ? .green : nil,
+            iconAnimationValue: st.rawValue
+        ) {
             VStack(alignment: .leading, spacing: 10) {
                 Text(item.detail)
                     .font(WistFont.caption(11))
@@ -111,6 +116,7 @@ struct WelcomePermissionsSheet: View {
     private func statusIcon(_ st: PermissionStatus) -> String {
         switch st {
         case .granted: return "checkmark.circle.fill"
+        case .outdated: return "exclamationmark.triangle.fill"
         case .denied: return "exclamationmark.triangle.fill"
         case .notDetermined: return "questionmark.circle.fill"
         case .unknown: return "ellipsis.circle.fill"
@@ -120,6 +126,7 @@ struct WelcomePermissionsSheet: View {
     private func statusLabel(_ st: PermissionStatus) -> String {
         switch st {
         case .granted: return String(localized: "Granted")
+        case .outdated: return String(localized: "Outdated")
         case .denied: return String(localized: "Denied or not installed")
         case .notDetermined: return String(localized: "Not determined")
         case .unknown: return String(localized: "Unknown — try Re-check in Settings")

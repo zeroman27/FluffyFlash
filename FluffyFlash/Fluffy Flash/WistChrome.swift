@@ -375,17 +375,70 @@ struct FeatureHeroHeader: View {
 
 // MARK: - Bento / layered cards
 
+/// Leading SF Symbol in `MistSectionCard` headers; optional tint and status-driven bounce (macOS 14+).
+private struct MistSectionCardHeaderSymbol: View {
+    let systemName: String
+    let iconTint: Color?
+    let iconAnimationValue: String?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        let image = Image(systemName: systemName)
+            .font(.system(size: 12, weight: .semibold, design: .default))
+            .frame(width: 16, alignment: .center)
+            .accessibilityHidden(true)
+
+        let styled: some View = Group {
+            if let iconTint {
+                image.foregroundStyle(iconTint)
+            } else {
+                image.foregroundStyle(
+                    LinearGradient(
+                        colors: [Color.secondary, Color.secondary.opacity(0.65)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+            }
+        }
+
+        Group {
+            if let iconAnimationValue, !reduceMotion {
+                if #available(macOS 14.0, *) {
+                    styled.symbolEffect(.bounce, value: iconAnimationValue)
+                } else {
+                    styled
+                }
+            } else {
+                styled
+            }
+        }
+    }
+}
+
 struct MistSectionCard<Content: View>: View {
     let title: String
     let systemImage: String?
+    /// When set, replaces the default secondary gradient on the header SF Symbol.
+    let iconTint: Color?
+    /// When non-nil, drives `symbolEffect(.bounce)` on macOS 14+ when this string changes (e.g. permission status).
+    let iconAnimationValue: String?
     let content: Content
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    init(title: String, systemImage: String? = nil, @ViewBuilder content: () -> Content) {
+    init(
+        title: String,
+        systemImage: String? = nil,
+        iconTint: Color? = nil,
+        iconAnimationValue: String? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
         self.title = title
         self.systemImage = systemImage
+        self.iconTint = iconTint
+        self.iconAnimationValue = iconAnimationValue
         self.content = content()
     }
 
@@ -393,17 +446,11 @@ struct MistSectionCard<Content: View>: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 8) {
                 if let systemImage {
-                    Image(systemName: systemImage)
-                        .font(.system(size: 12, weight: .semibold, design: .default))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [Color.secondary, Color.secondary.opacity(0.65)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        .frame(width: 16, alignment: .center)
-                        .accessibilityHidden(true)
+                    MistSectionCardHeaderSymbol(
+                        systemName: systemImage,
+                        iconTint: iconTint,
+                        iconAnimationValue: iconAnimationValue
+                    )
                 }
                 Text(title)
                     .font(WistFont.headline(12))
