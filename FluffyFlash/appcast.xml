@@ -5,5 +5,22 @@
     <link>https://github.com/zeroman27/FluffyFlash/releases</link>
     <description>Appcast for Sparkle in-app updates. Add a new item per release; see FluffyFlash/docs/Sparkle.md.</description>
     <language>en</language>
+    <item>
+      <title>Fluffy Flash 0.1.2</title>
+      <link>https://github.com/zeroman27/FluffyFlash/releases/tag/v0.1.2</link>
+      <sparkle:version>2</sparkle:version>
+      <sparkle:shortVersionString>0.1.2</sparkle:shortVersionString>
+      <pubDate>Mon, 19 May 2026 18:42:00 +0000</pubDate>
+      <description><![CDATA[
+        <h2>Fluffy Flash 0.1.2</h2>
+        <p>Notarized Developer ID build. Sparkle update from 0.1.x.</p>
+      ]]></description>
+      <enclosure
+        url="https://github.com/zeroman27/FluffyFlash/releases/download/v0.1.2/FluffyFlash-0.1.2.zip"
+        sparkle:edSignature="KqeCJMvECdJ6syWlMD1EnKzzLk5UygOVa6jTFKZBpbKFwTx7r/7EtK0XwP224xe6F2HOFe3CGO3RZDceAiIcBg=="
+        length="45638941"
+        type="application/octet-stream"
+      />
+    </item>
   </channel>
 </rss>
